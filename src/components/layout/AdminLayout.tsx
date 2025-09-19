@@ -415,7 +415,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               }}>
                 LX
               </div>
-            ) : '精品服饰管理后台'}
+            ) : '==实体店产品展示系统=='}
           </Title>
         </div>
         

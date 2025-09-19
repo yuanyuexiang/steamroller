@@ -134,7 +134,7 @@ export default function LoginPage() {
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
             }}
           >
-            智能管理系统
+            实体店产品展示系统
           </p>
         </div>
         
