@@ -527,71 +527,6 @@ function UsersManagement() {
       background: '#f5f5f5', 
       minHeight: '100vh' 
     }}>
-      {/* 页面头部 */}
-      <div style={{ 
-        background: '#fff', 
-        padding: '24px', 
-        borderRadius: '12px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-        marginBottom: '24px',
-        border: '1px solid #f0f0f0'
-      }}>
-        <Row justify="space-between" align="middle">
-          <Col>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <UserOutlined style={{ color: '#fff', fontSize: '18px' }} />
-              </div>
-              <div>
-                <Title level={3} style={{ margin: 0, color: '#262626' }}>
-                  用户管理
-                </Title>
-                <div style={{ fontSize: '14px', color: '#8c8c8c', marginTop: '4px' }}>
-                  管理系统用户账户和权限设置
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col>
-            <Space size="middle">
-              <Button 
-                icon={<ReloadOutlined />}
-                onClick={handleRefresh}
-                loading={usersLoading}
-                style={{
-                  borderRadius: '8px',
-                  border: '1px solid #d9d9d9',
-                  background: '#fff'
-                }}
-              >
-                刷新数据
-              </Button>
-              <Button 
-                type="primary" 
-                icon={<UserAddOutlined />}
-                onClick={() => router.push('/users/create')}
-                style={{
-                  borderRadius: '8px',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  border: 'none',
-                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
-                }}
-              >
-                添加用户
-              </Button>
-            </Space>
-          </Col>
-        </Row>
-      </div>
-
       {/* 筛选和搜索区域 */}
       <Card 
         style={{ 
@@ -682,7 +617,7 @@ function UsersManagement() {
               </Option>
             </Select>
           </Col>
-          <Col xs={24} sm={24} md={8} lg={12}>
+          <Col xs={24} sm={24} md={6} lg={8}>
             <div style={{ marginBottom: '4px', fontSize: '12px', color: 'transparent' }}>
               .
             </div>
@@ -695,6 +630,33 @@ function UsersManagement() {
               color: '#8c8c8c'
             }}>
               <span>共找到 {totalCount} 位用户</span>
+              <Space size="middle">
+                <Button 
+                  icon={<ReloadOutlined />}
+                  onClick={handleRefresh}
+                  loading={usersLoading}
+                  style={{
+                    borderRadius: '8px',
+                    border: '1px solid #d9d9d9',
+                    background: '#fff'
+                  }}
+                >
+                  刷新
+                </Button>
+                <Button 
+                  type="primary" 
+                  icon={<UserAddOutlined />}
+                  onClick={() => router.push('/users/create')}
+                  style={{
+                    borderRadius: '8px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    border: 'none',
+                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+                  }}
+                >
+                  添加用户
+                </Button>
+              </Space>
             </div>
           </Col>
         </Row>
