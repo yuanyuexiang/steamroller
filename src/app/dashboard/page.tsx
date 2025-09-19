@@ -137,221 +137,219 @@ function DashboardContent() {
   }
 
   return (
-    <div style={{ height: '100%', padding: '24px', backgroundColor: 'white' }}>
-      {/* 页面标题区域 */}
-      <div className="mb-6">
-        <Title level={4} className="mb-2">超级管理员仪表盘</Title>
-        <p className="text-gray-600">
-          查看整个平台的关键数据和业务指标 - 全系统视图
-        </p>
-      </div>
-      
+    <div className="dashboard-container">
       {isLoading && (
-        <Alert
-          message="正在加载数据..."
-          type="info"
-          showIcon
-          style={{ marginBottom: 24 }}
-        />
+        <div className="dashboard-loading-alert">
+          <Spin size="small" />
+          <span>正在加载数据...</span>
+        </div>
       )}
       
       {/* 统计卡片区域 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-        <div className="luxury-card p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px', fontWeight: 500 }}>总订单数</p>
-              <div style={{ fontSize: '36px', fontWeight: 700, color: '#111827', letterSpacing: '-0.02em' }}>
+      <div className="dashboard-stats-grid">
+        <div className="dashboard-stat-card orders-card">
+          <div className="stat-card-content">
+            <div className="stat-card-info">
+              <div className="stat-card-label">总订单数</div>
+              <div className="stat-card-value">
                 {isLoading ? <Spin size="small" /> : statsData.totalOrders.toLocaleString()}
               </div>
-              <p style={{ fontSize: '13px', color: '#059669', marginTop: '8px', fontWeight: 500 }}>
-                <span className="inline-block mr-1">↗</span>
+              <div className="stat-card-trend positive">
+                <span className="trend-icon">↗</span>
                 较昨日 +12%
-              </p>
+              </div>
             </div>
-            <div style={{ 
-              width: '56px', 
-              height: '56px', 
-              background: 'linear-gradient(135deg, #1F2937 0%, #374151 100%)', 
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(31, 41, 55, 0.3)'
-            }}>
-              <ShoppingCartOutlined style={{ fontSize: '24px', color: '#C5A46D' }} />
+            <div className="stat-card-icon orders-icon">
+              <ShoppingCartOutlined />
             </div>
           </div>
         </div>
         
-        <div className="luxury-card p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px', fontWeight: 500 }}>店铺总数</p>
-              <div style={{ fontSize: '36px', fontWeight: 700, color: '#111827', letterSpacing: '-0.02em' }}>
+        <div className="dashboard-stat-card boutiques-card">
+          <div className="stat-card-content">
+            <div className="stat-card-info">
+              <div className="stat-card-label">店铺总数</div>
+              <div className="stat-card-value">
                 {isLoading ? <Spin size="small" /> : statsData.totalBoutiques.toLocaleString()}
               </div>
-              <p style={{ fontSize: '13px', color: '#059669', marginTop: '8px', fontWeight: 500 }}>
-                <span className="inline-block mr-1">🏪</span>
+              <div className="stat-card-trend neutral">
+                <span className="trend-icon">🏪</span>
                 入驻店铺
-              </p>
+              </div>
             </div>
-            <div style={{ 
-              width: '56px', 
-              height: '56px', 
-              background: 'linear-gradient(135deg, #065F46 0%, #047857 100%)', 
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(6, 95, 70, 0.3)'
-            }}>
-              <ShopOutlined style={{ fontSize: '24px', color: '#A7F3D0' }} />
+            <div className="stat-card-icon boutiques-icon">
+              <ShopOutlined />
             </div>
           </div>
         </div>
         
-        <div className="luxury-card p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px', fontWeight: 500 }}>终端设备</p>
-              <div style={{ fontSize: '36px', fontWeight: 700, color: '#111827', letterSpacing: '-0.02em' }}>
+        <div className="dashboard-stat-card terminals-card">
+          <div className="stat-card-content">
+            <div className="stat-card-info">
+              <div className="stat-card-label">终端设备</div>
+              <div className="stat-card-value">
                 {isLoading ? <Spin size="small" /> : statsData.totalTerminals.toLocaleString()}
               </div>
-              <p style={{ fontSize: '13px', color: '#10B981', marginTop: '8px', fontWeight: 500 }}>
-                <span className="inline-block mr-1">🖥️</span>
+              <div className="stat-card-trend positive">
+                <span className="trend-icon">🖥️</span>
                 智能设备
-              </p>
+              </div>
             </div>
-            <div style={{ 
-              width: '56px', 
-              height: '56px', 
-              background: 'linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)', 
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(15, 118, 110, 0.3)'
-            }}>
-              <DashboardOutlined style={{ fontSize: '24px', color: '#A7F3D0' }} />
+            <div className="stat-card-icon terminals-icon">
+              <DashboardOutlined />
             </div>
           </div>
         </div>
       </div>
 
-      {/* 快速操作区域 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4">快速操作</h3>
-          <div className="grid grid-cols-2 gap-4">
+      {/* 主要内容区域 */}
+      <div className="dashboard-main-content">
+        {/* 快速操作区域 */}
+        <div className="dashboard-quick-actions">
+          <div className="dashboard-section-header">
+            <h3 className="section-title">快速操作</h3>
+            <p className="section-desc">常用功能快速访问</p>
+          </div>
+          <div className="quick-actions-grid">
             <Button 
-              type="primary" 
+              className="quick-action-btn boutiques-btn"
               icon={<ShopOutlined />}
-              className="h-12"
               onClick={() => router.push('/boutiques')}
             >
-              店铺管理
+              <span className="btn-text">
+                <strong>店铺管理</strong>
+                <small>管理店铺信息</small>
+              </span>
             </Button>
             <Button 
+              className="quick-action-btn orders-btn"
               icon={<ShoppingCartOutlined />}
-              className="h-12"
               onClick={() => router.push('/orders')}
             >
-              查看订单
+              <span className="btn-text">
+                <strong>查看订单</strong>
+                <small>订单处理中心</small>
+              </span>
             </Button>
             <Button 
+              className="quick-action-btn terminals-btn"
               icon={<DashboardOutlined />}
-              className="h-12"
               onClick={() => router.push('/terminals')}
             >
-              终端管理
+              <span className="btn-text">
+                <strong>终端管理</strong>
+                <small>设备监控台</small>
+              </span>
+            </Button>
+            <Button 
+              className="quick-action-btn users-btn"
+              icon={<UserOutlined />}
+              onClick={() => router.push('/users')}
+            >
+              <span className="btn-text">
+                <strong>用户管理</strong>
+                <small>系统用户</small>
+              </span>
             </Button>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4">系统状态</h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600">数据库连接</span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                正常
-              </span>
+        {/* 数据展示区域 */}
+        <div className="dashboard-data-sections">
+          {/* 最近订单 */}
+          <div className="dashboard-section recent-orders">
+            <div className="dashboard-section-header">
+              <h3 className="section-title">最近订单</h3>
+              <Button 
+                type="link" 
+                className="section-link"
+                onClick={() => router.push('/orders')}
+              >
+                查看全部 →
+              </Button>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600">API 状态</span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                运行中
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600">最后同步</span>
-              <span className="text-sm text-gray-500">
-                刚刚
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 最近活动区域 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 最近订单 */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">最近订单</h3>
-            <Button type="link" onClick={() => router.push('/orders')}>
-              查看全部
-            </Button>
-          </div>
-          <div className="space-y-3">
-            {isLoading ? (
-              <div className="text-center py-4">
-                <Spin />
-              </div>
-            ) : ordersData?.orders?.length ? (
-              ordersData.orders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between py-2 border-b last:border-b-0">
-                  <div>
-                    <div className="font-medium">#{order.id.substring(0, 8)}</div>
-                    <div className="text-sm text-gray-500">{order.customer?.nick_name || '未知用户'}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-medium">¥{order.total_price?.toFixed(2)}</div>
-                    <div className={`text-sm ${
-                      order.status === 'completed' ? 'text-green-600' : 
-                      order.status === 'processing' ? 'text-orange-600' : 'text-blue-600'
-                    }`}>
-                      {order.status === 'completed' ? '已完成' : 
-                       order.status === 'processing' ? '处理中' : '待处理'}
-                    </div>
-                  </div>
+            <div className="recent-orders-content">
+              {isLoading ? (
+                <div className="loading-state">
+                  <Spin />
+                  <span>加载订单数据...</span>
                 </div>
-              ))
-            ) : (
-              <div className="text-center py-4 text-gray-500">
-                暂无订单数据
-              </div>
-            )}
+              ) : ordersData?.orders?.length ? (
+                <div className="orders-list">
+                  {ordersData.orders.map((order) => (
+                    <div key={order.id} className="order-item">
+                      <div className="order-info">
+                        <div className="order-id">#{order.id.substring(0, 8)}</div>
+                        <div className="order-customer">{order.customer?.nick_name || '未知用户'}</div>
+                        <div className="order-date">
+                          {new Date(order.date_created).toLocaleDateString('zh-CN')}
+                        </div>
+                      </div>
+                      <div className="order-details">
+                        <div className="order-price">¥{order.total_price?.toFixed(2) || '0.00'}</div>
+                        <div className={`order-status status-${order.status}`}>
+                          {order.status === 'completed' ? '已完成' : 
+                           order.status === 'processing' ? '处理中' : '待处理'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <div className="empty-icon">📦</div>
+                  <p>暂无订单数据</p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* 系统信息 */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">系统信息</h3>
-          </div>
-          <div className="space-y-3">
-            <div className="text-center py-4 text-gray-600">
-              <div className="font-medium">活跃店铺: {statsData.totalBoutiques}</div>
-              <div className="font-medium mt-2">终端设备: {statsData.totalTerminals}</div>
-              <div className="text-sm mt-2">系统运行正常</div>
+          {/* 系统状态 */}
+          <div className="dashboard-section system-status">
+            <div className="dashboard-section-header">
+              <h3 className="section-title">系统状态</h3>
+              <div className="status-indicator online">
+                <span className="indicator-dot"></span>
+                运行正常
+              </div>
+            </div>
+            <div className="system-metrics">
+              <div className="metric-item">
+                <div className="metric-icon">🔗</div>
+                <div className="metric-info">
+                  <span className="metric-label">数据库连接</span>
+                  <span className="metric-status online">正常</span>
+                </div>
+              </div>
+              <div className="metric-item">
+                <div className="metric-icon">⚡</div>
+                <div className="metric-info">
+                  <span className="metric-label">API 服务</span>
+                  <span className="metric-status online">运行中</span>
+                </div>
+              </div>
+              <div className="metric-item">
+                <div className="metric-icon">🔄</div>
+                <div className="metric-info">
+                  <span className="metric-label">最后同步</span>
+                  <span className="metric-value">刚刚</span>
+                </div>
+              </div>
+              <div className="metric-item">
+                <div className="metric-icon">📊</div>
+                <div className="metric-info">
+                  <span className="metric-label">活跃店铺</span>
+                  <span className="metric-value">{statsData.totalBoutiques}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="mt-8 text-center text-gray-500 text-sm">
-        &copy; {new Date().getFullYear()} 服装店管理系统. 保留所有权利.
+      
+      {/* 页脚 */}
+      <div className="dashboard-footer">
+        <p>&copy; {new Date().getFullYear()} Steamroller Management System. 保留所有权利.</p>
       </div>
     </div>
   );
