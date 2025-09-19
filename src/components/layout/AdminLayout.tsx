@@ -125,6 +125,28 @@ const globalStyles = `
   gap: 16px;
 }
 
+.admin-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-header-title-main {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #262626 !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+}
+
+.admin-header-title-desc {
+  font-size: 12px !important;
+  color: #8c8c8c !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+  display: block !important;
+}
+
 .admin-header-toggle {
   width: 40px !important;
   height: 40px !important;
@@ -414,13 +436,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               onClick={toggleCollapsed}
             />
             
-            <div>
-              <Text style={{ fontSize: '18px', fontWeight: 600, color: '#262626' }}>
+            <div className="admin-header-title">
+              <Text className="admin-header-title-main">
                 {getPageTitle()}
               </Text>
-              <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '2px' }}>
+              <Text className="admin-header-title-desc">
                 {getPageDescription()}
-              </div>
+              </Text>
             </div>
           </div>
 
