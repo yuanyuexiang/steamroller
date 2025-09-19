@@ -59,14 +59,6 @@ const globalStyles = `
   padding: 24px;
 }
 
-.boutiques-header-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  color: white;
-  border-radius: 16px;
-  margin-bottom: 24px;
-}
-
 .boutiques-stats-card {
   background: white;
   border-radius: 16px;
@@ -172,9 +164,31 @@ const globalStyles = `
 .search-filter-section {
   background: white;
   border-radius: 16px;
-  padding: 20px;
+  padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.search-filter-section .ant-btn-primary {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-filter-section .ant-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.add-boutique-btn {
+  white-space: nowrap;
+  min-width: 110px;
+}
+
+@media (max-width: 576px) {
+  .add-boutique-btn {
+    width: 100%;
+    margin-top: 8px;
+  }
 }
 
 .stats-item {
@@ -592,41 +606,6 @@ function BoutiquesContent() {
 
   return (
     <div className="boutiques-container">
-      {/* 页面头部 */}
-      <Card className="boutiques-header-card">
-        <Row justify="space-between" align="middle">
-          <Col>
-            <div>
-              <Title level={2} style={{ color: 'white', margin: 0, marginBottom: '8px' }}>
-                店铺管理
-              </Title>
-              <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: '16px' }}>
-                管理所有店铺信息，包括基本信息、状态和统计数据
-              </Text>
-            </div>
-          </Col>
-          <Col>
-            <Button 
-              type="primary"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={handleAddBoutique}
-              style={{ 
-                background: 'rgba(255,255,255,0.2)',
-                border: '1px solid rgba(255,255,255,0.3)',
-                color: 'white',
-                fontWeight: 600,
-                borderRadius: '12px',
-                height: '44px',
-                padding: '0 24px'
-              }}
-            >
-              新增店铺
-            </Button>
-          </Col>
-        </Row>
-      </Card>
-
       {/* 统计卡片 */}
       <Card className="boutiques-stats-card">
         <Row gutter={[24, 16]}>
@@ -671,7 +650,7 @@ function BoutiquesContent() {
       {/* 搜索和筛选区域 */}
       <div className="search-filter-section">
         <Row gutter={[16, 16]} align="middle">
-          <Col xs={24} sm={16} md={12} lg={8}>
+          <Col xs={24} sm={12} md={10} lg={8}>
             <Search
               placeholder="搜索店铺名称或地址"
               allowClear
@@ -682,10 +661,30 @@ function BoutiquesContent() {
               style={{ borderRadius: '12px' }}
             />
           </Col>
-          <Col xs={24} sm={8} md={6}>
+          <Col xs={12} sm={8} md={8} lg={10}>
             <Text style={{ color: '#8c8c8c', fontSize: '14px' }}>
               共找到 {filteredBoutiques.length} 个店铺
             </Text>
+          </Col>
+          <Col xs={12} sm={4} md={6} lg={6} style={{ textAlign: 'right' }}>
+            <Button 
+              type="primary"
+              size="large"
+              icon={<PlusOutlined />}
+              onClick={handleAddBoutique}
+              className="add-boutique-btn"
+              style={{ 
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                border: 'none',
+                fontWeight: 600,
+                borderRadius: '12px',
+                height: '40px',
+                padding: '0 20px',
+                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+              }}
+            >
+              新增店铺
+            </Button>
           </Col>
         </Row>
       </div>
