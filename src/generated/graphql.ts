@@ -4250,7 +4250,7 @@ export type UpdateBoutiqueMutationVariables = Exact<{
 }>;
 
 
-export type UpdateBoutiqueMutation = { __typename?: 'Mutation', update_boutiques_item?: { __typename?: 'boutiques', id: string, name?: string | null, address?: string | null, city?: string | null, code?: string | null, category?: string | null, contact?: string | null, expire_date?: any | null, main_image?: string | null, images?: any | null, stars?: number | null, status?: string | null, sort?: number | null, date_updated?: any | null } | null };
+export type UpdateBoutiqueMutation = { __typename?: 'Mutation', update_boutiques_item?: { __typename?: 'boutiques', id: string, name?: string | null, address?: string | null, city?: string | null, code?: string | null, category?: string | null, contact?: string | null, expire_date?: any | null, main_image?: string | null, images?: any | null, stars?: number | null, status?: string | null, sort?: number | null, date_updated?: any | null, user_created?: { __typename?: 'directus_users', id: string, first_name?: string | null, last_name?: string | null, email?: string | null } | null } | null };
 
 export type DeleteBoutiqueMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -4750,6 +4750,12 @@ export const UpdateBoutiqueDocument = gql`
     status
     sort
     date_updated
+    user_created {
+      id
+      first_name
+      last_name
+      email
+    }
   }
 }
     `;

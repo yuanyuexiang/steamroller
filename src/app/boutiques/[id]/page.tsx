@@ -42,7 +42,8 @@ import {
   PictureOutlined,
   SettingOutlined,
   InfoCircleOutlined,
-  EditOutlined
+  EditOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { ProtectedRoute } from '@components/auth';
 import { AdminLayout } from '@components/layout';
@@ -307,7 +308,8 @@ function BoutiqueEditContent() {
         status: foundBoutique.status,
         sort: foundBoutique.sort,
         main_image: foundBoutique.main_image || '',
-        images: foundBoutique.images || []
+        images: foundBoutique.images || [],
+        user_created: foundBoutique.user_created?.id
       });
 
       // 初始化主图数据
@@ -496,6 +498,7 @@ function BoutiqueEditContent() {
         sort: values.sort || 0,
         main_image: values.main_image || null,
         images: values.images && values.images.length > 0 ? values.images : null,
+        ...(values.user_created && isEditMode ? { user_created: values.user_created } : {})
       };
 
       console.log('Submitting boutique data:', submitData);
@@ -862,6 +865,26 @@ function BoutiqueEditContent() {
           </Option>
         </Select>
       </Form.Item>
+
+      {isEditMode && (
+        <Form.Item
+          label={
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <UserOutlined />
+              创建者 ID
+              <Text style={{ fontSize: '12px', color: '#8c8c8c' }}>(管理员功能)</Text>
+            </span>
+          }
+          name="user_created"
+          tooltip="输入用户ID来修改店铺的创建者，只有管理员可以使用此功能"
+        >
+          <Input
+            placeholder="请输入用户ID" 
+            size="large" 
+            style={{ borderRadius: '8px' }}
+          />
+        </Form.Item>
+      )}
     </Card>
   );
 

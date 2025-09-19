@@ -32,7 +32,8 @@ import {
   CheckCircleOutlined,
   SearchOutlined,
   FilterOutlined,
-  StarOutlined
+  StarOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { ProtectedRoute, AdminLayout } from '@components';
 import { 
@@ -189,6 +190,30 @@ const globalStyles = `
     width: 100%;
     margin-top: 8px;
   }
+}
+
+.boutique-creator-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.boutique-creator-name {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: #262626;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.boutique-creator-email {
+  font-size: 11px;
+  color: #8c8c8c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 130px;
 }
 
 .stats-item {
@@ -545,6 +570,40 @@ function BoutiquesContent() {
       onFilter: (value: any, record: Boutique) => record.status === value,
     },
     {
+      title: '创建者',
+      dataIndex: 'user_created',
+      key: 'user_created',
+      width: 150,
+      render: (userCreated: any) => {
+        if (!userCreated) {
+          return <Text style={{ color: '#8c8c8c', fontSize: '12px' }}>未知用户</Text>;
+        }
+        
+        const displayName = userCreated.first_name || userCreated.last_name 
+          ? `${userCreated.first_name || ''} ${userCreated.last_name || ''}`.trim()
+          : userCreated.email || `用户 ${userCreated.id}`;
+        
+        return (
+          <div className="boutique-creator-cell">
+            <div className="boutique-creator-name">
+              <UserOutlined style={{ marginRight: '4px', color: '#667eea' }} />
+              {displayName}
+            </div>
+            {userCreated.email && userCreated.email !== displayName && (
+              <div className="boutique-creator-email" title={userCreated.email}>
+                {userCreated.email}
+              </div>
+            )}
+          </div>
+        );
+      },
+      sorter: (a: Boutique, b: Boutique) => {
+        const nameA = a.user_created?.first_name || a.user_created?.last_name || a.user_created?.email || '';
+        const nameB = b.user_created?.first_name || b.user_created?.last_name || b.user_created?.email || '';
+        return nameA.localeCompare(nameB);
+      },
+    },
+    {
       title: '创建时间',
       dataIndex: 'date_created',
       key: 'date_created',
@@ -735,7 +794,7 @@ function BoutiquesContent() {
               return originalElement;
             }
           }}
-          scroll={{ x: 1200 }}
+          scroll={{ x: 1350 }}
           size="middle"
           rowClassName={(record, index) => 
             index % 2 === 0 ? 'boutiques-table-even-row' : 'boutiques-table-odd-row'

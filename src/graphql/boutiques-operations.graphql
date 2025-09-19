@@ -112,6 +112,12 @@ mutation UpdateBoutique($id: ID!, $data: update_boutiques_input!) {
     status
     sort
     date_updated
+    user_created {
+      id
+      first_name
+      last_name
+      email
+    }
   }
 }
 

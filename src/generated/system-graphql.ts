@@ -6281,6 +6281,11 @@ export type ToggleSystemUserStatusMutationVariables = Exact<{
 
 export type ToggleSystemUserStatusMutation = { __typename?: 'Mutation', update_users_item?: { __typename?: 'directus_users', id: string, email?: string | null, status?: string | null } | null };
 
+export type GetActiveSystemUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveSystemUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'directus_users', id: string, first_name?: string | null, last_name?: string | null, email?: string | null, avatar?: { __typename?: 'directus_files', id: string } | null }> };
+
 
 export const GetAllSystemUsersDocument = gql`
     query GetAllSystemUsers($filter: directus_users_filter, $sort: [String], $limit: Int, $offset: Int, $search: String) {
@@ -6727,3 +6732,51 @@ export function useToggleSystemUserStatusMutation(baseOptions?: ApolloReactHooks
 export type ToggleSystemUserStatusMutationHookResult = ReturnType<typeof useToggleSystemUserStatusMutation>;
 export type ToggleSystemUserStatusMutationResult = ApolloReactCommon.MutationResult<ToggleSystemUserStatusMutation>;
 export type ToggleSystemUserStatusMutationOptions = ApolloReactCommon.BaseMutationOptions<ToggleSystemUserStatusMutation, ToggleSystemUserStatusMutationVariables>;
+export const GetActiveSystemUsersDocument = gql`
+    query GetActiveSystemUsers {
+  users(
+    filter: {status: {_eq: "active"}}
+    sort: ["first_name", "last_name", "email"]
+  ) {
+    id
+    first_name
+    last_name
+    email
+    avatar {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetActiveSystemUsersQuery__
+ *
+ * To run a query within a React component, call `useGetActiveSystemUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActiveSystemUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActiveSystemUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetActiveSystemUsersQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetActiveSystemUsersQuery, GetActiveSystemUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetActiveSystemUsersQuery, GetActiveSystemUsersQueryVariables>(GetActiveSystemUsersDocument, options);
+      }
+export function useGetActiveSystemUsersLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetActiveSystemUsersQuery, GetActiveSystemUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetActiveSystemUsersQuery, GetActiveSystemUsersQueryVariables>(GetActiveSystemUsersDocument, options);
+        }
+export function useGetActiveSystemUsersSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetActiveSystemUsersQuery, GetActiveSystemUsersQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetActiveSystemUsersQuery, GetActiveSystemUsersQueryVariables>(GetActiveSystemUsersDocument, options);
+        }
+export type GetActiveSystemUsersQueryHookResult = ReturnType<typeof useGetActiveSystemUsersQuery>;
+export type GetActiveSystemUsersLazyQueryHookResult = ReturnType<typeof useGetActiveSystemUsersLazyQuery>;
+export type GetActiveSystemUsersSuspenseQueryHookResult = ReturnType<typeof useGetActiveSystemUsersSuspenseQuery>;
+export type GetActiveSystemUsersQueryResult = ApolloReactCommon.QueryResult<GetActiveSystemUsersQuery, GetActiveSystemUsersQueryVariables>;
