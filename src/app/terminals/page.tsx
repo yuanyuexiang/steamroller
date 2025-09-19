@@ -189,7 +189,7 @@ export default function TerminalsPage() {
       render: (record: Terminal) => (
         <div>
           <div>
-            <UserOutlined /> {record.user_created?.first_name} {record.user_created?.last_name}
+            <UserOutlined /> {record.user_created?.last_name}{record.user_created?.first_name}
           </div>
           <div style={{ fontSize: '12px', color: '#666' }}>
             {record.user_created?.email}

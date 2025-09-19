@@ -579,8 +579,9 @@ function BoutiquesContent() {
           return <Text style={{ color: '#8c8c8c', fontSize: '12px' }}>未知用户</Text>;
         }
         
-        const displayName = userCreated.first_name || userCreated.last_name 
-          ? `${userCreated.first_name || ''} ${userCreated.last_name || ''}`.trim()
+        // 按照中国习惯：姓在前，名在后
+        const displayName = userCreated.last_name || userCreated.first_name 
+          ? `${userCreated.last_name || ''}${userCreated.first_name || ''}`.trim()
           : userCreated.email || `用户 ${userCreated.id}`;
         
         return (
@@ -598,8 +599,8 @@ function BoutiquesContent() {
         );
       },
       sorter: (a: Boutique, b: Boutique) => {
-        const nameA = a.user_created?.first_name || a.user_created?.last_name || a.user_created?.email || '';
-        const nameB = b.user_created?.first_name || b.user_created?.last_name || b.user_created?.email || '';
+        const nameA = a.user_created?.last_name || a.user_created?.first_name || a.user_created?.email || '';
+        const nameB = b.user_created?.last_name || b.user_created?.first_name || b.user_created?.email || '';
         return nameA.localeCompare(nameB);
       },
     },

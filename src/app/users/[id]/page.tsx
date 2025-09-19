@@ -671,7 +671,7 @@ function UserEditContent() {
         />
         
         <div style={{ fontSize: '18px', fontWeight: 600, marginBottom: '4px' }}>
-          {user ? `${user.first_name} ${user.last_name}` : '新用户'}
+          {user ? `${user.last_name || ''}${user.first_name || ''}` : '新用户'}
         </div>
         
         <div style={{ fontSize: '14px', opacity: 0.8, marginBottom: '16px' }}>
