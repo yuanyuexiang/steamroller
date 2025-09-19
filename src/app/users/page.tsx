@@ -161,8 +161,8 @@ function UsersManagement() {
       filter: {
         ...(searchText && {
           _or: [
-            { first_name: { _icontains: searchText } },
             { last_name: { _icontains: searchText } },
+            { first_name: { _icontains: searchText } },
             { email: { _icontains: searchText } }
           ]
         }),
@@ -179,8 +179,8 @@ function UsersManagement() {
       filter: {
         ...(searchText && {
           _or: [
-            { first_name: { _icontains: searchText } },
             { last_name: { _icontains: searchText } },
+            { first_name: { _icontains: searchText } },
             { email: { _icontains: searchText } }
           ]
         }),
@@ -277,7 +277,7 @@ function UsersManagement() {
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap'
             }}>
-              {record.first_name} {record.last_name}
+               {record.last_name}{record.first_name}
             </div>
             <div style={{ 
               fontSize: '12px', 
@@ -443,7 +443,7 @@ function UsersManagement() {
             icon: record.status === 'active' ? <LockOutlined /> : <UnlockOutlined />,
             label: record.status === 'active' ? '暂停用户' : '激活用户',
             onClick: () => handleToggleStatus(record.id, record.status, 
-              `${record.first_name} ${record.last_name}`)
+              `${record.last_name}${record.first_name}`)
           },
           {
             type: 'divider' as const
@@ -456,11 +456,11 @@ function UsersManagement() {
             onClick: () => {
               Modal.confirm({
                 title: '确认删除',
-                content: `确定要删除用户 "${record.first_name} ${record.last_name}" 吗？此操作不可恢复。`,
+                content: `确定要删除用户 "${record.last_name}${record.first_name}" 吗？此操作不可恢复。`,
                 okText: '删除',
                 okType: 'danger',
                 cancelText: '取消',
-                onOk: () => handleDeleteUser(record.id, `${record.first_name} ${record.last_name}`)
+                onOk: () => handleDeleteUser(record.id, `${record.last_name}${record.first_name}`)
               });
             }
           }
