@@ -1,0 +1,16 @@
+overwrite: true
+schema: "./system-schema.graphql"
+documents: "src/graphql/system/**/*.{gql,graphql}"
+
+generates:
+  # 生成系统相关的GraphQL类型和hooks
+  src/generated/system-graphql.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHooks: true
+      apolloReactHooksImportFrom: "@apollo/client"
+      apolloReactCommonImportFrom: "@apollo/client"
+      reactApolloVersion: 3

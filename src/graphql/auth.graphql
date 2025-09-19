@@ -1,0 +1,41 @@
+query LoginUser($openid: String!) {
+  customers(filter: { open_id: { _eq: $openid } }) {
+    id
+    nick_name
+    open_id
+    avatar
+    sex
+    status
+    type
+  }
+}
+
+query GetUserById($id: ID!) {
+  customers_by_id(id: $id) {
+    id
+    nick_name
+    open_id
+    avatar
+    sex
+    status
+    type
+    sort
+    date_created
+    date_updated
+  }
+}
+
+query GetAllUsers {
+  customers {
+    id
+    nick_name
+    open_id
+    avatar
+    sex
+    status
+    type
+    sort
+    date_created
+    date_updated
+  }
+}

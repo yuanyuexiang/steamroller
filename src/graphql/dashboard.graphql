@@ -1,0 +1,44 @@
+query GetDashboardData($today: String) {
+  # 查询各个表的记录数（超级管理员 - 无权限过滤）
+  orders(limit: 1000) {
+    id
+  }
+  boutiques(limit: 1000) {
+    id
+  }
+  terminals(limit: 1000) {
+    id
+  }
+  
+  # 使用聚合查询获取总数（超级管理员 - 无权限过滤）
+  orders_aggregated {
+    countAll
+  }
+  boutiques_aggregated {
+    countAll
+  }
+  terminals_aggregated {
+    countAll
+  }
+  
+  # 今日订单（超级管理员 - 无权限过滤）
+  today_orders: orders(filter: { 
+    date_created: { _gte: $today }
+  }) {
+    id
+    status
+  }
+}
+
+query GetRecentOrders($limit: Int = 5) {
+  orders(limit: $limit, sort: ["-date_created"]) {
+    id
+    customer {
+      id
+      nick_name
+    }
+    total_price
+    status
+    date_created
+  }
+}

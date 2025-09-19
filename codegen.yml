@@ -1,0 +1,32 @@
+overwrite: true
+
+generates:
+  # 常规 GraphQL 操作（使用常规 schema，排除系统操作）
+  src/generated/graphql.ts:
+    schema: "./schema.graphql"
+    documents: 
+      - "src/graphql/**/*.{gql,graphql}"
+      - "!src/graphql/system/**/*.{gql,graphql}"
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHooks: true
+      apolloReactHooksImportFrom: "@apollo/client"
+      apolloReactCommonImportFrom: "@apollo/client"
+      reactApolloVersion: 3
+  
+  # 系统 GraphQL 操作（使用系统 schema）
+  src/generated/system-graphql.ts:
+    schema: "./system-schema.graphql"
+    documents: "src/graphql/system/**/*.{gql,graphql}"
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHooks: true
+      apolloReactHooksImportFrom: "@apollo/client"
+      apolloReactCommonImportFrom: "@apollo/client"
+      reactApolloVersion: 3

@@ -1,0 +1,20 @@
+services:
+   steamroller:
+    container_name: steamroller
+    image: ${DOCKER_IMAGE_TAG}
+    restart: always
+    healthcheck:
+      disable: true
+    networks:
+      - matrix-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.steamroller.rule=Host(`steamroller.matrix-net.tech`)" # 替换为你的域名
+      - "traefik.http.routers.steamroller.entrypoints=websecure"
+      - "traefik.http.routers.steamroller.service=steamroller"
+      - "traefik.http.routers.steamroller.tls.certresolver=aliyunresolver"
+      - "traefik.http.services.steamroller.loadbalancer.server.port=3000"
+
+networks:
+  matrix-network:
+    external: true

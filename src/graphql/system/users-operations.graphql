@@ -1,0 +1,195 @@
+# 系统用户管理相关的 GraphQL 操作
+# 这些操作使用 system-schema.graphql
+
+# 获取所有系统用户列表
+query GetAllSystemUsers(
+  $filter: directus_users_filter
+  $sort: [String]
+  $limit: Int
+  $offset: Int
+  $search: String
+) {
+  users(
+    filter: $filter
+    sort: $sort
+    limit: $limit
+    offset: $offset
+    search: $search
+  ) {
+    id
+    first_name
+    last_name
+    email
+    status
+    last_access
+    avatar {
+      id
+      filename_disk
+      title
+    }
+    role {
+      id
+      name
+      description
+      icon
+    }
+    language
+    provider
+    external_identifier
+    email_notifications
+  }
+}
+
+# 获取系统用户总数（用于分页）
+query GetSystemUsersCount(
+  $filter: directus_users_filter
+  $search: String
+) {
+  users_aggregated(
+    filter: $filter
+    search: $search
+  ) {
+    countAll
+  }
+}
+
+# 根据ID获取单个系统用户详情
+query GetSystemUserById($id: ID!) {
+  users_by_id(id: $id) {
+    id
+    first_name
+    last_name
+    email
+    status
+    last_access
+    last_page
+    avatar {
+      id
+      filename_disk
+      title
+      type
+      width
+      height
+    }
+    role {
+      id
+      name
+      description
+      icon
+    }
+    language
+    provider
+    external_identifier
+    auth_data
+    email_notifications
+    appearance
+    theme_dark
+    theme_light
+    text_direction
+    location
+    title
+    description
+    tags
+    policies {
+      id
+      policy {
+        id
+        name
+        description
+      }
+      role {
+        id
+        name
+      }
+    }
+  }
+}
+
+# 获取所有角色列表
+query GetAllSystemRoles(
+  $filter: directus_roles_filter
+  $sort: [String]
+  $limit: Int
+) {
+  roles(
+    filter: $filter
+    sort: $sort
+    limit: $limit
+  ) {
+    id
+    name
+    description
+    icon
+    parent {
+      id
+      name
+    }
+  }
+}
+
+# 获取所有策略列表
+query GetAllSystemPolicies(
+  $filter: directus_policies_filter
+  $sort: [String]
+  $limit: Int
+) {
+  policies(
+    filter: $filter
+    sort: $sort
+    limit: $limit
+  ) {
+    id
+    name
+    description
+    icon
+    enforce_tfa
+    ip_access
+  }
+}
+
+# 创建新用户
+mutation CreateSystemUser($data: create_directus_users_input!) {
+  create_users_item(data: $data) {
+    id
+    first_name
+    last_name
+    email
+    status
+    role {
+      id
+      name
+    }
+  }
+}
+
+# 更新用户信息
+mutation UpdateSystemUser($id: ID!, $data: update_directus_users_input!) {
+  update_users_item(id: $id, data: $data) {
+    id
+    first_name
+    last_name
+    email
+    status
+    last_access
+    role {
+      id
+      name
+    }
+  }
+}
+
+# 删除单个用户
+mutation DeleteSystemUser($id: ID!) {
+  delete_users_item(id: $id) {
+    id
+  }
+}
+
+# 切换用户状态（启用/禁用）
+mutation ToggleSystemUserStatus($id: ID!, $status: String!) {
+  update_users_item(id: $id, data: { status: $status }) {
+    id
+    email
+    status
+  }
+}

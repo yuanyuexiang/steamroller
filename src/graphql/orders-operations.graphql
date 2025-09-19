@@ -1,0 +1,155 @@
+# 订单相关的GraphQL操作
+
+# 查询所有订单（带权限过滤）
+query GetOrders($userId: ID) {
+  orders(filter: { user_created: { id: { _eq: $userId } } }) {
+    id
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+      sex
+    }
+    boutique {
+      id
+      name
+      address
+    }
+    total_price
+    status
+    date_created
+    date_updated
+    user_created {
+      id
+      first_name
+      last_name
+      email
+    }
+  }
+}
+
+# 查询所有订单（管理员用，无权限过滤）
+query GetAllOrders {
+  orders {
+    id
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+      sex
+    }
+    boutique {
+      id
+      name
+      address
+    }
+    total_price
+    status
+    date_created
+    date_updated
+    user_created {
+      id
+      first_name
+      last_name
+      email
+    }
+  }
+}
+
+# 根据ID查询订单
+query GetOrderById($id: ID!) {
+  orders_by_id(id: $id) {
+    id
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+      sex
+    }
+    boutique {
+      id
+      name
+      address
+    }
+    total_price
+    status
+    date_created
+    date_updated
+  }
+}
+
+# 由于schema中没有order_items表，这个查询需要重新设计
+# query GetOrderItems($orderId: GraphQLStringOrFloat!) {
+#   order_items(filter: { order_id: { id: { _eq: $orderId } } }) {
+#     id
+#     order_id {
+#       id
+#     }
+#     product_id {
+#       id
+#       name
+#       description
+#     }
+#     quantity
+#     price
+#   }
+# }
+
+# 创建订单
+mutation CreateOrder($data: create_orders_input!) {
+  create_orders_item(data: $data) {
+    id
+    customer {
+      id
+      nick_name
+    }
+    boutique {
+      id
+      name
+      address
+    }
+    total_price
+    status
+    date_created
+    date_updated
+  }
+}
+
+# 更新订单
+mutation UpdateOrder($id: ID!, $data: update_orders_input!) {
+  update_orders_item(id: $id, data: $data) {
+    id
+    customer {
+      id
+      nick_name
+    }
+    boutique {
+      id
+      name
+      address
+    }
+    total_price
+    status
+    date_created
+    date_updated
+  }
+}
+
+# 删除订单
+mutation DeleteOrder($id: ID!) {
+  delete_orders_item(id: $id) {
+    id
+  }
+}
+
+# 更新订单状态
+mutation UpdateOrderStatus($id: ID!, $status: String!) {
+  update_orders_item(id: $id, data: { status: $status }) {
+    id
+    status
+    date_updated
+  }
+}
