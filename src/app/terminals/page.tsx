@@ -253,13 +253,76 @@ export default function TerminalsPage() {
   return (
     <ProtectedRoute>
       <AdminLayout>
-        <div style={{ height: '100%', padding: '24px', backgroundColor: '#F9FAFB' }}>
-          <div className="mb-6 flex justify-between items-center">
-            <Title level={4} style={{ margin: 0, color: '#111827', fontWeight: 600 }}>
-              终端设备管理
-            </Title>
-            <Space>
+        <div className="terminals-page-container">
+          {/* 统计卡片 */}
+          <div className="terminals-stats-section">
+            <div className="terminals-stat-card total-card">
+              <div className="stat-card-content">
+                <div className="stat-info">
+                  <div className="stat-value">{totalTerminals}</div>
+                  <div className="stat-label">总终端数</div>
+                </div>
+                <div className="stat-icon total-terminals">
+                  <DesktopOutlined />
+                </div>
+              </div>
+            </div>
+            
+            <div className="terminals-stat-card active-card">
+              <div className="stat-card-content">
+                <div className="stat-info">
+                  <div className="stat-value">{activeTerminals}</div>
+                  <div className="stat-label">活跃终端</div>
+                </div>
+                <div className="stat-icon active-terminals">
+                  <ClockCircleOutlined />
+                </div>
+              </div>
+            </div>
+            
+            <div className="terminals-stat-card today-card">
+              <div className="stat-card-content">
+                <div className="stat-info">
+                  <div className="stat-value">{todayTerminals}</div>
+                  <div className="stat-label">今日新增</div>
+                </div>
+                <div className="stat-icon today-terminals">
+                  <PlusOutlined />
+                </div>
+              </div>
+            </div>
+            
+            <div className="terminals-stat-card rate-card">
+              <div className="stat-card-content">
+                <div className="stat-info">
+                  <div className="stat-value">
+                    {(totalTerminals > 0 ? ((activeTerminals / totalTerminals) * 100) : 0).toFixed(1)}%
+                  </div>
+                  <div className="stat-label">在线率</div>
+                </div>
+                <div className="stat-icon online-rate">
+                  <DesktopOutlined />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 操作栏 */}
+          <div className="terminals-toolbar">
+            <div className="toolbar-left">
+              <h2 className="page-title">终端设备管理</h2>
+              <p className="page-desc">管理和监控所有终端设备状态</p>
+            </div>
+            <div className="toolbar-right">
+              <Input.Search
+                placeholder="搜索终端设备ID、创建用户..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="search-input"
+                allowClear
+              />
               <Button 
+                className="export-btn"
                 icon={<DownloadOutlined />}
                 onClick={handleExport}
                 disabled={terminals.length === 0}
@@ -268,6 +331,7 @@ export default function TerminalsPage() {
               </Button>
               <Button 
                 type="primary" 
+                className="add-btn"
                 icon={<PlusOutlined />}
                 onClick={() => {
                   setEditingTerminal(null);
@@ -277,75 +341,17 @@ export default function TerminalsPage() {
               >
                 新增终端设备
               </Button>
-            </Space>
+            </div>
           </div>
 
-          {/* 统计卡片 */}
-          <Row gutter={16} style={{ marginBottom: 24 }}>
-            <Col span={6}>
-              <Card>
-                <Statistic
-                  title="总终端数"
-                  value={totalTerminals}
-                  prefix={<DesktopOutlined />}
-                  valueStyle={{ color: '#1890ff' }}
-                />
-              </Card>
-            </Col>
-            <Col span={6}>
-              <Card>
-                <Statistic
-                  title="活跃终端"
-                  value={activeTerminals}
-                  prefix={<ClockCircleOutlined />}
-                  valueStyle={{ color: '#52c41a' }}
-                />
-              </Card>
-            </Col>
-            <Col span={6}>
-              <Card>
-                <Statistic
-                  title="今日新增"
-                  value={todayTerminals}
-                  prefix={<PlusOutlined />}
-                  valueStyle={{ color: '#fa8c16' }}
-                />
-              </Card>
-            </Col>
-            <Col span={6}>
-              <Card>
-                <Statistic
-                  title="在线率"
-                  value={totalTerminals > 0 ? ((activeTerminals / totalTerminals) * 100) : 0}
-                  suffix="%"
-                  precision={1}
-                  valueStyle={{ color: '#722ed1' }}
-                />
-              </Card>
-            </Col>
-          </Row>
-
-          {/* 搜索栏 */}
-          <Card style={{ marginBottom: 16 }}>
-            <Row gutter={16}>
-              <Col span={8}>
-                <Input.Search
-                  placeholder="搜索终端设备ID、创建用户..."
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  allowClear
-                />
-              </Col>
-            </Row>
-          </Card>
-
-          {/* 主要内容 */}
-          <Card>
+          {/* 终端设备表格 */}
+          <div className="terminals-table-container">
             <Table
               columns={columns}
               dataSource={filteredTerminals}
               rowKey="id"
               loading={loading}
+              className="modern-table"
               pagination={{
                 total: filteredTerminals.length,
                 showSizeChanger: true,
@@ -355,7 +361,7 @@ export default function TerminalsPage() {
                 pageSizeOptions: ['10', '20', '50', '100'],
               }}
             />
-          </Card>
+          </div>
 
           {/* 编辑/新增模态框 */}
           <Modal

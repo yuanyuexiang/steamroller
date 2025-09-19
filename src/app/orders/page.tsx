@@ -272,89 +272,108 @@ function OrdersContent() {
   ];
 
   return (
-    <div style={{ height: '100%', padding: '24px', backgroundColor: '#F9FAFB' }}>
+    <div className="orders-page-container">
       {/* 统计卡片 */}
-      <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="总订单数"
-              value={totalOrders}
-              prefix={<ShoppingCartOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="待处理订单"
-              value={pendingOrders}
-              prefix={<ClockCircleOutlined />}
-              valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="已完成订单"
-              value={completedOrders}
-              prefix={<ShoppingCartOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="总收入"
-              value={totalRevenue}
-              prefix={<DollarOutlined />}
-              precision={2}
-              valueStyle={{ color: '#3f8600' }}
-            />
-          </Card>
-        </Col>
-      </Row>
+      <div className="orders-stats-section">
+        <div className="orders-stat-card total-card">
+          <div className="stat-card-content">
+            <div className="stat-info">
+              <div className="stat-value">{totalOrders}</div>
+              <div className="stat-label">总订单数</div>
+            </div>
+            <div className="stat-icon total-orders">
+              <ShoppingCartOutlined />
+            </div>
+          </div>
+        </div>
+        
+        <div className="orders-stat-card pending-card">
+          <div className="stat-card-content">
+            <div className="stat-info">
+              <div className="stat-value">{pendingOrders}</div>
+              <div className="stat-label">待处理订单</div>
+            </div>
+            <div className="stat-icon pending-orders">
+              <ClockCircleOutlined />
+            </div>
+          </div>
+        </div>
+        
+        <div className="orders-stat-card completed-card">
+          <div className="stat-card-content">
+            <div className="stat-info">
+              <div className="stat-value">{completedOrders}</div>
+              <div className="stat-label">已完成订单</div>
+            </div>
+            <div className="stat-icon completed-orders">
+              <ShoppingCartOutlined />
+            </div>
+          </div>
+        </div>
+        
+        <div className="orders-stat-card revenue-card">
+          <div className="stat-card-content">
+            <div className="stat-info">
+              <div className="stat-value">¥{totalRevenue.toFixed(2)}</div>
+              <div className="stat-label">总收入</div>
+            </div>
+            <div className="stat-icon total-revenue">
+              <DollarOutlined />
+            </div>
+          </div>
+        </div>
+      </div>
 
-      {/* 搜索和操作栏 */}
-      <div className="mb-6 flex justify-between items-center">
-        <Title level={4} className="mb-0">订单管理</Title>
-        <Space>
+      {/* 操作栏 */}
+      <div className="orders-toolbar">
+        <div className="toolbar-left">
+          <h2 className="page-title">订单管理</h2>
+          <p className="page-desc">管理和跟踪所有订单信息</p>
+        </div>
+        <div className="toolbar-right">
           <Search
             placeholder="搜索订单ID、用户或状态"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: 300 }}
+            className="search-input"
           />
-          <Button onClick={() => refetch()}>刷新</Button>
           <Button 
+            className="refresh-btn" 
+            onClick={() => refetch()}
+          >
+            刷新
+          </Button>
+          <Button 
+            className="export-btn"
             icon={<DownloadOutlined />}
             onClick={handleExport}
             disabled={orders.length === 0}
           >
             导出数据
           </Button>
-        </Space>
+        </div>
       </div>
 
       {/* 订单表格 */}
-      <Table
-        columns={columns}
-        dataSource={filteredOrders}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total) => `共 ${total} 条订单记录`,
-          size: 'default',
-          position: ['bottomCenter']
-        }}
-        scroll={{ y: 'calc(100vh - 280px)' }}
-        size="middle"
-      />      {/* 订单详情弹窗 */}
+      <div className="orders-table-container">
+        <Table
+          columns={columns}
+          dataSource={filteredOrders}
+          rowKey="id"
+          loading={loading}
+          className="modern-table"
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total) => `共 ${total} 条订单记录`,
+            size: 'default',
+            position: ['bottomCenter']
+          }}
+          scroll={{ y: 'calc(100vh - 350px)' }}
+          size="middle"
+        />
+      </div>
       <Modal
         title="订单详情"
         open={detailModalVisible}

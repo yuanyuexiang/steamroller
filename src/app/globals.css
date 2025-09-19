@@ -836,6 +836,351 @@ body {
   }
 }
 
+/* 订单管理页面样式 */
+.orders-page-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 50%, #e6ebff 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.orders-page-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+  z-index: 1;
+}
+
+.orders-stats-section {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  margin-bottom: 1rem;
+}
+
+.orders-stat-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.orders-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(102, 126, 234, 0.05) 100%);
+  z-index: -1;
+}
+
+.orders-stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.orders-toolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 2rem 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.toolbar-left .page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.toolbar-left .page-desc {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-input {
+  width: 300px;
+}
+
+.search-input .ant-input {
+  border-radius: 12px !important;
+  border: 1px solid rgba(102, 126, 234, 0.2) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s ease !important;
+}
+
+.search-input .ant-input:focus,
+.search-input .ant-input:hover {
+  border-color: rgba(102, 126, 234, 0.4) !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
+}
+
+.refresh-btn, .export-btn, .add-btn {
+  border-radius: 12px !important;
+  border: 1px solid rgba(102, 126, 234, 0.2) !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
+  color: #374151 !important;
+  font-weight: 600 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+.refresh-btn:hover, .export-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15) !important;
+  border-color: rgba(102, 126, 234, 0.4) !important;
+  color: #374151 !important;
+}
+
+.add-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.add-btn:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+  color: white !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3) !important;
+}
+
+.orders-table-container {
+  position: relative;
+  z-index: 2;
+  margin: 0 2rem 2rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.orders-table-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(102, 126, 234, 0.03) 100%);
+  z-index: -1;
+}
+
+/* 终端管理页面样式 */
+.terminals-page-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 50%, #e6ebff 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.terminals-page-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+  z-index: 1;
+}
+
+.terminals-stats-section {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  margin-bottom: 1rem;
+}
+
+.terminals-stat-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.terminals-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(102, 126, 234, 0.05) 100%);
+  z-index: -1;
+}
+
+.terminals-stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.terminals-toolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 2rem 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.terminals-table-container {
+  position: relative;
+  z-index: 2;
+  margin: 0 2rem 2rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.terminals-table-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(102, 126, 234, 0.03) 100%);
+  z-index: -1;
+}
+
+/* 统计卡片图标样式 */
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.total-orders, .total-terminals {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.pending-orders, .active-terminals {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.completed-orders, .today-terminals {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.total-revenue, .online-rate {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+/* 表格现代化样式 */
+.modern-table .ant-table {
+  background: transparent !important;
+}
+
+.modern-table .ant-table-thead > tr > th {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%) !important;
+  border: none !important;
+  color: #374151 !important;
+  font-weight: 600 !important;
+  padding: 16px 12px !important;
+}
+
+.modern-table .ant-table-tbody > tr > td {
+  border: none !important;
+  padding: 12px !important;
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.modern-table .ant-table-tbody > tr:hover > td {
+  background: rgba(102, 126, 234, 0.1) !important;
+}
+
+.modern-table .ant-table-tbody > tr {
+  border-bottom: 1px solid rgba(102, 126, 234, 0.1) !important;
+}
+
+@media (max-width: 768px) {
+  .orders-stats-section,
+  .terminals-stats-section {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+  
+  .orders-toolbar,
+  .terminals-toolbar {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+    padding: 1rem;
+  }
+  
+  .toolbar-right {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+  
+  .orders-table-container,
+  .terminals-table-container {
+    margin: 0 1rem 1rem;
+    padding: 1rem;
+  }
+}
+
 /* 高级输入框样式 */
 .ant-input, .ant-input-number, .ant-select-selector {
   border-color: #D1D5DB !important;
