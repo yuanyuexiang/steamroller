@@ -466,7 +466,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   className="admin-header-user-avatar"
                 />
                 <div className="admin-header-user-info">
-                  <h4>{user.first_name} {user.last_name}</h4>
+                  <h4> {user.last_name} {user.first_name}</h4>
                   <p>{user.email}</p>
                 </div>
               </div>

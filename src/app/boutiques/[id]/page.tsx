@@ -903,10 +903,10 @@ function BoutiqueEditContent() {
               if (!user) return false;
               const searchText = input.toLowerCase();
               
-              // 构建显示名称
-              const firstName = user.first_name?.trim() || '';
+              // 构建显示名称 - 中国习惯：姓在前，名在后
               const lastName = user.last_name?.trim() || '';
-              const fullName = [firstName, lastName].filter(Boolean).join(' ');
+              const firstName = user.first_name?.trim() || '';
+              const fullName = [lastName, firstName].filter(Boolean).join('');
               const displayName = fullName || user.email || `用户 ${user.id}`;
               
               return displayName.toLowerCase().includes(searchText) || 
@@ -914,10 +914,10 @@ function BoutiqueEditContent() {
             }}
           >
             {systemUsers.map(user => {
-              // 构建显示名称
-              const firstName = user.first_name?.trim() || '';
+              // 构建显示名称 - 中国习惯：姓在前，名在后
               const lastName = user.last_name?.trim() || '';
-              const fullName = [firstName, lastName].filter(Boolean).join(' ');
+              const firstName = user.first_name?.trim() || '';
+              const fullName = [lastName, firstName].filter(Boolean).join('');
               const displayName = fullName || user.email || `用户 ${user.id}`;
               
               // 用户状态
@@ -939,7 +939,9 @@ function BoutiqueEditContent() {
                     <div style={{ flex: 1 }}>
                       <div style={{ 
                         fontWeight: 500,
-                        color: isActive ? '#262626' : '#8c8c8c'
+                        color: isActive ? '#262626' : '#8c8c8c',
+                        lineHeight: '1.2',
+                        marginBottom: '2px'
                       }}>
                         {displayName}
                         {!isActive && (
@@ -953,7 +955,11 @@ function BoutiqueEditContent() {
                         )}
                       </div>
                       {user.email && displayName !== user.email && (
-                        <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                        <div style={{ 
+                          fontSize: '12px', 
+                          color: '#8c8c8c',
+                          lineHeight: '1.2' 
+                        }}>
                           {user.email}
                         </div>
                       )}
