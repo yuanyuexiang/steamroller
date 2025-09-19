@@ -511,7 +511,10 @@ function BoutiqueEditContent() {
         sort: values.sort || 0,
         main_image: values.main_image || null,
         images: values.images && values.images.length > 0 ? values.images : null,
-        ...(values.user_created && isEditMode ? { user_created: values.user_created } : {})
+        // 修复：如果是编辑模式且有 user_created，传递对象格式而不是字符串 ID
+        ...(values.user_created && isEditMode ? { 
+          user_created: { id: values.user_created } 
+        } : {})
       };
 
       console.log('Submitting boutique data:', submitData);
