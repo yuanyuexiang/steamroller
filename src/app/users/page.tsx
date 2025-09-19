@@ -89,6 +89,17 @@ const globalStyles = `
 
 .ant-btn {
   border-radius: 8px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ant-btn-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+.ant-btn:not(.ant-btn-primary):hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 `;
 
@@ -537,7 +548,7 @@ function UsersManagement() {
         }}
       >
         <Row gutter={[16, 16]} align="middle">
-          <Col xs={24} sm={12} md={8} lg={6}>
+          <Col xs={24} sm={12} md={6} lg={5}>
             <div style={{ marginBottom: '4px', fontSize: '12px', color: '#8c8c8c', fontWeight: 500 }}>
               搜索用户
             </div>
@@ -617,13 +628,13 @@ function UsersManagement() {
               </Option>
             </Select>
           </Col>
-          <Col xs={24} sm={24} md={6} lg={8}>
+          <Col xs={24} sm={24} md={10} lg={13}>
             <div style={{ marginBottom: '4px', fontSize: '12px', color: 'transparent' }}>
               .
             </div>
             <div style={{ 
               display: 'flex', 
-              justifyContent: 'flex-end', 
+              justifyContent: 'space-between', 
               alignItems: 'center',
               gap: '12px',
               fontSize: '13px',
