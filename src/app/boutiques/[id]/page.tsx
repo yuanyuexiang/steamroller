@@ -49,10 +49,14 @@ import { ProtectedRoute } from '@components/auth';
 import { AdminLayout } from '@components/layout';
 import { 
   useGetBoutiquesQuery,
+  useGetAllBoutiquesQuery,
   useCreateBoutiqueMutation,
   useUpdateBoutiqueMutation,
-  GetBoutiquesQuery
+  GetBoutiquesQuery,
+  GetAllBoutiquesQuery
 } from '@generated/graphql';
+import { useGetActiveSystemUsersQuery } from '@generated/system-graphql';
+import systemClient from '@lib/api/system-apollo-client';
 import { TokenManager } from '@lib/auth';
 import { FILE_CONFIG } from '@lib/api';
 import { 
@@ -182,7 +186,7 @@ if (typeof document !== 'undefined') {
 }
 
 // 使用生成的类型
-type Boutique = GetBoutiquesQuery['boutiques'][0];
+type Boutique = GetBoutiquesQuery['boutiques'][0] | GetAllBoutiquesQuery['boutiques'][0];
 
 function BoutiqueEditContent() {
   const router = useRouter();
@@ -203,6 +207,12 @@ function BoutiqueEditContent() {
   const [cascaderOptions, setCascaderOptions] = useState<any[]>([]);
 
   const isEditMode = params.id !== 'new';
+
+  // 查询系统用户列表（用于创建者选择），使用系统专用客户端
+  const { data: systemUsersData, loading: systemUsersLoading } = useGetActiveSystemUsersQuery({
+    client: systemClient
+  });
+  const systemUsers = systemUsersData?.users || [];
 
   // 初始化级联选择器数据
   useEffect(() => {
@@ -225,11 +235,13 @@ function BoutiqueEditContent() {
     setUserId(currentUserId);
   }, []);
 
-  // 查询店铺列表（带权限过滤）
-  const { data: boutiquesData, refetch } = useGetBoutiquesQuery({
-    variables: userId ? { userId } : undefined,
-    skip: !userId
-  });
+  // 查询店铺列表
+  const { data: boutiquesData, refetch, loading: boutiquesLoading } = isEditMode 
+    ? useGetAllBoutiquesQuery()  // 编辑模式：查询所有店铺
+    : useGetBoutiquesQuery({     // 创建模式：按用户权限过滤
+        variables: userId ? { userId } : undefined,
+        skip: !userId
+      });
   
   // 创建店铺
   const [createBoutique] = useCreateBoutiqueMutation({
@@ -280,7 +292,7 @@ function BoutiqueEditContent() {
 
   // 获取店铺数据
   const fetchBoutique = () => {
-    if (!isEditMode || !boutiquesData) return;
+    if (!isEditMode || !boutiquesData || boutiquesLoading) return;
     
     const foundBoutique = boutiques.find((b: Boutique) => b.id === params.id);
     if (foundBoutique) {
@@ -332,8 +344,9 @@ function BoutiqueEditContent() {
         }));
         setImageList(imagesList);
       }
-    } else if (isEditMode) {
-      message.error('店铺不存在');
+    } else if (isEditMode && !boutiquesLoading) {
+      // 只有在确认不在加载状态时才显示错误
+      message.error('店铺不存在或您没有访问权限');
       router.push('/boutiques');
     }
   };
@@ -341,7 +354,7 @@ function BoutiqueEditContent() {
   // 当数据加载完成时初始化表单
   useEffect(() => {
     fetchBoutique();
-  }, [boutiquesData, params.id, isEditMode]);
+  }, [boutiquesData, boutiquesLoading, params.id, isEditMode]);
 
   // 主图上传处理
   const handleMainImageUpload = useCallback(async (file: File) => {
@@ -871,18 +884,85 @@ function BoutiqueEditContent() {
           label={
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <UserOutlined />
-              创建者 ID
+              创建者
               <Text style={{ fontSize: '12px', color: '#8c8c8c' }}>(管理员功能)</Text>
             </span>
           }
           name="user_created"
-          tooltip="输入用户ID来修改店铺的创建者，只有管理员可以使用此功能"
+          tooltip="选择店铺的创建者用户，只有管理员可以使用此功能"
         >
-          <Input
-            placeholder="请输入用户ID" 
-            size="large" 
+          <Select
+            placeholder="请选择创建者用户"
+            size="large"
             style={{ borderRadius: '8px' }}
-          />
+            loading={systemUsersLoading}
+            showSearch
+            allowClear
+            filterOption={(input, option) => {
+              const user = systemUsers.find(u => u.id === option?.value);
+              if (!user) return false;
+              const searchText = input.toLowerCase();
+              
+              // 构建显示名称
+              const firstName = user.first_name?.trim() || '';
+              const lastName = user.last_name?.trim() || '';
+              const fullName = [firstName, lastName].filter(Boolean).join(' ');
+              const displayName = fullName || user.email || `用户 ${user.id}`;
+              
+              return displayName.toLowerCase().includes(searchText) || 
+                     user.email?.toLowerCase().includes(searchText) || false;
+            }}
+          >
+            {systemUsers.map(user => {
+              // 构建显示名称
+              const firstName = user.first_name?.trim() || '';
+              const lastName = user.last_name?.trim() || '';
+              const fullName = [firstName, lastName].filter(Boolean).join(' ');
+              const displayName = fullName || user.email || `用户 ${user.id}`;
+              
+              // 用户状态
+              const isActive = user.status === 'active';
+              
+              return (
+                <Option key={user.id} value={user.id} disabled={!isActive}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Avatar 
+                      size={24}
+                      src={user.avatar?.id ? getImageUrl(user.avatar.id) : undefined}
+                      style={{ 
+                        backgroundColor: isActive ? '#667eea' : '#d9d9d9',
+                        opacity: isActive ? 1 : 0.6
+                      }}
+                    >
+                      {displayName.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ 
+                        fontWeight: 500,
+                        color: isActive ? '#262626' : '#8c8c8c'
+                      }}>
+                        {displayName}
+                        {!isActive && (
+                          <span style={{ 
+                            fontSize: '12px', 
+                            color: '#ff7875',
+                            marginLeft: '8px'
+                          }}>
+                            (已禁用)
+                          </span>
+                        )}
+                      </div>
+                      {user.email && displayName !== user.email && (
+                        <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                          {user.email}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Option>
+              );
+            })}
+          </Select>
         </Form.Item>
       )}
     </Card>
@@ -958,44 +1038,55 @@ function BoutiqueEditContent() {
 
   return (
     <div className="boutique-edit-container">
-      {/* 页面头部 */}
-      <Card className="boutique-edit-header-card">
-        <Row justify="space-between" align="middle">
-          <Col>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <Button 
-                icon={<ArrowLeftOutlined />}
-                onClick={handleBack}
-                size="large"
-                style={{ 
-                  background: 'rgba(255,255,255,0.2)',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  color: 'white',
-                  borderRadius: '8px'
-                }}
-              >
-                返回
-              </Button>
-              
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
-                  <Title level={3} style={{ margin: 0, color: 'white' }}>
-                    {isEditMode ? '编辑店铺' : '新增店铺'}
-                  </Title>
+      {/* 数据加载状态 */}
+      {isEditMode && (boutiquesLoading || (!boutique && boutiquesData)) && (
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          <Spin size="large" />
+          <div style={{ marginTop: '16px', color: '#8c8c8c' }}>加载店铺数据中...</div>
+        </div>
+      )}
+
+      {/* 只有在数据准备就绪时才渲染表单 */}
+      {(!isEditMode || boutique || boutiquesLoading) && (
+        <>
+          {/* 页面头部 */}
+          <Card className="boutique-edit-header-card">
+            <Row justify="space-between" align="middle">
+              <Col>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <Button 
+                    icon={<ArrowLeftOutlined />}
+                    onClick={handleBack}
+                    size="large"
+                    style={{ 
+                      background: 'rgba(255,255,255,0.2)',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      color: 'white',
+                      borderRadius: '8px'
+                    }}
+                  >
+                    返回
+                  </Button>
                   
-                  <Tag className={isEditMode ? 'edit-mode-badge' : 'new-mode-badge'}>
-                    {isEditMode ? '编辑模式' : '新建模式'}
-                  </Tag>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+                      <Title level={3} style={{ margin: 0, color: 'white' }}>
+                        {isEditMode ? '编辑店铺' : '新增店铺'}
+                      </Title>
+                      
+                      <Tag className={isEditMode ? 'edit-mode-badge' : 'new-mode-badge'}>
+                        {isEditMode ? '编辑模式' : '新建模式'}
+                      </Tag>
+                    </div>
+                    
+                    <Text style={{ color: 'rgba(255,255,255,0.8)' }}>
+                      {isEditMode 
+                        ? `编辑店铺：${boutique?.name || '加载中...'}`
+                        : '创建新的店铺信息'
+                      }
+                    </Text>
+                  </div>
                 </div>
-                
-                <Text style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  {isEditMode 
-                    ? `编辑店铺：${boutique?.name || '未命名店铺'}`
-                    : '创建新的店铺信息'
-                  }
-                </Text>
-              </div>
-            </div>
           </Col>
           
           <Col>
@@ -1126,7 +1217,9 @@ function BoutiqueEditContent() {
           )}
         </Col>
       </Row>
-    </div>
+      </>
+    )}
+  </div>
   );
 }
 

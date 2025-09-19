@@ -196,11 +196,12 @@ mutation ToggleSystemUserStatus($id: ID!, $status: String!) {
 
 # 获取活跃用户列表（用于选择器）
 query GetActiveSystemUsers {
-  users(filter: { status: { _eq: "active" } }, sort: ["first_name", "last_name", "email"]) {
+  users(sort: ["first_name", "last_name", "email"]) {
     id
     first_name
     last_name
     email
+    status
     avatar {
       id
     }

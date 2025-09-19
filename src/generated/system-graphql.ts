@@ -6284,7 +6284,7 @@ export type ToggleSystemUserStatusMutation = { __typename?: 'Mutation', update_u
 export type GetActiveSystemUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetActiveSystemUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'directus_users', id: string, first_name?: string | null, last_name?: string | null, email?: string | null, avatar?: { __typename?: 'directus_files', id: string } | null }> };
+export type GetActiveSystemUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'directus_users', id: string, first_name?: string | null, last_name?: string | null, email?: string | null, status?: string | null, avatar?: { __typename?: 'directus_files', id: string } | null }> };
 
 
 export const GetAllSystemUsersDocument = gql`
@@ -6734,14 +6734,12 @@ export type ToggleSystemUserStatusMutationResult = ApolloReactCommon.MutationRes
 export type ToggleSystemUserStatusMutationOptions = ApolloReactCommon.BaseMutationOptions<ToggleSystemUserStatusMutation, ToggleSystemUserStatusMutationVariables>;
 export const GetActiveSystemUsersDocument = gql`
     query GetActiveSystemUsers {
-  users(
-    filter: {status: {_eq: "active"}}
-    sort: ["first_name", "last_name", "email"]
-  ) {
+  users(sort: ["first_name", "last_name", "email"]) {
     id
     first_name
     last_name
     email
+    status
     avatar {
       id
     }
