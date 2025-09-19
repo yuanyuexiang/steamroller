@@ -252,7 +252,7 @@ function OrdersContent() {
       render: (record: Order) => (
         <Space>
           <Button
-            type="primary"
+            className="action-btn detail-btn"
             size="small"
             icon={<EyeOutlined />}
             onClick={() => viewOrderDetails(record)}
@@ -260,6 +260,7 @@ function OrdersContent() {
             详情
           </Button>
           <Button
+            className="action-btn status-btn"
             size="small"
             icon={<EditOutlined />}
             onClick={() => handleUpdateStatus(record.id)}
@@ -379,11 +380,16 @@ function OrdersContent() {
         open={detailModalVisible}
         onCancel={() => setDetailModalVisible(false)}
         footer={[
-          <Button key="close" onClick={() => setDetailModalVisible(false)}>
+          <Button 
+            key="close" 
+            className="modal-close-btn"
+            onClick={() => setDetailModalVisible(false)}
+          >
             关闭
           </Button>,
         ]}
         width={800}
+        className="modern-modal"
       >
         {selectedOrder && (
           <div>
@@ -467,6 +473,9 @@ function OrdersContent() {
         onCancel={() => setStatusModalVisible(false)}
         okText="确认更新"
         cancelText="取消"
+        className="modern-modal status-modal"
+        okButtonProps={{ className: "modal-confirm-btn" }}
+        cancelButtonProps={{ className: "modal-cancel-btn" }}
       >
         <div style={{ marginBottom: 16 }}>
           <label>新状态：</label>
