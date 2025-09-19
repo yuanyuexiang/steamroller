@@ -884,7 +884,7 @@ function BoutiqueEditContent() {
           label={
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <UserOutlined />
-              创建者
+              授权用户
               <Text style={{ fontSize: '12px', color: '#8c8c8c' }}>(管理员功能)</Text>
             </span>
           }
@@ -1185,7 +1185,7 @@ function BoutiqueEditContent() {
         <Col xs={24} lg={8}>
           {renderBoutiqueInfo()}
           
-          {isEditMode && boutique?.address && (
+          {/* {isEditMode && boutique?.address && (
             <Card className="boutique-edit-form-card">
               <div style={{ marginBottom: '16px' }}>
                 <Text style={{ fontSize: '16px', fontWeight: 600 }}>
@@ -1193,34 +1193,11 @@ function BoutiqueEditContent() {
                 </Text>
               </div>
               
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '16px' }}>
-                <div style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <EnvironmentOutlined style={{ color: 'white', fontSize: '20px' }} />
-                </div>
-                
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: '15px', marginBottom: '4px' }}>
-                    {boutique.address}
-                  </div>
-                  <div style={{ color: '#8c8c8c', fontSize: '13px' }}>
-                    {boutique.city || '城市信息'}
-                  </div>
-                </div>
-              </div>
-              
               <Tag color="blue" style={{ borderRadius: '16px' }}>
                 {boutique.category || '店铺类别'}
               </Tag>
             </Card>
-          )}
+          )} */}
         </Col>
       </Row>
       </>
