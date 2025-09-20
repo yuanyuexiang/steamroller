@@ -42,47 +42,58 @@ export function useNotifications(): NotificationsState & NotificationsActions {
 
     console.log('=== WebSocket: 开始创建连接 ===');
     setLoading(true);
-    const ws = new WebSocket('wss://forge.matrix-net.tech/websocket');
-    wsRef.current = ws;
-
-    ws.onopen = async () => {
-      console.log('=== WebSocket: 连接成功 ===');
-      setConnected(true);
-      setLoading(false);
+    
+    try {
+      // 动态获取 WebSocket URL
+      const response = await fetch('/api/websocket');
+      const config = await response.json();
       
-      // 使用 TokenManager 获取有效认证令牌
-      try {
-        const { TokenManager } = await import('@lib/auth/token-manager');
-        const token = await TokenManager.getValidToken();
+      if (!config.success || !config.wsUrl) {
+        throw new Error('获取WebSocket配置失败');
+      }
+      
+      console.log('=== WebSocket: 使用动态URL ===', config.wsUrl);
+      const ws = new WebSocket(config.wsUrl);
+      wsRef.current = ws;
+
+      ws.onopen = async () => {
+        console.log('=== WebSocket: 连接成功 ===');
+        setConnected(true);
+        setLoading(false);
         
-        if (token) {
-          console.log('=== WebSocket: 开始认证，token长度:', token.length, '===');
-          // Directus WebSocket 认证格式
-          ws.send(JSON.stringify({
-            type: 'auth',
-            access_token: token
-          }));
-        } else {
-          console.error('=== WebSocket: 未找到有效令牌 ===');
+        // 使用 TokenManager 获取有效认证令牌
+        try {
+          const { TokenManager } = await import('@lib/auth/token-manager');
+          const token = await TokenManager.getValidToken();
+          
+          if (token) {
+            console.log('=== WebSocket: 开始认证，token长度:', token.length, '===');
+            // Directus WebSocket 认证格式
+            ws.send(JSON.stringify({
+              type: 'auth',
+              access_token: token
+            }));
+          } else {
+            console.error('=== WebSocket: 未找到有效令牌 ===');
+            ws.close();
+          }
+        } catch (error) {
+          console.error('=== WebSocket: 获取令牌失败 ===', error);
           ws.close();
         }
-      } catch (error) {
-        console.error('=== WebSocket: 获取令牌失败 ===', error);
-        ws.close();
-      }
-    };
+      };
 
-    ws.onmessage = (event) => {
-      try {
-        const msg: WebSocketMessage = JSON.parse(event.data);
-        console.log('=== WebSocket: 收到消息 ===', msg.type, msg.event, msg);
+      ws.onmessage = (event) => {
+        try {
+          const msg: WebSocketMessage = JSON.parse(event.data);
+          console.log('=== WebSocket: 收到消息 ===', msg.type, msg.event, msg);
         
         if (msg.type === 'auth') {
           if (msg.status === 'ok') {
             console.log('=== WebSocket: 认证成功，开始订阅 ===');
             
             // 订阅所有重要实体的事件
-            const collections = ['boutiques', 'categories', 'customers', 'orders', 'products', 'terminals', 'directus_users', 'views', 'visits'];
+            const collections = ['boutiques', 'categories', 'customers', 'orders', 'products', 'terminals', 'views', 'visits'];
             const events = ['create', 'update', 'delete'];
             
             console.log(`=== 准备订阅 ${collections.length} 个实体，每个 ${events.length} 种事件 ===`);
@@ -376,6 +387,17 @@ export function useNotifications(): NotificationsState & NotificationsActions {
         }, 3000);
       }
     };
+    
+    } catch (error) {
+      console.error('=== WebSocket: 获取配置失败 ===', error);
+      setConnected(false);
+      setLoading(false);
+      
+      // 配置获取失败时也要重连
+      setTimeout(() => {
+        connectWs();
+      }, 5000);
+    }
   };
 
   const disconnect = () => {
