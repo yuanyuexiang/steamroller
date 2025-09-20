@@ -13,6 +13,7 @@ import {
   Row,
   Col,
   message,
+  Modal,
   Avatar,
   Upload,
   Spin,
@@ -242,6 +243,7 @@ function UserEditContent() {
       setLoading(true);
       const values = await form.validateFields();
       
+      // 构建用户数据，暂时不包含角色字段
       const userData = {
         first_name: values.first_name,
         last_name: values.last_name,
@@ -250,24 +252,70 @@ function UserEditContent() {
         title: values.title || null,
         location: values.location || null,
         description: values.description || null,
-        role: values.role,
         language: values.language,
         appearance: values.appearance,
         email_notifications: values.email_notifications,
         ...(values.password && { password: values.password })
       };
 
+      console.log('创建用户数据:', userData);
+
       if (isNew) {
-        await createUser({
+        const result = await createUser({
           variables: { data: userData }
         });
-        message.success('用户创建成功');
-        router.push('/users');
+        
+        // 如果有角色，创建成功后更新角色
+        if (values.role && result.data?.create_users_item?.id) {
+          await updateUser({
+            variables: { 
+              id: result.data.create_users_item.id, 
+              data: { role: { id: values.role } } 
+            }
+          });
+        }
+        
+        // 显示创建成功的详细信息
+        Modal.success({
+          title: '用户创建成功',
+          content: (
+            <div>
+              <p>新用户已成功创建，请将以下登录信息告知用户：</p>
+              <div style={{ 
+                background: '#f5f5f5', 
+                padding: '12px', 
+                borderRadius: '6px', 
+                marginTop: '12px',
+                fontFamily: 'monospace'
+              }}>
+                <p style={{ margin: '4px 0' }}>
+                  <strong>邮箱：</strong>{values.email}
+                </p>
+                <p style={{ margin: '4px 0' }}>
+                  <strong>密码：</strong>{values.password || '123456'}
+                </p>
+              </div>
+              <p style={{ marginTop: '12px', fontSize: '12px', color: '#8c8c8c' }}>
+                建议用户首次登录后立即修改密码
+              </p>
+            </div>
+          ),
+          width: 480,
+          onOk: () => {
+            router.push('/users');
+          }
+        });
       } else {
+        // 构建更新数据，处理角色字段
+        const updateData = { ...userData };
+        if (values.role) {
+          updateData.role = { id: values.role };
+        }
+        
         await updateUser({
           variables: {
             id: userId!,
-            data: userData
+            data: updateData
           }
         });
         message.success('用户更新成功');
@@ -541,17 +589,36 @@ function UserEditContent() {
               label={
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <LockOutlined />
-                  密码
+                  初始密码
                   <Text type="danger">*</Text>
                 </span>
               }
               rules={[
-                { required: isNew, message: '请输入密码' },
+                { required: isNew, message: '请输入初始密码' },
                 { min: 6, message: '密码长度至少6位' }
               ]}
+              extra={
+                <div style={{ marginTop: '4px' }}>
+                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                    建议使用 <Text code>123456</Text> 作为初始密码，用户首次登录后可修改
+                  </Text>
+                  <br />
+                  <Button 
+                    type="link" 
+                    size="small" 
+                    style={{ padding: '0', height: 'auto', fontSize: '12px' }}
+                    onClick={() => {
+                      form.setFieldsValue({ password: '123456' });
+                      message.success('已设置默认密码');
+                    }}
+                  >
+                    使用默认密码 123456
+                  </Button>
+                </div>
+              }
             >
               <Input.Password 
-                placeholder="请输入密码（至少6位）"
+                placeholder="请输入初始密码（建议使用 123456）"
                 size="large"
                 style={{ borderRadius: '8px' }}
               />

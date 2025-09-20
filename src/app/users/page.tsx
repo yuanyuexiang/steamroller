@@ -19,7 +19,8 @@ import {
   Row,
   Col,
   Dropdown,
-  Badge
+  Badge,
+  Alert
 } from 'antd';
 import {
   UserOutlined,
@@ -585,6 +586,32 @@ function UsersManagement() {
       background: '#f5f5f5', 
       minHeight: '100vh' 
     }}>
+      {/* 用户管理提示信息 */}
+      <Alert
+        message="用户管理说明"
+        description={
+          <div>
+            <p style={{ margin: '4px 0' }}>
+              • 新创建的用户默认密码为 <strong>123456</strong>，请提醒用户首次登录后及时修改
+            </p>
+            <p style={{ margin: '4px 0' }}>
+              • 用户使用邮箱地址作为登录用户名
+            </p>
+            <p style={{ margin: '4px 0' }}>
+              • 管理员用户拥有系统最高权限，请谨慎分配
+            </p>
+          </div>
+        }
+        type="info"
+        showIcon
+        closable
+        style={{ 
+          marginBottom: '24px',
+          borderRadius: '8px',
+          border: '1px solid #91caff'
+        }}
+      />
+      
       {/* 筛选和搜索区域 */}
       <Card 
         style={{ 
