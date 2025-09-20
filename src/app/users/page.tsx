@@ -192,6 +192,26 @@ function UsersManagement() {
   const [deleteUser] = useDeleteSystemUserMutation();
   const [toggleUserStatus] = useToggleSystemUserStatusMutation();
 
+  // 检查删除权限
+  const checkDeletePermission = useCallback((record: any) => {
+    // 不能删除自己
+    // 注意：这里需要根据实际的当前用户ID来判断
+    // 暂时通过其他方式判断，比如超级管理员角色等
+    
+    // 如果是超级管理员或创建者，可能不允许删除
+    if (record.role?.name === 'Administrator' || record.role?.admin_access === true) {
+      return {
+        canDelete: false,
+        reason: '不能删除管理员用户'
+      };
+    }
+    
+    return {
+      canDelete: true,
+      reason: ''
+    };
+  }, []);
+
   // 处理搜索
   const handleSearch = useCallback((value: string) => {
     setSearchText(value);
@@ -218,16 +238,16 @@ function UsersManagement() {
   // 删除用户
   const handleDeleteUser = useCallback(async (userId: string, userName: string) => {
     try {
+      console.log('正在删除用户:', { userId, userName });
       await deleteUser({
         variables: { id: userId }
       });
       message.success(`用户 "${userName}" 删除成功`);
-      refetchUsers();
-    } catch (error) {
+    } catch (error: any) {
       console.error('删除用户失败:', error);
-      message.error('删除用户失败');
+      message.error(`删除用户失败: ${error.message || '未知错误'}`);
     }
-  }, [deleteUser, refetchUsers]);
+  }, [deleteUser]);
 
   // 切换用户状态
   const handleToggleStatus = useCallback(async (userId: string, currentStatus: string, userName: string) => {
@@ -422,6 +442,8 @@ function UsersManagement() {
       width: 160,
       fixed: 'right' as const,
       render: (_: any, record: any) => {
+        const deletePermission = checkDeletePermission(record);
+        
         const dropdownItems = [
           {
             key: 'view',
@@ -444,25 +466,6 @@ function UsersManagement() {
             label: record.status === 'active' ? '暂停用户' : '激活用户',
             onClick: () => handleToggleStatus(record.id, record.status, 
               `${record.last_name}${record.first_name}`)
-          },
-          {
-            type: 'divider' as const
-          },
-          {
-            key: 'delete',
-            icon: <DeleteOutlined />,
-            label: '删除用户',
-            danger: true,
-            onClick: () => {
-              Modal.confirm({
-                title: '确认删除',
-                content: `确定要删除用户 "${record.last_name}${record.first_name}" 吗？此操作不可恢复。`,
-                okText: '删除',
-                okType: 'danger',
-                cancelText: '取消',
-                onOk: () => handleDeleteUser(record.id, `${record.last_name}${record.first_name}`)
-              });
-            }
           }
         ];
 
@@ -483,7 +486,51 @@ function UsersManagement() {
             >
               查看
             </Button>
-            <Dropdown 
+            
+            <Popconfirm
+              title="确定要删除这个用户吗?"
+              description={`删除用户 "${record.last_name}${record.first_name}" 后将无法恢复，请谨慎操作。`}
+              onConfirm={() => {
+                console.log('=== Popconfirm 确认删除 ===', {
+                  userId: record.id,
+                  userName: `${record.last_name}${record.first_name}`
+                });
+                handleDeleteUser(record.id, `${record.last_name}${record.first_name}`);
+              }}
+              onCancel={() => {
+                console.log('=== Popconfirm 取消删除 ===');
+              }}
+              okText="确定"
+              cancelText="取消"
+              okButtonProps={{ danger: true }}
+              disabled={!checkDeletePermission(record).canDelete}
+            >
+              <Button 
+                type="text" 
+                size="small" 
+                danger
+                icon={<DeleteOutlined />}
+                disabled={!checkDeletePermission(record).canDelete}
+                title={!checkDeletePermission(record).canDelete ? checkDeletePermission(record).reason : '删除用户'}
+                style={{
+                  color: !checkDeletePermission(record).canDelete ? '#d9d9d9' : '#ff4d4f',
+                  padding: '4px 8px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  fontSize: '12px'
+                }}
+                onClick={(e) => {
+                  console.log('=== 点击删除按钮（Popconfirm） ===', {
+                    userId: record.id,
+                    userName: `${record.last_name}${record.first_name}`
+                  });
+                }}
+              >
+                删除
+              </Button>
+            </Popconfirm>
+            
+            <Dropdown
               menu={{ items: dropdownItems }}
               trigger={['click']}
               placement="bottomRight"
