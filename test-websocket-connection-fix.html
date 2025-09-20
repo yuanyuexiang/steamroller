@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket 连接管理测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover { background-color: #0056b3; }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket 连接管理测试</h1>
+    
+    <div class="status-panel">
+        <div id="connectionStatus" class="status info">连接状态: 未连接</div>
+        <div id="connectionCount" class="status info">连接尝试次数: 0</div>
+        <div id="messageCount" class="status info">收到消息: 0</div>
+    </div>
+
+    <div class="controls">
+        <button onclick="testConnection()">测试连接</button>
+        <button onclick="testMultipleConnections()">测试多次连接 (应该只创建一个)</button>
+        <button onclick="testReconnection()">测试重连</button>
+        <button onclick="disconnect()">断开连接</button>
+        <button onclick="clearLog()">清空日志</button>
+    </div>
+
+    <div id="log" class="log"></div>
+
+    <script>
+        let ws = null;
+        let connecting = false;
+        let connectionAttempts = 0;
+        let messageCount = 0;
+        let reconnectTimeout = null;
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logDiv.textContent += logEntry;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            
+            console.log(message);
+        }
+
+        function updateStatus() {
+            const statusDiv = document.getElementById('connectionStatus');
+            const countDiv = document.getElementById('connectionCount');
+            const messageDiv = document.getElementById('messageCount');
+            
+            let status = '未连接';
+            let statusClass = 'info';
+            
+            if (connecting) {
+                status = '连接中...';
+                statusClass = 'warning';
+            } else if (ws && ws.readyState === WebSocket.OPEN) {
+                status = '已连接';
+                statusClass = 'success';
+            } else if (ws && ws.readyState === WebSocket.CONNECTING) {
+                status = '连接中...';
+                statusClass = 'warning';
+            } else if (ws && ws.readyState === WebSocket.CLOSED) {
+                status = '连接已关闭';
+                statusClass = 'error';
+            }
+            
+            statusDiv.className = `status ${statusClass}`;
+            statusDiv.textContent = `连接状态: ${status}`;
+            countDiv.textContent = `连接尝试次数: ${connectionAttempts}`;
+            messageDiv.textContent = `收到消息: ${messageCount}`;
+        }
+
+        async function connect() {
+            // 防止并发连接 - 这是修复的关键点
+            if (connecting) {
+                log('连接正在进行中，跳过新的连接请求', 'warning');
+                return;
+            }
+
+            // 如果已经有连接且状态正常，直接返回
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                log('连接已存在，跳过', 'info');
+                return;
+            }
+
+            connecting = true;
+            connectionAttempts++;
+            updateStatus();
+
+            try {
+                log(`开始第 ${connectionAttempts} 次连接尝试`);
+                
+                // 模拟获取 WebSocket 配置
+                const response = await fetch('/api/websocket');
+                if (!response.ok) {
+                    throw new Error('无法获取 WebSocket 配置');
+                }
+                const config = await response.json();
+                
+                log(`获取到 WebSocket URL: ${config.wsUrl}`);
+                
+                // 清理现有连接
+                if (ws && ws.readyState !== WebSocket.CLOSED) {
+                    log('清理现有连接');
+                    ws.close();
+                    ws = null;
+                }
+
+                // 创建新连接
+                ws = new WebSocket(config.wsUrl);
+
+                // 设置连接超时
+                const connectionTimeout = setTimeout(() => {
+                    if (ws.readyState !== WebSocket.OPEN) {
+                        log('连接超时', 'error');
+                        ws.close();
+                    }
+                }, 10000);
+
+                ws.onopen = () => {
+                    clearTimeout(connectionTimeout);
+                    connecting = false;
+                    log('WebSocket 连接成功建立', 'success');
+                    updateStatus();
+                    
+                    // 发送认证消息
+                    const authMessage = {
+                        type: 'auth',
+                        access_token: 'test-token'
+                    };
+                    ws.send(JSON.stringify(authMessage));
+                    log('发送认证消息');
+                };
+
+                ws.onmessage = (event) => {
+                    messageCount++;
+                    const message = JSON.parse(event.data);
+                    log(`收到消息: ${JSON.stringify(message)}`);
+                    updateStatus();
+                };
+
+                ws.onerror = (error) => {
+                    clearTimeout(connectionTimeout);
+                    connecting = false;
+                    log(`连接错误: ${error}`, 'error');
+                    updateStatus();
+                };
+
+                ws.onclose = (event) => {
+                    clearTimeout(connectionTimeout);
+                    connecting = false;
+                    log(`连接关闭, Code: ${event.code}, Reason: ${event.reason}`);
+                    updateStatus();
+                    
+                    // 只有在非手动关闭时才重连
+                    if (event.code !== 1000 && connectionAttempts < 3) {
+                        const delay = 3000 * Math.pow(2, Math.min(connectionAttempts - 1, 2));
+                        log(`${delay/1000}秒后尝试重连`);
+                        
+                        reconnectTimeout = setTimeout(() => {
+                            connect();
+                        }, delay);
+                    } else if (connectionAttempts >= 3) {
+                        log('已达到最大重连次数，停止重连', 'error');
+                    }
+                };
+
+            } catch (error) {
+                connecting = false;
+                log(`连接失败: ${error}`, 'error');
+                updateStatus();
+            }
+        }
+
+        function testConnection() {
+            log('=== 开始连接测试 ===');
+            connect();
+        }
+
+        function testMultipleConnections() {
+            log('=== 开始多次连接测试 ===');
+            log('快速创建多个连接请求，应该只创建一个连接');
+            
+            // 快速调用多次 connect，应该只创建一个连接
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    log(`第 ${i + 1} 次调用 connect()`);
+                    connect();
+                }, i * 100);
+            }
+        }
+
+        function testReconnection() {
+            log('=== 开始重连测试 ===');
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                log('手动关闭连接以测试重连');
+                ws.close(1006, 'Manual close for reconnection test');
+            } else {
+                log('没有活动连接，先建立连接');
+                connect();
+            }
+        }
+
+        function disconnect() {
+            log('=== 手动断开连接 ===');
+            
+            if (reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
+                reconnectTimeout = null;
+                log('取消重连定时器');
+            }
+            
+            connecting = false;
+            
+            if (ws) {
+                ws.close(1000, 'User disconnected');
+                ws = null;
+                log('用户手动断开连接');
+            }
+            
+            connectionAttempts = 0;
+            messageCount = 0;
+            updateStatus();
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+            log('日志已清空');
+        }
+
+        // 初始化
+        updateStatus();
+        log('WebSocket 连接管理测试工具已就绪');
+        log('这个测试展示了修复后的连接管理逻辑：');
+        log('1. 防止并发连接 (connecting 锁)');
+        log('2. 避免重复连接 (检查现有连接状态)');
+        log('3. 正确的连接清理');
+        log('4. 智能重连逻辑');
+    </script>
+</body>
+</html>

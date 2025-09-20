@@ -8,10 +8,13 @@ if (typeof window !== 'undefined') {
       message.includes('antd: compatible') && 
       message.includes('antd v5 support React is 16 ~ 18')
     ) {
-      // 静默忽略这个警告
+      // 抑制这个警告
       return;
     }
     // 其他警告正常显示
     originalWarn.apply(console, args);
   };
 }
+
+// 导出一个空对象以使这个文件成为模块
+export {};

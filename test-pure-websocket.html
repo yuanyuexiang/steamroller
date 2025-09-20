@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>纯WebSocket通知测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.connecting { background-color: #fff3cd; color: #856404; }
+        .status.connected { background-color: #d1edff; color: #0c5460; }
+        .status.error { background-color: #f8d7da; color: #721c24; }
+        .log {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            margin: 20px 0;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>纯 WebSocket 实时通知测试</h1>
+        
+        <div class="controls">
+            <label for="wsUrl">WebSocket URL（Directus标准端点）：</label>
+            <input type="text" id="wsUrl" placeholder="wss://forge.matrix-net.tech/graphql" value="wss://forge.matrix-net.tech/graphql">
+            
+            <label for="token">访问令牌：</label>
+            <input type="text" id="token" placeholder="从浏览器localStorage获取token">
+            
+            <br><br>
+            <button class="btn-primary" onclick="connect()">连接 WebSocket</button>
+            <button class="btn-secondary" onclick="disconnect()">断开连接</button>
+            <button class="btn-danger" onclick="clearLog()">清空日志</button>
+        </div>
+        
+        <div id="status" class="status">未连接</div>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        let ws = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(message, className) {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = message;
+            statusElement.className = `status ${className}`;
+        }
+
+        function connect() {
+            const url = document.getElementById('wsUrl').value;
+            const token = document.getElementById('token').value || 
+                         localStorage.getItem('access_token') || 
+                         localStorage.getItem('authToken') ||
+                         localStorage.getItem('directus_auth_token');
+            
+            if (!url) {
+                log('错误: 请输入WebSocket URL');
+                return;
+            }
+            
+            if (!token) {
+                log('错误: 请提供访问令牌');
+                return;
+            }
+            
+            log(`尝试连接到Directus标准WebSocket端点: ${url}`);
+            updateStatus('正在连接...', 'connecting');
+            
+            try {
+                ws = new WebSocket(url);
+                
+                // 连接超时
+                const connectionTimeout = setTimeout(() => {
+                    if (ws.readyState !== WebSocket.OPEN) {
+                        log('WebSocket连接超时');
+                        ws.close();
+                    }
+                }, 10000);
+                
+                ws.onopen = () => {
+                    clearTimeout(connectionTimeout);
+                    log('WebSocket连接已建立');
+                    updateStatus('已连接', 'connected');
+                    reconnectAttempts = 0;
+                    
+                    // 发送认证消息
+                    const authMessage = {
+                        type: 'auth',
+                        access_token: token
+                    };
+                    
+                    log('发送认证消息...');
+                    ws.send(JSON.stringify(authMessage));
+                };
+                
+                ws.onmessage = (event) => {
+                    let messageData;
+                    try {
+                        messageData = JSON.parse(event.data);
+                        log(`收到消息: ${JSON.stringify(messageData, null, 2)}`);
+                        
+                        // 处理认证响应
+                        if (messageData.type === 'auth') {
+                            if (messageData.status === 'ok') {
+                                log('认证成功！开始订阅数据变化...');
+                                subscribeToCollections();
+                            } else {
+                                log(`认证失败: ${JSON.stringify(messageData)}`);
+                            }
+                        }
+                        
+                        // 处理订阅消息
+                        if (messageData.type === 'subscription') {
+                            log(`📢 收到实时通知: ${messageData.collection} - ${messageData.event}`);
+                            if (messageData.data) {
+                                log(`数据: ${JSON.stringify(messageData.data, null, 2)}`);
+                            }
+                        }
+                        
+                        // 处理心跳
+                        if (messageData.type === 'heartbeat') {
+                            log('💓 心跳消息');
+                        }
+                        
+                    } catch (error) {
+                        log(`消息解析错误: ${error.message}`);
+                        log(`原始消息: ${event.data}`);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    clearTimeout(connectionTimeout);
+                    log(`WebSocket错误: ${error}`);
+                    updateStatus('连接错误', 'error');
+                };
+                
+                ws.onclose = (event) => {
+                    clearTimeout(connectionTimeout);
+                    log(`WebSocket连接关闭 - Code: ${event.code}, Reason: ${event.reason}`);
+                    updateStatus('连接已关闭', 'error');
+                    
+                    // 自动重连逻辑
+                    if (event.code !== 1000 && reconnectAttempts < maxReconnectAttempts) {
+                        reconnectAttempts++;
+                        const delay = 3000 * Math.pow(2, Math.min(reconnectAttempts, 3)); // 指数退避
+                        log(`${delay/1000}秒后尝试重连 (第${reconnectAttempts}/${maxReconnectAttempts}次)...`);
+                        setTimeout(() => {
+                            log('正在自动重连...');
+                            connect();
+                        }, delay);
+                    } else if (reconnectAttempts >= maxReconnectAttempts) {
+                        log('已达到最大重连次数，停止自动重连');
+                    }
+                };
+                
+            } catch (error) {
+                log(`连接失败: ${error.message}`);
+                updateStatus('连接失败', 'error');
+            }
+        }
+        
+        function subscribeToCollections() {
+            const collections = ['users', 'products', 'boutiques', 'orders', 'customers'];
+            
+            collections.forEach(collection => {
+                const subscriptionMessage = {
+                    type: 'subscribe',
+                    collection: collection,
+                    query: {
+                        fields: ['*'],
+                        filter: {}
+                    }
+                };
+                
+                log(`订阅集合: ${collection}`);
+                ws.send(JSON.stringify(subscriptionMessage));
+            });
+        }
+        
+        function disconnect() {
+            if (ws) {
+                reconnectAttempts = maxReconnectAttempts; // 阻止自动重连
+                ws.close(1000, 'User disconnected');
+                ws = null;
+            }
+            updateStatus('已断开连接', 'error');
+            log('用户手动断开连接');
+        }
+        
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+        
+        // 页面加载时尝试从localStorage获取token
+        window.onload = function() {
+            const tokenInput = document.getElementById('token');
+            const storedToken = localStorage.getItem('access_token') || 
+                               localStorage.getItem('authToken') || 
+                               localStorage.getItem('directus_auth_token');
+            if (storedToken) {
+                tokenInput.value = storedToken;
+                log(`自动填入存储的token: ${storedToken.substring(0, 20)}...`);
+            }
+            
+            log('纯WebSocket实时通知系统测试工具已就绪');
+            log('请连接到您的Directus WebSocket端点开始测试');
+        };
+    </script>
+</body>
+</html>

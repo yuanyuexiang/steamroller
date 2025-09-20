@@ -1,469 +1,196 @@
 'use client';
 
-import React, { useState } from 'react';
-import { 
-  Dropdown, 
-  List, 
-  Avatar, 
-  Typography, 
-  Button, 
-  Space, 
-  Divider,
-  Empty,
-  Badge,
-  Tag,
-  Tooltip
-} from 'antd';
-import { 
-  BellOutlined,
-  DeleteOutlined,
-  CheckOutlined,
-  ClearOutlined,
-  WifiOutlined,
-  DisconnectOutlined,
-  SyncOutlined,
-  ClockCircleOutlined,
-  ShoppingCartOutlined,
-  SettingOutlined,
-  InfoCircleOutlined,
-  CheckCircleOutlined,
-  WarningOutlined,
-  ExclamationCircleOutlined,
-  RightOutlined
-} from '@ant-design/icons';
-import { useRouter } from 'next/navigation';
-import { Notification } from '@types';
-import { useSmartNotifications } from '@hooks/useSmartNotifications';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/zh-cn';
+import React from 'react';
+import { Badge, Button, Dropdown, List, Typography, Space, Divider, Empty } from 'antd';
+import { BellOutlined, DeleteOutlined, ReloadOutlined, WifiOutlined, DisconnectOutlined } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import { useNotifications } from '@hooks/useNotifications';
 
-dayjs.extend(relativeTime);
-dayjs.locale('zh-cn');
+const { Text } = Typography;
 
-const { Text, Title } = Typography;
-
-// 全局样式注入
-if (typeof document !== 'undefined') {
-  const notificationStyles = `
-    .notification-item {
-      border-radius: 8px !important;
-      margin-bottom: 4px !important;
-      transition: all 0.2s ease !important;
-    }
-    
-    .notification-item:hover {
-      background: #f8f9ff !important;
-      transform: translateX(2px) !important;
-    }
-    
-    .notification-item.unread {
-      background: #f6f8ff !important;
-      border-left: 3px solid #1890ff !important;
-    }
-    
-    .admin-header-notification {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-      border: 1px solid #e6ebff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      color: #667eea;
-      margin-right: 16px;
-    }
-    
-    .admin-header-notification:hover {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    }
-  `;
-  
-  const styleElement = document.createElement('style');
-  styleElement.innerHTML = notificationStyles;
-  if (!document.head.querySelector('style[data-notification-styles]')) {
-    styleElement.setAttribute('data-notification-styles', 'true');
-    document.head.appendChild(styleElement);
-  }
-}
-
-// 通知类型对应的图标和颜色
-const getNotificationIcon = (type: Notification['type']) => {
-  switch (type) {
-    case 'order':
-      return <ShoppingCartOutlined style={{ color: '#1890ff' }} />;
-    case 'system':
-      return <SettingOutlined style={{ color: '#722ed1' }} />;
-    case 'success':
-      return <CheckCircleOutlined style={{ color: '#52c41a' }} />;
-    case 'warning':
-      return <WarningOutlined style={{ color: '#faad14' }} />;
-    case 'error':
-      return <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />;
-    default:
-      return <InfoCircleOutlined style={{ color: '#1890ff' }} />;
-  }
-};
-
-// 通知类型标签颜色
-const getNotificationTagColor = (type: Notification['type']) => {
-  switch (type) {
-    case 'order': return 'blue';
-    case 'system': return 'purple';
-    case 'success': return 'green';
-    case 'warning': return 'orange';
-    case 'error': return 'red';
-    default: return 'default';
-  }
-};
-
-// 通知类型显示文本
-const getNotificationTypeText = (type: Notification['type']) => {
-  switch (type) {
-    case 'order': return '订单';
-    case 'system': return '系统';
-    case 'success': return '成功';
-    case 'warning': return '警告';
-    case 'error': return '错误';
-    default: return '消息';
-  }
-};
-
-export interface NotificationDropdownProps {
-  className?: string;
-}
-
-export default function NotificationDropdown({ className }: NotificationDropdownProps) {
-  const router = useRouter();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+export function NotificationDropdown() {
   const {
     notifications,
     unreadCount,
     connected,
     loading,
+    connectionAttempts,
     markAsRead,
     markAllAsRead,
     deleteNotification,
-    clearAll,
-    mode,
-    websocketConnected,
-    pollingActive,
-    switchToWebSocket,
-    switchToPolling
-  } = useSmartNotifications();  // 处理通知点击
-  const handleNotificationClick = (notification: Notification) => {
-    // 标记为已读
-    if (!notification.read) {
-      markAsRead(notification.id);
-    }
+    refresh,
+    connect,
+    disconnect
+  } = useNotifications();
 
-    // 执行动作
-    if (notification.action) {
-      if (notification.action.type === 'navigate') {
-        setDropdownOpen(false);
-        router.push(notification.action.url);
-      } else if (notification.action.type === 'external') {
-        window.open(notification.action.url, '_blank');
-      }
+  const handleNotificationClick = (id: string, read: boolean) => {
+    if (!read) {
+      markAsRead(id);
     }
   };
 
-  // 处理删除通知
-  const handleDeleteNotification = (e: React.MouseEvent, notificationId: string) => {
-    e.stopPropagation();
-    deleteNotification(notificationId);
+  const connectionStatusIcon = () => {
+    if (loading) {
+      return <ReloadOutlined spin style={{ color: '#1890ff' }} />;
+    }
+    if (connected) {
+      return <WifiOutlined style={{ color: '#52c41a' }} />;
+    }
+    return <DisconnectOutlined style={{ color: '#ff4d4f' }} />;
   };
 
-  // 渲染单个通知项
-  const renderNotificationItem = (notification: Notification) => (
-    <List.Item
-      key={notification.id}
-      onClick={() => handleNotificationClick(notification)}
-      style={{
-        padding: '12px 16px',
-        cursor: 'pointer',
-        background: notification.read ? 'transparent' : '#f6f8ff',
-        borderLeft: notification.read ? '3px solid transparent' : '3px solid #1890ff',
-        transition: 'all 0.2s',
-      }}
-      className="notification-item"
-    >
-      <List.Item.Meta
-        avatar={
-          <Avatar 
-            icon={getNotificationIcon(notification.type)}
-            size={40}
-            style={{ 
-              backgroundColor: 'transparent',
-              border: '1px solid #f0f0f0'
-            }}
-          />
-        }
-        title={
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
-              <Text 
-                strong={!notification.read}
-                style={{ 
-                  fontSize: '14px',
-                  color: notification.read ? '#8c8c8c' : '#262626'
-                }}
-              >
-                {notification.title}
-              </Text>
-              <Tag 
-                color={getNotificationTagColor(notification.type)}
-              >
-                {getNotificationTypeText(notification.type)}
-              </Tag>
-            </div>
-            <Space size="small">
-              {notification.action && (
-                <Tooltip title="查看详情">
-                  <RightOutlined 
-                    style={{ 
-                      fontSize: '12px', 
-                      color: '#8c8c8c',
-                      opacity: 0.6
-                    }} 
-                  />
-                </Tooltip>
-              )}
-              <Tooltip title="删除通知">
-                <DeleteOutlined 
-                  onClick={(e) => handleDeleteNotification(e, notification.id)}
-                  style={{ 
-                    fontSize: '12px', 
-                    color: '#ff4d4f',
-                    opacity: 0.6,
-                    cursor: 'pointer'
-                  }}
-                />
-              </Tooltip>
-            </Space>
-          </div>
-        }
-        description={
-          <div>
-            <Text 
-              style={{ 
-                fontSize: '13px', 
-                color: notification.read ? '#bfbfbf' : '#595959',
-                lineHeight: '1.4',
-                display: 'block',
-                marginBottom: '4px'
-              }}
-            >
-              {notification.message}
-            </Text>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Text 
-                style={{ 
-                  fontSize: '12px', 
-                  color: '#bfbfbf'
-                }}
-              >
-                <ClockCircleOutlined style={{ marginRight: '4px' }} />
-                {dayjs(notification.timestamp).fromNow()}
-              </Text>
-              {notification.action && (
-                <Text 
-                  style={{ 
-                    fontSize: '12px', 
-                    color: '#1890ff',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {notification.action.label}
-                </Text>
-              )}
-            </div>
-          </div>
-        }
-      />
-    </List.Item>
-  );
+  const connectionStatusText = () => {
+    if (loading) {
+      return `连接中... ${connectionAttempts > 0 ? `(第${connectionAttempts}次尝试)` : ''}`;
+    }
+    if (connected) {
+      return 'WebSocket 已连接';
+    }
+    return 'WebSocket 未连接';
+  };
 
-  // 创建下拉内容
   const dropdownContent = (
-    <div style={{ 
-      width: 380, 
-      maxHeight: 600, 
-      background: 'white',
-      borderRadius: '8px',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
-    }}>
-      {/* 头部 */}
-      <div style={{ 
-        padding: '16px', 
-        borderBottom: '1px solid #f0f0f0',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      }}>
-        <Title level={5} style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <BellOutlined />
-          通知中心
-          {unreadCount > 0 && (
-            <Badge 
-              count={unreadCount} 
-              size="small"
-              style={{ marginLeft: '4px' }}
-            />
-          )}
-          {/* 连接状态指示器 */}
-          <Tooltip title={
-            mode === 'websocket' 
-              ? (websocketConnected ? 'WebSocket已连接' : 'WebSocket连接中...')
-              : 'HTTP轮询模式'
-          }>
-            {mode === 'websocket' ? (
-              websocketConnected ? (
-                <WifiOutlined style={{ color: '#52c41a', fontSize: '14px' }} />
-              ) : (
-                <SyncOutlined spin style={{ color: '#faad14', fontSize: '14px' }} />
-              )
-            ) : (
-              <DisconnectOutlined style={{ color: '#ff4d4f', fontSize: '14px' }} />
-            )}
-          </Tooltip>
-        </Title>
-        <Tooltip 
-          title={
-            mode === 'websocket' && !websocketConnected
-              ? '连接失败，点击切换到轮询模式'
-              : mode === 'polling' 
-              ? '点击切换到WebSocket模式'
-              : 'WebSocket连接正常'
-          }
-        >
-          {mode === 'websocket' && !websocketConnected && (
-            <Button 
-              type="text" 
-              size="small" 
-              icon={<DisconnectOutlined />}
-              onClick={switchToPolling}
-              style={{ color: '#ff4d4f' }}
-            >
-              切换到轮询
+    <div style={{ width: 380, maxHeight: 500, overflow: 'hidden' }}>
+      {/* 连接状态栏 */}
+      <div style={{ padding: '12px 16px', backgroundColor: '#fafafa', borderBottom: '1px solid #f0f0f0' }}>
+        <Space>
+          {connectionStatusIcon()}
+          <Text style={{ fontSize: '12px', color: '#666' }}>
+            {connectionStatusText()}
+          </Text>
+          {!connected && !loading && (
+            <Button size="small" type="link" onClick={connect}>
+              重连
             </Button>
           )}
-          {mode === 'polling' && (
-            <Button 
-              type="text" 
-              size="small" 
-              icon={<WifiOutlined />}
-              onClick={switchToWebSocket}
-              style={{ color: '#1890ff' }}
-            >
-              重试WebSocket
+          {connected && (
+            <Button size="small" type="link" danger onClick={disconnect}>
+              断开
             </Button>
           )}
-        </Tooltip>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <Tooltip title={connected ? 'WebSocket已连接' : 'WebSocket未连接'}>
-            <div style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: connected ? '#52c41a' : '#ff4d4f',
-              marginRight: '8px'
-            }} />
-          </Tooltip>
-          {notifications.length > 0 && (
-            <Space size="small">
-              {unreadCount > 0 && (
-                <Button 
-                  type="text" 
-                  size="small"
-                  icon={<CheckOutlined />}
-                  onClick={markAllAsRead}
-                >
-                  全部已读
-                </Button>
-              )}
-              <Button 
-                type="text" 
-                size="small"
-                danger
-                onClick={clearAll}
-              >
-                清空
-              </Button>
-            </Space>
-          )}
-        </div>
+        </Space>
       </div>
 
+      {/* 通知标题栏 */}
+      <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text strong>通知 ({notifications.length})</Text>
+        <Space>
+          {unreadCount > 0 && (
+            <Button type="link" size="small" onClick={markAllAsRead}>
+              全部已读
+            </Button>
+          )}
+          <Button
+            type="link" 
+            size="small" 
+            icon={<ReloadOutlined />}
+            onClick={refresh}
+            loading={loading}
+          >
+            刷新
+          </Button>
+        </Space>
+      </div>
+
+      <Divider style={{ margin: 0 }} />
+
       {/* 通知列表 */}
-      <div style={{ 
-        maxHeight: 480, 
-        overflowY: 'auto',
-        overflowX: 'hidden'
-      }}>
-        {loading ? (
-          <div style={{ padding: '40px', textAlign: 'center' }}>
-            <Text>加载中...</Text>
-          </div>
-        ) : notifications.length === 0 ? (
-          <div style={{ padding: '40px' }}>
-            <Empty 
-              description="暂无通知"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
-          </div>
+      <div style={{ maxHeight: 350, overflow: 'auto' }}>
+        {notifications.length === 0 ? (
+          <Empty 
+            image={Empty.PRESENTED_IMAGE_SIMPLE} 
+            description="暂无通知" 
+            style={{ padding: '40px 20px' }}
+          />
         ) : (
           <List
             dataSource={notifications}
-            renderItem={renderNotificationItem}
-            split={false}
-            style={{ padding: '0' }}
+            renderItem={(notification) => (
+              <List.Item
+                key={notification.id}
+                style={{
+                  padding: '12px 16px',
+                  backgroundColor: notification.read ? 'transparent' : '#f6ffed',
+                  borderLeft: notification.read ? 'none' : '3px solid #52c41a',
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleNotificationClick(notification.id, notification.read)}
+                actions={[
+                  <Button
+                    key="delete"
+                    type="text"
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteNotification(notification.id);
+                    }}
+                    style={{ color: '#999' }}
+                  />
+                ]}
+              >
+                <List.Item.Meta
+                  title={
+                    <Space>
+                      <Text strong={!notification.read} style={{ fontSize: '14px' }}>
+                        {notification.title}
+                      </Text>
+                      {!notification.read && (
+                        <Badge status="processing" />
+                      )}
+                    </Space>
+                  }
+                  description={
+                    <div>
+                      <Text style={{ fontSize: '12px', color: '#666' }}>
+                        {notification.message}
+                      </Text>
+                      <br />
+                      <Text style={{ fontSize: '11px', color: '#999' }}>
+                        {new Date(notification.timestamp).toLocaleString('zh-CN')}
+                      </Text>
+                    </div>
+                  }
+                />
+              </List.Item>
+            )}
           />
         )}
       </div>
-
-      {/* 底部 */}
-      {notifications.length > 0 && (
-        <>
-          <Divider style={{ margin: 0 }} />
-          <div style={{ padding: '12px 16px', textAlign: 'center' }}>
-            <Button 
-              type="link" 
-              size="small"
-              onClick={() => {
-                setDropdownOpen(false);
-                // TODO: 导航到通知中心页面
-                console.log('导航到通知中心');
-              }}
-            >
-              查看全部通知
-            </Button>
-          </div>
-        </>
-      )}
     </div>
   );
 
+  const menuItems: MenuProps['items'] = [
+    {
+      key: 'notifications',
+      label: dropdownContent,
+    },
+  ];
+
   return (
     <Dropdown
-      dropdownRender={() => dropdownContent}
-      trigger={['click']}
-      open={dropdownOpen}
-      onOpenChange={setDropdownOpen}
+      menu={{ items: menuItems }}
       placement="bottomRight"
-      className={className}
+      trigger={['click']}
+      overlayClassName="notification-dropdown"
+      overlayStyle={{ 
+        boxShadow: '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
+        borderRadius: '8px'
+      }}
     >
-      <div className="admin-header-notification">
-        <Badge count={unreadCount} size="small" offset={[-2, 2]}>
-          <BellOutlined />
-        </Badge>
-      </div>
+      <Badge count={unreadCount} size="small">
+        <Button
+          type="text"
+          icon={<BellOutlined />}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 40,
+            height: 40
+          }}
+        />
+      </Badge>
     </Dropdown>
   );
 }
