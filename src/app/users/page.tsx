@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Table,
@@ -193,6 +193,18 @@ function UsersManagement() {
   const [deleteUser] = useDeleteSystemUserMutation();
   const [toggleUserStatus] = useToggleSystemUserStatusMutation();
 
+  // 页面获得焦点时自动刷新用户列表
+  useEffect(() => {
+    const handleFocus = () => {
+      refetchUsers();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [refetchUsers]);
+
   // 检查删除权限
   const checkDeletePermission = useCallback((record: any) => {
     // 不能删除自己
@@ -244,11 +256,13 @@ function UsersManagement() {
         variables: { id: userId }
       });
       message.success(`用户 "${userName}" 删除成功`);
+      // 刷新用户列表
+      refetchUsers();
     } catch (error: any) {
       console.error('删除用户失败:', error);
       message.error(`删除用户失败: ${error.message || '未知错误'}`);
     }
-  }, [deleteUser]);
+  }, [deleteUser, refetchUsers]);
 
   // 切换用户状态
   const handleToggleStatus = useCallback(async (userId: string, currentStatus: string, userName: string) => {

@@ -302,7 +302,7 @@ function UserEditContent() {
           ),
           width: 480,
           onOk: () => {
-            router.push('/users');
+            router.replace('/users');
           }
         });
       } else {

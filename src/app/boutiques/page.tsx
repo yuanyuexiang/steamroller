@@ -312,6 +312,18 @@ function BoutiquesContent() {
     }
   }, [searchParams]);
 
+  // 页面获得焦点时自动刷新列表
+  useEffect(() => {
+    const handleFocus = () => {
+      refetch();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [refetch]);
+
   // 删除店铺
   const [deleteBoutique] = useDeleteBoutiqueMutation({
     onCompleted: () => {

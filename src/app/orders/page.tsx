@@ -74,6 +74,18 @@ function OrdersContent() {
     }
   });
 
+  // 页面获得焦点时自动刷新列表
+  useEffect(() => {
+    const handleFocus = () => {
+      refetch();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [refetch]);
+
   const orders = ordersData?.orders || [];
   // 暂时使用空数组，等实现order_items功能时再修复
   const orderItems: any[] = [];

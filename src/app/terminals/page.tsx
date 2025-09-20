@@ -93,6 +93,18 @@ export default function TerminalsPage() {
     }
   });
 
+  // 页面获得焦点时自动刷新列表
+  useEffect(() => {
+    const handleFocus = () => {
+      refetch();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [refetch]);
+
   // 过滤终端设备
   const filteredTerminals = terminals.filter(terminal => {
     if (!searchText) return true;
