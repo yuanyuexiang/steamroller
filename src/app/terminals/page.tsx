@@ -25,7 +25,8 @@ import {
   DesktopOutlined,
   ClockCircleOutlined,
   UserOutlined,
-  DownloadOutlined
+  DownloadOutlined,
+  SearchOutlined
 } from '@ant-design/icons';
 import { 
   useGetAllTerminalsQuery,
@@ -38,7 +39,8 @@ import { ProtectedRoute, AdminLayout } from '@components';
 import { exportTerminals } from '@lib/utils';
 import dayjs from 'dayjs';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
+const { Search } = Input;
 
 type Terminal = NonNullable<GetAllTerminalsQuery['terminals'][0]>;
 
@@ -307,41 +309,71 @@ export default function TerminalsPage() {
             </div>
           </div>
 
-          {/* 搜索和操作区域 */}
-          <div className="terminals-toolbar">
-            <div className="toolbar-right">
-              <Input.Search
-                placeholder="搜索终端设备ID、创建用户..."
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="search-input"
-                allowClear
-              />
-              <Button 
-                className="export-btn"
-                icon={<DownloadOutlined />}
-                onClick={handleExport}
-                disabled={terminals.length === 0}
-              >
-                导出数据
-              </Button>
-              <Button 
-                type="primary" 
-                className="add-btn"
-                icon={<PlusOutlined />}
-                onClick={() => {
-                  setEditingTerminal(null);
-                  form.resetFields();
-                  setIsModalVisible(true);
-                }}
-              >
-                新增终端设备
-              </Button>
-            </div>
-          </div>
+
 
           {/* 终端设备表格 */}
           <div className="terminals-table-container">
+
+          {/* 搜索和操作区域 */}
+            <div style={{
+              background: 'white',
+              borderRadius: '16px',
+              padding: '20px 32px',
+              marginBottom: '24px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.06)',
+              border: '1px solid rgba(102, 126, 234, 0.1)'
+            }}>
+              <Row gutter={[16, 16]} align="middle">
+                <Col xs={24} sm={12} md={10} lg={8}>
+                  <Search
+                    placeholder="搜索终端设备ID、创建用户..."
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    allowClear
+                    size="large"
+                    prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
+                    style={{ borderRadius: '12px' }}
+                  />
+                </Col>
+                <Col xs={12} sm={8} md={8} lg={10}>
+                  <Text style={{ color: '#8c8c8c', fontSize: '14px' }}>
+                    共找到 {filteredTerminals.length} 个终端
+                  </Text>
+                </Col>
+                <Col xs={12} sm={4} md={6} lg={6} style={{ textAlign: 'right' }}>
+                  <Space>
+                    <Button 
+                      icon={<DownloadOutlined />}
+                      onClick={handleExport}
+                      disabled={terminals.length === 0}
+                      style={{ borderRadius: '8px' }}
+                    >
+                      导出数据
+                    </Button>
+                    <Button 
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={() => {
+                        setEditingTerminal(null);
+                        form.resetFields();
+                        setIsModalVisible(true);
+                      }}
+                      style={{ 
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        border: 'none',
+                        fontWeight: 600,
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+                      }}
+                    >
+                      新增终端设备
+                    </Button>
+                  </Space>
+                </Col>
+              </Row>
+            </div>
+
+
             <Table
               columns={columns}
               dataSource={filteredTerminals}
