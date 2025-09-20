@@ -373,7 +373,6 @@ export default function TerminalsPage() {
               </Row>
             </div>
 
-
             <Table
               columns={columns}
               dataSource={filteredTerminals}

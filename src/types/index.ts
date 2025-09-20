@@ -1,5 +1,32 @@
 // 共享类型定义
 
+// 通知消息类型
+export interface Notification {
+  id: string;
+  type: 'info' | 'success' | 'warning' | 'error' | 'order' | 'system';
+  title: string;
+  message: string;
+  description?: string;
+  timestamp: string;
+  read: boolean;
+  action?: {
+    type: 'navigate' | 'external';
+    url: string;
+    label: string;
+  };
+  data?: Record<string, any>;
+}
+
+// WebSocket 消息类型
+export interface WebSocketMessage {
+  type: 'notification' | 'system' | 'heartbeat' | 'auth' | 'subscription';
+  data?: any;
+  timestamp?: string;
+  status?: 'ok' | 'error';
+  event?: 'create' | 'update' | 'delete';
+  collection?: string;
+}
+
 // 用户相关类型
 export interface User {
   id: string;

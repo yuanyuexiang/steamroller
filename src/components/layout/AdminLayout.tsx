@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Avatar, Dropdown, Button, Typography, Badge } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Button, Typography } from 'antd';
 import { 
   DashboardOutlined, 
   ShoppingCartOutlined, 
@@ -12,11 +12,11 @@ import {
   SettingOutlined,
   ShopOutlined,
   DesktopOutlined,
-  BellOutlined,
   SearchOutlined
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@providers/AuthProvider';
+import { NotificationDropdown } from '@components/notifications';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -447,11 +447,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           <div className="admin-header-right">
-            <Badge count={3} size="small">
-              <div className="admin-header-notification">
-                <BellOutlined />
-              </div>
-            </Badge>
+            <NotificationDropdown />
             
             <Dropdown
               menu={{ items: userMenuItems }}

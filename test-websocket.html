@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket 连接测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket 连接测试工具</h1>
+    
+    <div>
+        <label>WebSocket URL:</label>
+        <input type="text" id="wsUrl" value="wss://forge.matrix-net.tech/graphql" style="width: 400px;">
+        <button onclick="testConnection()">测试连接</button>
+        <button onclick="clearLog()">清除日志</button>
+    </div>
+    
+    <div>
+        <label>Access Token (可选):</label>
+        <input type="text" id="accessToken" placeholder="输入你的Directus访问令牌" style="width: 400px;">
+    </div>
+    
+    <div>
+        <label>集合订阅测试:</label>
+        <select id="collectionSelect">
+            <option value="orders">订单 (orders)</option>
+            <option value="customers">客户 (customers)</option>
+            <option value="products">产品 (products)</option>
+            <option value="boutiques">门店 (boutiques)</option>
+        </select>
+        <button onclick="subscribeToCollection()">订阅集合</button>
+        <button onclick="testNotification()">测试通知</button>
+    </div>
+    
+    <div id="status" class="status info">
+        准备测试WebSocket连接...
+    </div>
+    
+    <div>
+        <label>测试日志:</label>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        let ws = null;
+        let logElement = document.getElementById('log');
+        let statusElement = document.getElementById('status');
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        function setStatus(message, type = 'info') {
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+
+        function clearLog() {
+            logElement.textContent = '';
+        }
+
+        function testConnection() {
+            const url = document.getElementById('wsUrl').value;
+            const accessToken = document.getElementById('accessToken').value;
+            
+            if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) {
+                ws.close();
+            }
+
+            log(`开始测试Directus WebSocket连接: ${url}`);
+            setStatus('正在连接...', 'info');
+
+            try {
+                ws = new WebSocket(url);
+
+                ws.onopen = function(event) {
+                    log('✅ WebSocket连接成功建立');
+                    setStatus('连接成功！发送认证请求...', 'info');
+                    
+                    // 根据Directus文档，handshake模式下第一条消息必须是认证请求
+                    if (accessToken) {
+                        const authMessage = {
+                            type: 'auth',
+                            access_token: accessToken
+                        };
+                        log(`📤 发送认证消息: ${JSON.stringify(authMessage)}`);
+                        ws.send(JSON.stringify(authMessage));
+                    } else {
+                        log('⚠️ 未提供访问令牌，跳过认证');
+                    }
+                };
+
+                ws.onmessage = function(event) {
+                    log(`� 收到消息: ${event.data}`);
+                    
+                    try {
+                        const response = JSON.parse(event.data);
+                        if (response.type === 'auth') {
+                            if (response.status === 'ok') {
+                                log('✅ Directus认证成功！');
+                                setStatus('认证成功！WebSocket连接就绪', 'success');
+                            } else {
+                                log('❌ Directus认证失败');
+                                setStatus('认证失败！请检查访问令牌', 'error');
+                            }
+                        }
+                    } catch (e) {
+                        // 消息不是JSON格式，直接显示
+                    }
+                };
+
+                ws.onerror = function(error) {
+                    log(`❌ WebSocket错误: ${error}`);
+                    setStatus('连接失败！请检查URL和服务器配置', 'error');
+                };
+
+                ws.onclose = function(event) {
+                    log(`🔌 连接关闭 - Code: ${event.code}, Reason: ${event.reason}`);
+                    
+                    if (event.code === 1000) {
+                        setStatus('连接正常关闭', 'info');
+                    } else {
+                        setStatus(`连接异常关闭 (${event.code}: ${event.reason})`, 'error');
+                    }
+                };
+
+        function subscribeToCollection() {
+            const collection = document.getElementById('collectionSelect').value;
+            
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                log('❌ 请先建立WebSocket连接');
+                return;
+            }
+
+            const subscriptionMessage = {
+                type: 'subscribe',
+                collection: collection,
+                uid: `${collection}_all`
+            };
+
+            log(`📤 订阅集合: ${JSON.stringify(subscriptionMessage)}`);
+            ws.send(JSON.stringify(subscriptionMessage));
+        }
+
+        function testNotification() {
+            const collection = document.getElementById('collectionSelect').value;
+            
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                log('❌ 请先建立WebSocket连接');
+                return;
+            }
+
+            // 模拟创建一个测试项目（这会触发实时通知）
+            const createMessage = {
+                type: 'items',
+                action: 'create',
+                collection: collection,
+                data: {
+                    name: `测试项目_${Date.now()}`,
+                    description: '这是一个测试创建的项目'
+                },
+                uid: `test_create_${Date.now()}`
+            };
+
+            log(`📤 测试创建项目: ${JSON.stringify(createMessage)}`);
+            ws.send(JSON.stringify(createMessage));
+        }
+
+        // 页面加载时自动测试
+        window.onload = function() {
+            log('Directus WebSocket测试工具加载完成');
+            log('请点击"测试连接"按钮开始测试');
+        };
+
+        // 页面关闭时清理连接
+        window.onbeforeunload = function() {
+            if (ws) {
+                ws.close();
+            }
+        };
+    </script>
+</body>
+</html>
