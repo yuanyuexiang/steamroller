@@ -23,7 +23,7 @@ export interface WebSocketMessage {
   data?: any;
   timestamp?: string;
   status?: 'ok' | 'error';
-  event?: 'create' | 'update' | 'delete';
+  event?: 'create' | 'update' | 'delete' | 'init';
   collection?: string;
 }
 

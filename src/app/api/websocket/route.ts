@@ -11,15 +11,15 @@ export async function GET() {
     const wsBaseUrl = directusUrl.replace(/^http/, 'ws');
     
     // Directus标准WebSocket端点
-    const websocketUrl = wsBaseUrl + '/graphql';
+    const websocketUrl = wsBaseUrl + '/websocket';
     
     return new Response(JSON.stringify({
       wsUrl: websocketUrl,
-      endpoint: '/graphql',
+      endpoint: '/websocket',
       authMode: 'handshake',
       directusUrl,
       success: true,
-      note: 'Directus标准WebSocket端点，使用/graphql进行WebSocket连接'
+      note: 'Directus标准WebSocket端点，使用/websocket进行WebSocket连接'
     }), {
       headers: {
         'Content-Type': 'application/json',
