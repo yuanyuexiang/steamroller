@@ -25,7 +25,8 @@ import {
   DollarOutlined,
   UserOutlined,
   ClockCircleOutlined,
-  DownloadOutlined
+  DownloadOutlined,
+  SearchOutlined
 } from '@ant-design/icons';
 import { 
   useGetAllOrdersQuery,
@@ -325,38 +326,53 @@ function OrdersContent() {
         </div>
       </div>
 
-      {/* 操作栏 */}
-      <div className="orders-toolbar">
-        <div className="toolbar-left">
-          <h2 className="page-title">订单管理</h2>
-          <p className="page-desc">管理和跟踪所有订单信息</p>
-        </div>
-        <div className="toolbar-right">
-          <Search
-            placeholder="搜索订单ID、用户或状态"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="search-input"
-          />
-          <Button 
-            className="refresh-btn" 
-            onClick={() => refetch()}
-          >
-            刷新
-          </Button>
-          <Button 
-            className="export-btn"
-            icon={<DownloadOutlined />}
-            onClick={handleExport}
-            disabled={orders.length === 0}
-          >
-            导出数据
-          </Button>
-        </div>
-      </div>
-
       {/* 订单表格 */}
       <div className="orders-table-container">
+        <div style={{ marginBottom: '16px' }}>
+          <Row gutter={[16, 16]} align="middle">
+            <Col xs={24} sm={12} md={10} lg={8}>
+              <Search
+                placeholder="搜索订单ID、用户或状态"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                allowClear
+                size="large"
+                prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
+                style={{ borderRadius: '12px' }}
+              />
+            </Col>
+            <Col xs={12} sm={8} md={8} lg={10}>
+              <Text style={{ color: '#8c8c8c', fontSize: '14px' }}>
+                共找到 {filteredOrders.length} 个订单
+              </Text>
+            </Col>
+            <Col xs={12} sm={4} md={6} lg={6} style={{ textAlign: 'right' }}>
+              <Space>
+                <Button 
+                  onClick={() => refetch()}
+                  style={{ borderRadius: '8px' }}
+                >
+                  刷新
+                </Button>
+                <Button 
+                  type="primary"
+                  icon={<DownloadOutlined />}
+                  onClick={handleExport}
+                  disabled={orders.length === 0}
+                  style={{ 
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    border: 'none',
+                    fontWeight: 600,
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+                  }}
+                >
+                  导出数据
+                </Button>
+              </Space>
+            </Col>
+          </Row>
+        </div>
         <Table
           columns={columns}
           dataSource={filteredOrders}

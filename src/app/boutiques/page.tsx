@@ -165,7 +165,7 @@ const globalStyles = `
 .search-filter-section {
   background: white;
   border-radius: 16px;
-  padding: 24px;
+  padding: 20px 32px;
   margin-bottom: 24px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(102, 126, 234, 0.1);

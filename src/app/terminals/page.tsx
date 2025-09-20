@@ -307,12 +307,8 @@ export default function TerminalsPage() {
             </div>
           </div>
 
-          {/* 操作栏 */}
+          {/* 搜索和操作区域 */}
           <div className="terminals-toolbar">
-            <div className="toolbar-left">
-              <h2 className="page-title">终端设备管理</h2>
-              <p className="page-desc">管理和监控所有终端设备状态</p>
-            </div>
             <div className="toolbar-right">
               <Input.Search
                 placeholder="搜索终端设备ID、创建用户..."
