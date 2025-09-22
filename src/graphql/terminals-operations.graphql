@@ -4,6 +4,22 @@
 query GetTerminals($userId: ID) {
   terminals(filter: { user_created: { id: { _eq: $userId } } }) {
     id
+    android_id
+    brand
+    device_name
+    device_type
+    manufacturer
+    model_name
+    os_name
+    os_version
+    purposes
+    supported_cpu_architectures
+    total_memory
+    authorized_boutique {
+      id
+      name
+      code
+    }
     user_created {
       id
       first_name
@@ -19,6 +35,22 @@ query GetTerminals($userId: ID) {
 query GetAllTerminals {
   terminals {
     id
+    android_id
+    brand
+    device_name
+    device_type
+    manufacturer
+    model_name
+    os_name
+    os_version
+    purposes
+    supported_cpu_architectures
+    total_memory
+    authorized_boutique {
+      id
+      name
+      code
+    }
     user_created {
       id
       first_name
@@ -34,6 +66,22 @@ query GetAllTerminals {
 query GetTerminalById($id: ID!) {
   terminals_by_id(id: $id) {
     id
+    android_id
+    brand
+    device_name
+    device_type
+    manufacturer
+    model_name
+    os_name
+    os_version
+    purposes
+    supported_cpu_architectures
+    total_memory
+    authorized_boutique {
+      id
+      name
+      code
+    }
     user_created {
       id
       first_name
@@ -49,6 +97,22 @@ query GetTerminalById($id: ID!) {
 mutation CreateTerminal($data: create_terminals_input!) {
   create_terminals_item(data: $data) {
     id
+    android_id
+    brand
+    device_name
+    device_type
+    manufacturer
+    model_name
+    os_name
+    os_version
+    purposes
+    supported_cpu_architectures
+    total_memory
+    authorized_boutique {
+      id
+      name
+      code
+    }
     user_created {
       id
       first_name
@@ -64,6 +128,22 @@ mutation CreateTerminal($data: create_terminals_input!) {
 mutation UpdateTerminal($id: ID!, $data: update_terminals_input!) {
   update_terminals_item(id: $id, data: $data) {
     id
+    android_id
+    brand
+    device_name
+    device_type
+    manufacturer
+    model_name
+    os_name
+    os_version
+    purposes
+    supported_cpu_architectures
+    total_memory
+    authorized_boutique {
+      id
+      name
+      code
+    }
     user_created {
       id
       first_name

@@ -5277,6 +5277,7 @@ export type Products = {
   boutique?: Maybe<Boutiques>;
   boutique_id?: Maybe<Boutiques>;
   brand?: Maybe<Scalars['String']['output']>;
+  carousel?: Maybe<Scalars['String']['output']>;
   category_id?: Maybe<Categories>;
   created_at?: Maybe<Scalars['Date']['output']>;
   created_at_func?: Maybe<Datetime_Functions>;
@@ -5364,6 +5365,7 @@ export type Products_Filter = {
   boutique?: InputMaybe<Boutiques_Filter>;
   boutique_id?: InputMaybe<Boutiques_Filter>;
   brand?: InputMaybe<String_Filter_Operators>;
+  carousel?: InputMaybe<String_Filter_Operators>;
   category_id?: InputMaybe<Categories_Filter>;
   created_at?: InputMaybe<Date_Filter_Operators>;
   created_at_func?: InputMaybe<Datetime_Function_Filter_Operators>;
@@ -5486,13 +5488,35 @@ export type String_Filter_Operators = {
 
 export type Terminals = {
   __typename?: 'terminals';
+  android_id?: Maybe<Scalars['String']['output']>;
+  authorized_boutique?: Maybe<Boutiques>;
+  brand?: Maybe<Scalars['String']['output']>;
   date_created?: Maybe<Scalars['Date']['output']>;
   date_created_func?: Maybe<Datetime_Functions>;
   date_updated?: Maybe<Scalars['Date']['output']>;
   date_updated_func?: Maybe<Datetime_Functions>;
+  device_name?: Maybe<Scalars['String']['output']>;
+  device_type?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  manufacturer?: Maybe<Scalars['String']['output']>;
+  model_name?: Maybe<Scalars['String']['output']>;
+  os_name?: Maybe<Scalars['String']['output']>;
+  os_version?: Maybe<Scalars['String']['output']>;
+  purposes?: Maybe<Scalars['String']['output']>;
+  supported_cpu_architectures?: Maybe<Scalars['String']['output']>;
+  total_memory?: Maybe<Scalars['String']['output']>;
   user_created?: Maybe<Directus_Users>;
   user_updated?: Maybe<Directus_Users>;
+};
+
+
+export type TerminalsAuthorized_BoutiqueArgs = {
+  filter?: InputMaybe<Boutiques_Filter>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 
