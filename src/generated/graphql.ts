@@ -4372,7 +4372,7 @@ export type GetDashboardDataQueryVariables = Exact<{
 }>;
 
 
-export type GetDashboardDataQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'orders', id: string }>, boutiques: Array<{ __typename?: 'boutiques', id: string }>, terminals: Array<{ __typename?: 'terminals', id: string }>, orders_aggregated: Array<{ __typename?: 'orders_aggregated', countAll?: number | null }>, boutiques_aggregated: Array<{ __typename?: 'boutiques_aggregated', countAll?: number | null }>, terminals_aggregated: Array<{ __typename?: 'terminals_aggregated', countAll?: number | null }>, today_orders: Array<{ __typename?: 'orders', id: string, status?: string | null }> };
+export type GetDashboardDataQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'orders', id: string }>, boutiques: Array<{ __typename?: 'boutiques', id: string }>, terminals: Array<{ __typename?: 'terminals', id: string }>, customers: Array<{ __typename?: 'customers', id: string }>, views: Array<{ __typename?: 'views', id: string }>, visits: Array<{ __typename?: 'visits', id: string }>, orders_aggregated: Array<{ __typename?: 'orders_aggregated', countAll?: number | null }>, boutiques_aggregated: Array<{ __typename?: 'boutiques_aggregated', countAll?: number | null }>, terminals_aggregated: Array<{ __typename?: 'terminals_aggregated', countAll?: number | null }>, customers_aggregated: Array<{ __typename?: 'customers_aggregated', countAll?: number | null }>, views_aggregated: Array<{ __typename?: 'views_aggregated', countAll?: number | null }>, visits_aggregated: Array<{ __typename?: 'visits_aggregated', countAll?: number | null }>, today_orders: Array<{ __typename?: 'orders', id: string, status?: string | null }>, today_views: Array<{ __typename?: 'views', id: string }>, today_visits: Array<{ __typename?: 'visits', id: string }> };
 
 export type GetRecentOrdersQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -5155,6 +5155,15 @@ export const GetDashboardDataDocument = gql`
   terminals(limit: 1000) {
     id
   }
+  customers(limit: 1000) {
+    id
+  }
+  views(limit: 1000) {
+    id
+  }
+  visits(limit: 1000) {
+    id
+  }
   orders_aggregated {
     countAll
   }
@@ -5164,9 +5173,24 @@ export const GetDashboardDataDocument = gql`
   terminals_aggregated {
     countAll
   }
+  customers_aggregated {
+    countAll
+  }
+  views_aggregated {
+    countAll
+  }
+  visits_aggregated {
+    countAll
+  }
   today_orders: orders(filter: {date_created: {_gte: $today}}) {
     id
     status
+  }
+  today_views: views(filter: {date_created: {_gte: $today}}) {
+    id
+  }
+  today_visits: visits(filter: {date_created: {_gte: $today}}) {
+    id
   }
 }
     `;

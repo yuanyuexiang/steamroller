@@ -9,6 +9,15 @@ query GetDashboardData($today: String) {
   terminals(limit: 1000) {
     id
   }
+  customers(limit: 1000) {
+    id
+  }
+  views(limit: 1000) {
+    id
+  }
+  visits(limit: 1000) {
+    id
+  }
   
   # 使用聚合查询获取总数（超级管理员 - 无权限过滤）
   orders_aggregated {
@@ -20,13 +29,34 @@ query GetDashboardData($today: String) {
   terminals_aggregated {
     countAll
   }
+  customers_aggregated {
+    countAll
+  }
+  views_aggregated {
+    countAll
+  }
+  visits_aggregated {
+    countAll
+  }
   
-  # 今日订单（超级管理员 - 无权限过滤）
+  # 今日数据统计（超级管理员 - 无权限过滤）
   today_orders: orders(filter: { 
     date_created: { _gte: $today }
   }) {
     id
     status
+  }
+  
+  today_views: views(filter: { 
+    date_created: { _gte: $today }
+  }) {
+    id
+  }
+  
+  today_visits: visits(filter: { 
+    date_created: { _gte: $today }
+  }) {
+    id
   }
 }
 

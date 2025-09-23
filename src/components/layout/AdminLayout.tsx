@@ -303,12 +303,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const getSelectedKey = () => {
     if (pathname === '/dashboard') return 'dashboard';
     if (pathname.startsWith('/boutiques')) return 'boutiques';
-    if (pathname.startsWith('/orders')) return 'orders';;
+    if (pathname.startsWith('/orders')) return 'orders';
     if (pathname.startsWith('/terminals')) return 'terminals';
     if (pathname.startsWith('/users')) return 'users';
     if (pathname.startsWith('/customers')) return 'customers';
     if (pathname.startsWith('/views')) return 'views';
-    if (pathname.startsWith('/visits')) return 'visits'
+    if (pathname.startsWith('/visits')) return 'visits';
     if (pathname.startsWith('/profile')) return 'profile';
     return 'dashboard';
   };

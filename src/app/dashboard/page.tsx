@@ -11,7 +11,10 @@ import {
   ClockCircleOutlined,
   CheckCircleOutlined,
   EyeInvisibleOutlined,
-  ShopOutlined
+  ShopOutlined,
+  TeamOutlined,
+  EyeOutlined,
+  BarChartOutlined
 } from '@ant-design/icons';
 import { ProtectedRoute, AdminLayout } from '@components';
 import { 
@@ -73,7 +76,12 @@ function DashboardContent() {
     totalOrders: dashboardData?.orders_aggregated?.[0]?.countAll || dashboardData?.orders?.length || 0,
     totalBoutiques: dashboardData?.boutiques_aggregated?.[0]?.countAll || dashboardData?.boutiques?.length || 0,
     totalTerminals: dashboardData?.terminals_aggregated?.[0]?.countAll || dashboardData?.terminals?.length || 0,
-    todayOrders: dashboardData?.today_orders?.length || 0
+    totalCustomers: dashboardData?.customers_aggregated?.[0]?.countAll || dashboardData?.customers?.length || 0,
+    totalViews: dashboardData?.views_aggregated?.[0]?.countAll || dashboardData?.views?.length || 0,
+    totalVisits: dashboardData?.visits_aggregated?.[0]?.countAll || dashboardData?.visits?.length || 0,
+    todayOrders: dashboardData?.today_orders?.length || 0,
+    todayViews: dashboardData?.today_views?.length || 0,
+    todayVisits: dashboardData?.today_visits?.length || 0
   };
 
   // 详细调试信息
@@ -95,7 +103,9 @@ function DashboardContent() {
                       dashboardError?.message?.includes('token');
   
   // 如果所有数据都为0，显示警告信息
-  const hasAnyData = statsData.totalBoutiques > 0 || statsData.totalOrders > 0 || statsData.totalTerminals > 0;
+  const hasAnyData = statsData.totalBoutiques > 0 || statsData.totalOrders > 0 || 
+                    statsData.totalTerminals > 0 || statsData.totalCustomers > 0 || 
+                    statsData.totalViews > 0 || statsData.totalVisits > 0;
   const isLoading = dashboardLoading || ordersLoading;
 
   if (dashboardError) {
@@ -200,6 +210,60 @@ function DashboardContent() {
             </div>
           </div>
         </div>
+
+        <div className="dashboard-stat-card customers-card">
+          <div className="stat-card-content">
+            <div className="stat-card-info">
+              <div className="stat-card-label">注册客户</div>
+              <div className="stat-card-value">
+                {isLoading ? <Spin size="small" /> : statsData.totalCustomers.toLocaleString()}
+              </div>
+              <div className="stat-card-trend positive">
+                <span className="trend-icon">👥</span>
+                活跃用户
+              </div>
+            </div>
+            <div className="stat-card-icon customers-icon">
+              <TeamOutlined />
+            </div>
+          </div>
+        </div>
+
+        <div className="dashboard-stat-card views-card">
+          <div className="stat-card-content">
+            <div className="stat-card-info">
+              <div className="stat-card-label">产品浏览</div>
+              <div className="stat-card-value">
+                {isLoading ? <Spin size="small" /> : statsData.totalViews.toLocaleString()}
+              </div>
+              <div className="stat-card-trend positive">
+                <span className="trend-icon">👀</span>
+                今日 +{statsData.todayViews}
+              </div>
+            </div>
+            <div className="stat-card-icon views-icon">
+              <EyeOutlined />
+            </div>
+          </div>
+        </div>
+
+        <div className="dashboard-stat-card visits-card">
+          <div className="stat-card-content">
+            <div className="stat-card-info">
+              <div className="stat-card-label">店铺访问</div>
+              <div className="stat-card-value">
+                {isLoading ? <Spin size="small" /> : statsData.totalVisits.toLocaleString()}
+              </div>
+              <div className="stat-card-trend positive">
+                <span className="trend-icon">📊</span>
+                今日 +{statsData.todayVisits}
+              </div>
+            </div>
+            <div className="stat-card-icon visits-icon">
+              <BarChartOutlined />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* 主要内容区域 */}
@@ -249,6 +313,36 @@ function DashboardContent() {
               <span className="btn-text">
                 <strong>用户管理</strong>
                 <small>系统用户</small>
+              </span>
+            </Button>
+            <Button 
+              className="quick-action-btn customers-btn"
+              icon={<TeamOutlined />}
+              onClick={() => router.push('/customers')}
+            >
+              <span className="btn-text">
+                <strong>客户管理</strong>
+                <small>客户关系</small>
+              </span>
+            </Button>
+            <Button 
+              className="quick-action-btn views-btn"
+              icon={<EyeOutlined />}
+              onClick={() => router.push('/views')}
+            >
+              <span className="btn-text">
+                <strong>浏览分析</strong>
+                <small>行为分析</small>
+              </span>
+            </Button>
+            <Button 
+              className="quick-action-btn visits-btn"
+              icon={<BarChartOutlined />}
+              onClick={() => router.push('/visits')}
+            >
+              <span className="btn-text">
+                <strong>访问统计</strong>
+                <small>流量分析</small>
               </span>
             </Button>
           </div>
