@@ -1,0 +1,97 @@
+# 浏览分析相关的GraphQL操作
+
+# 查询所有浏览记录
+query GetAllViews {
+  views {
+    id
+    date_created
+    date_updated
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+    }
+    product {
+      id
+      name
+      description
+      price
+      main_image
+    }
+    boutique {
+      id
+      name
+      address
+      city
+    }
+  }
+}
+
+# 根据ID查询浏览记录
+query GetViewById($id: ID!) {
+  views_by_id(id: $id) {
+    id
+    date_created
+    date_updated
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+      sex
+      status
+    }
+    product {
+      id
+      name
+      description
+      price
+      main_image
+      category_id {
+        id
+        name
+      }
+    }
+    boutique {
+      id
+      name
+      address
+      city
+      code
+    }
+    user_created {
+      id
+      first_name
+      last_name
+    }
+    user_updated {
+      id
+      first_name
+      last_name
+    }
+  }
+}
+
+# 浏览记录统计数据
+query GetViewsAggregated($filter: views_filter) {
+  views_aggregated(filter: $filter) {
+    countAll
+  }
+}
+
+# 按店铺分组的浏览统计
+query GetViewsGroupedByBoutique {
+  views_aggregated(groupBy: ["boutique"]) {
+    group
+    countAll
+  }
+}
+
+# 按商品分组的浏览统计
+query GetViewsGroupedByProduct {
+  views_aggregated(groupBy: ["product"]) {
+    group
+    countAll
+  }
+}

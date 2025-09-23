@@ -1,0 +1,62 @@
+# 客户相关的GraphQL操作
+
+# 查询所有客户
+query GetAllCustomers {
+  customers {
+    id
+    nick_name
+    open_id
+    sex
+    avatar
+    status
+    type
+    sort
+    date_created
+    date_updated
+    boutique {
+      id
+      name
+      address
+      city
+    }
+  }
+}
+
+# 根据ID查询客户
+query GetCustomerById($id: ID!) {
+  customers_by_id(id: $id) {
+    id
+    nick_name
+    open_id
+    sex
+    avatar
+    status
+    type
+    sort
+    date_created
+    date_updated
+    boutique {
+      id
+      name
+      address
+      city
+    }
+    user_created {
+      id
+      first_name
+      last_name
+    }
+    user_updated {
+      id
+      first_name
+      last_name
+    }
+  }
+}
+
+# 客户统计数据
+query GetCustomersAggregated($filter: customers_filter) {
+  customers_aggregated(filter: $filter) {
+    countAll
+  }
+}

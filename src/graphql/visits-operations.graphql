@@ -1,0 +1,81 @@
+# 访问统计相关的GraphQL操作
+
+# 查询所有访问记录
+query GetAllVisits {
+  visits {
+    id
+    date_created
+    date_updated
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+    }
+    boutique {
+      id
+      name
+      address
+      city
+    }
+  }
+}
+
+# 根据ID查询访问记录
+query GetVisitById($id: ID!) {
+  visits_by_id(id: $id) {
+    id
+    date_created
+    date_updated
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+      sex
+      status
+      type
+    }
+    boutique {
+      id
+      name
+      address
+      city
+      code
+      category
+    }
+    user_created {
+      id
+      first_name
+      last_name
+    }
+    user_updated {
+      id
+      first_name
+      last_name
+    }
+  }
+}
+
+# 访问记录统计数据
+query GetVisitsAggregated($filter: visits_filter) {
+  visits_aggregated(filter: $filter) {
+    countAll
+  }
+}
+
+# 按店铺分组的访问统计
+query GetVisitsGroupedByBoutique {
+  visits_aggregated(groupBy: ["boutique"]) {
+    group
+    countAll
+  }
+}
+
+# 按日期分组的访问统计
+query GetVisitsGroupedByDate {
+  visits_aggregated(groupBy: ["date_created"]) {
+    group
+    countAll
+  }
+}

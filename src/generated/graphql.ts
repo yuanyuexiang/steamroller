@@ -4348,6 +4348,25 @@ export type DeleteBoutiqueMutationVariables = Exact<{
 
 export type DeleteBoutiqueMutation = { __typename?: 'Mutation', delete_boutiques_item?: { __typename?: 'delete_one', id: string } | null };
 
+export type GetAllCustomersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllCustomersQuery = { __typename?: 'Query', customers: Array<{ __typename?: 'customers', id: string, nick_name?: string | null, open_id: string, sex?: number | null, avatar?: string | null, status?: string | null, type?: string | null, sort?: number | null, date_created?: any | null, date_updated?: any | null, boutique?: { __typename?: 'boutiques', id: string, name?: string | null, address?: string | null, city?: string | null } | null }> };
+
+export type GetCustomerByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetCustomerByIdQuery = { __typename?: 'Query', customers_by_id?: { __typename?: 'customers', id: string, nick_name?: string | null, open_id: string, sex?: number | null, avatar?: string | null, status?: string | null, type?: string | null, sort?: number | null, date_created?: any | null, date_updated?: any | null, boutique?: { __typename?: 'boutiques', id: string, name?: string | null, address?: string | null, city?: string | null } | null, user_created?: { __typename?: 'directus_users', id: string, first_name?: string | null, last_name?: string | null } | null, user_updated?: { __typename?: 'directus_users', id: string, first_name?: string | null, last_name?: string | null } | null } | null };
+
+export type GetCustomersAggregatedQueryVariables = Exact<{
+  filter?: InputMaybe<Customers_Filter>;
+}>;
+
+
+export type GetCustomersAggregatedQuery = { __typename?: 'Query', customers_aggregated: Array<{ __typename?: 'customers_aggregated', countAll?: number | null }> };
+
 export type GetDashboardDataQueryVariables = Exact<{
   today?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -4458,6 +4477,64 @@ export type DeleteTerminalsMutationVariables = Exact<{
 
 
 export type DeleteTerminalsMutation = { __typename?: 'Mutation', delete_terminals_items?: { __typename?: 'delete_many', ids: Array<string | null> } | null };
+
+export type GetAllViewsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllViewsQuery = { __typename?: 'Query', views: Array<{ __typename?: 'views', id: string, date_created?: any | null, date_updated?: any | null, customer?: { __typename?: 'customers', id: string, nick_name?: string | null, open_id: string, avatar?: string | null } | null, product?: { __typename?: 'products', id: string, name: string, description?: string | null, price: number, main_image?: string | null } | null, boutique?: { __typename?: 'boutiques', id: string, name?: string | null, address?: string | null, city?: string | null } | null }> };
+
+export type GetViewByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetViewByIdQuery = { __typename?: 'Query', views_by_id?: { __typename?: 'views', id: string, date_created?: any | null, date_updated?: any | null, customer?: { __typename?: 'customers', id: string, nick_name?: string | null, open_id: string, avatar?: string | null, sex?: number | null, status?: string | null } | null, product?: { __typename?: 'products', id: string, name: string, description?: string | null, price: number, main_image?: string | null, category_id?: { __typename?: 'categories', id: string, name: string } | null } | null, boutique?: { __typename?: 'boutiques', id: string, name?: string | null, address?: string | null, city?: string | null, code?: string | null } | null, user_created?: { __typename?: 'directus_users', id: string, first_name?: string | null, last_name?: string | null } | null, user_updated?: { __typename?: 'directus_users', id: string, first_name?: string | null, last_name?: string | null } | null } | null };
+
+export type GetViewsAggregatedQueryVariables = Exact<{
+  filter?: InputMaybe<Views_Filter>;
+}>;
+
+
+export type GetViewsAggregatedQuery = { __typename?: 'Query', views_aggregated: Array<{ __typename?: 'views_aggregated', countAll?: number | null }> };
+
+export type GetViewsGroupedByBoutiqueQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetViewsGroupedByBoutiqueQuery = { __typename?: 'Query', views_aggregated: Array<{ __typename?: 'views_aggregated', group?: any | null, countAll?: number | null }> };
+
+export type GetViewsGroupedByProductQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetViewsGroupedByProductQuery = { __typename?: 'Query', views_aggregated: Array<{ __typename?: 'views_aggregated', group?: any | null, countAll?: number | null }> };
+
+export type GetAllVisitsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllVisitsQuery = { __typename?: 'Query', visits: Array<{ __typename?: 'visits', id: string, date_created?: any | null, date_updated?: any | null, customer?: { __typename?: 'customers', id: string, nick_name?: string | null, open_id: string, avatar?: string | null } | null, boutique?: { __typename?: 'boutiques', id: string, name?: string | null, address?: string | null, city?: string | null } | null }> };
+
+export type GetVisitByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetVisitByIdQuery = { __typename?: 'Query', visits_by_id?: { __typename?: 'visits', id: string, date_created?: any | null, date_updated?: any | null, customer?: { __typename?: 'customers', id: string, nick_name?: string | null, open_id: string, avatar?: string | null, sex?: number | null, status?: string | null, type?: string | null } | null, boutique?: { __typename?: 'boutiques', id: string, name?: string | null, address?: string | null, city?: string | null, code?: string | null, category?: string | null } | null, user_created?: { __typename?: 'directus_users', id: string, first_name?: string | null, last_name?: string | null } | null, user_updated?: { __typename?: 'directus_users', id: string, first_name?: string | null, last_name?: string | null } | null } | null };
+
+export type GetVisitsAggregatedQueryVariables = Exact<{
+  filter?: InputMaybe<Visits_Filter>;
+}>;
+
+
+export type GetVisitsAggregatedQuery = { __typename?: 'Query', visits_aggregated: Array<{ __typename?: 'visits_aggregated', countAll?: number | null }> };
+
+export type GetVisitsGroupedByBoutiqueQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetVisitsGroupedByBoutiqueQuery = { __typename?: 'Query', visits_aggregated: Array<{ __typename?: 'visits_aggregated', group?: any | null, countAll?: number | null }> };
+
+export type GetVisitsGroupedByDateQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetVisitsGroupedByDateQuery = { __typename?: 'Query', visits_aggregated: Array<{ __typename?: 'visits_aggregated', group?: any | null, countAll?: number | null }> };
 
 
 export const LoginUserDocument = gql`
@@ -4908,6 +4985,165 @@ export function useDeleteBoutiqueMutation(baseOptions?: ApolloReactHooks.Mutatio
 export type DeleteBoutiqueMutationHookResult = ReturnType<typeof useDeleteBoutiqueMutation>;
 export type DeleteBoutiqueMutationResult = ApolloReactCommon.MutationResult<DeleteBoutiqueMutation>;
 export type DeleteBoutiqueMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteBoutiqueMutation, DeleteBoutiqueMutationVariables>;
+export const GetAllCustomersDocument = gql`
+    query GetAllCustomers {
+  customers {
+    id
+    nick_name
+    open_id
+    sex
+    avatar
+    status
+    type
+    sort
+    date_created
+    date_updated
+    boutique {
+      id
+      name
+      address
+      city
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAllCustomersQuery__
+ *
+ * To run a query within a React component, call `useGetAllCustomersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllCustomersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllCustomersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllCustomersQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetAllCustomersQuery, GetAllCustomersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetAllCustomersQuery, GetAllCustomersQueryVariables>(GetAllCustomersDocument, options);
+      }
+export function useGetAllCustomersLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetAllCustomersQuery, GetAllCustomersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetAllCustomersQuery, GetAllCustomersQueryVariables>(GetAllCustomersDocument, options);
+        }
+export function useGetAllCustomersSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetAllCustomersQuery, GetAllCustomersQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetAllCustomersQuery, GetAllCustomersQueryVariables>(GetAllCustomersDocument, options);
+        }
+export type GetAllCustomersQueryHookResult = ReturnType<typeof useGetAllCustomersQuery>;
+export type GetAllCustomersLazyQueryHookResult = ReturnType<typeof useGetAllCustomersLazyQuery>;
+export type GetAllCustomersSuspenseQueryHookResult = ReturnType<typeof useGetAllCustomersSuspenseQuery>;
+export type GetAllCustomersQueryResult = ApolloReactCommon.QueryResult<GetAllCustomersQuery, GetAllCustomersQueryVariables>;
+export const GetCustomerByIdDocument = gql`
+    query GetCustomerById($id: ID!) {
+  customers_by_id(id: $id) {
+    id
+    nick_name
+    open_id
+    sex
+    avatar
+    status
+    type
+    sort
+    date_created
+    date_updated
+    boutique {
+      id
+      name
+      address
+      city
+    }
+    user_created {
+      id
+      first_name
+      last_name
+    }
+    user_updated {
+      id
+      first_name
+      last_name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCustomerByIdQuery__
+ *
+ * To run a query within a React component, call `useGetCustomerByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCustomerByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCustomerByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetCustomerByIdQuery(baseOptions: ApolloReactHooks.QueryHookOptions<GetCustomerByIdQuery, GetCustomerByIdQueryVariables> & ({ variables: GetCustomerByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetCustomerByIdQuery, GetCustomerByIdQueryVariables>(GetCustomerByIdDocument, options);
+      }
+export function useGetCustomerByIdLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetCustomerByIdQuery, GetCustomerByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetCustomerByIdQuery, GetCustomerByIdQueryVariables>(GetCustomerByIdDocument, options);
+        }
+export function useGetCustomerByIdSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetCustomerByIdQuery, GetCustomerByIdQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetCustomerByIdQuery, GetCustomerByIdQueryVariables>(GetCustomerByIdDocument, options);
+        }
+export type GetCustomerByIdQueryHookResult = ReturnType<typeof useGetCustomerByIdQuery>;
+export type GetCustomerByIdLazyQueryHookResult = ReturnType<typeof useGetCustomerByIdLazyQuery>;
+export type GetCustomerByIdSuspenseQueryHookResult = ReturnType<typeof useGetCustomerByIdSuspenseQuery>;
+export type GetCustomerByIdQueryResult = ApolloReactCommon.QueryResult<GetCustomerByIdQuery, GetCustomerByIdQueryVariables>;
+export const GetCustomersAggregatedDocument = gql`
+    query GetCustomersAggregated($filter: customers_filter) {
+  customers_aggregated(filter: $filter) {
+    countAll
+  }
+}
+    `;
+
+/**
+ * __useGetCustomersAggregatedQuery__
+ *
+ * To run a query within a React component, call `useGetCustomersAggregatedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCustomersAggregatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCustomersAggregatedQuery({
+ *   variables: {
+ *      filter: // value for 'filter'
+ *   },
+ * });
+ */
+export function useGetCustomersAggregatedQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetCustomersAggregatedQuery, GetCustomersAggregatedQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetCustomersAggregatedQuery, GetCustomersAggregatedQueryVariables>(GetCustomersAggregatedDocument, options);
+      }
+export function useGetCustomersAggregatedLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetCustomersAggregatedQuery, GetCustomersAggregatedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetCustomersAggregatedQuery, GetCustomersAggregatedQueryVariables>(GetCustomersAggregatedDocument, options);
+        }
+export function useGetCustomersAggregatedSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetCustomersAggregatedQuery, GetCustomersAggregatedQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetCustomersAggregatedQuery, GetCustomersAggregatedQueryVariables>(GetCustomersAggregatedDocument, options);
+        }
+export type GetCustomersAggregatedQueryHookResult = ReturnType<typeof useGetCustomersAggregatedQuery>;
+export type GetCustomersAggregatedLazyQueryHookResult = ReturnType<typeof useGetCustomersAggregatedLazyQuery>;
+export type GetCustomersAggregatedSuspenseQueryHookResult = ReturnType<typeof useGetCustomersAggregatedSuspenseQuery>;
+export type GetCustomersAggregatedQueryResult = ApolloReactCommon.QueryResult<GetCustomersAggregatedQuery, GetCustomersAggregatedQueryVariables>;
 export const GetDashboardDataDocument = gql`
     query GetDashboardData($today: String) {
   orders(limit: 1000) {
@@ -5727,3 +5963,503 @@ export function useDeleteTerminalsMutation(baseOptions?: ApolloReactHooks.Mutati
 export type DeleteTerminalsMutationHookResult = ReturnType<typeof useDeleteTerminalsMutation>;
 export type DeleteTerminalsMutationResult = ApolloReactCommon.MutationResult<DeleteTerminalsMutation>;
 export type DeleteTerminalsMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteTerminalsMutation, DeleteTerminalsMutationVariables>;
+export const GetAllViewsDocument = gql`
+    query GetAllViews {
+  views {
+    id
+    date_created
+    date_updated
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+    }
+    product {
+      id
+      name
+      description
+      price
+      main_image
+    }
+    boutique {
+      id
+      name
+      address
+      city
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAllViewsQuery__
+ *
+ * To run a query within a React component, call `useGetAllViewsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllViewsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllViewsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllViewsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetAllViewsQuery, GetAllViewsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetAllViewsQuery, GetAllViewsQueryVariables>(GetAllViewsDocument, options);
+      }
+export function useGetAllViewsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetAllViewsQuery, GetAllViewsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetAllViewsQuery, GetAllViewsQueryVariables>(GetAllViewsDocument, options);
+        }
+export function useGetAllViewsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetAllViewsQuery, GetAllViewsQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetAllViewsQuery, GetAllViewsQueryVariables>(GetAllViewsDocument, options);
+        }
+export type GetAllViewsQueryHookResult = ReturnType<typeof useGetAllViewsQuery>;
+export type GetAllViewsLazyQueryHookResult = ReturnType<typeof useGetAllViewsLazyQuery>;
+export type GetAllViewsSuspenseQueryHookResult = ReturnType<typeof useGetAllViewsSuspenseQuery>;
+export type GetAllViewsQueryResult = ApolloReactCommon.QueryResult<GetAllViewsQuery, GetAllViewsQueryVariables>;
+export const GetViewByIdDocument = gql`
+    query GetViewById($id: ID!) {
+  views_by_id(id: $id) {
+    id
+    date_created
+    date_updated
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+      sex
+      status
+    }
+    product {
+      id
+      name
+      description
+      price
+      main_image
+      category_id {
+        id
+        name
+      }
+    }
+    boutique {
+      id
+      name
+      address
+      city
+      code
+    }
+    user_created {
+      id
+      first_name
+      last_name
+    }
+    user_updated {
+      id
+      first_name
+      last_name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetViewByIdQuery__
+ *
+ * To run a query within a React component, call `useGetViewByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetViewByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetViewByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetViewByIdQuery(baseOptions: ApolloReactHooks.QueryHookOptions<GetViewByIdQuery, GetViewByIdQueryVariables> & ({ variables: GetViewByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetViewByIdQuery, GetViewByIdQueryVariables>(GetViewByIdDocument, options);
+      }
+export function useGetViewByIdLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetViewByIdQuery, GetViewByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetViewByIdQuery, GetViewByIdQueryVariables>(GetViewByIdDocument, options);
+        }
+export function useGetViewByIdSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetViewByIdQuery, GetViewByIdQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetViewByIdQuery, GetViewByIdQueryVariables>(GetViewByIdDocument, options);
+        }
+export type GetViewByIdQueryHookResult = ReturnType<typeof useGetViewByIdQuery>;
+export type GetViewByIdLazyQueryHookResult = ReturnType<typeof useGetViewByIdLazyQuery>;
+export type GetViewByIdSuspenseQueryHookResult = ReturnType<typeof useGetViewByIdSuspenseQuery>;
+export type GetViewByIdQueryResult = ApolloReactCommon.QueryResult<GetViewByIdQuery, GetViewByIdQueryVariables>;
+export const GetViewsAggregatedDocument = gql`
+    query GetViewsAggregated($filter: views_filter) {
+  views_aggregated(filter: $filter) {
+    countAll
+  }
+}
+    `;
+
+/**
+ * __useGetViewsAggregatedQuery__
+ *
+ * To run a query within a React component, call `useGetViewsAggregatedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetViewsAggregatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetViewsAggregatedQuery({
+ *   variables: {
+ *      filter: // value for 'filter'
+ *   },
+ * });
+ */
+export function useGetViewsAggregatedQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetViewsAggregatedQuery, GetViewsAggregatedQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetViewsAggregatedQuery, GetViewsAggregatedQueryVariables>(GetViewsAggregatedDocument, options);
+      }
+export function useGetViewsAggregatedLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetViewsAggregatedQuery, GetViewsAggregatedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetViewsAggregatedQuery, GetViewsAggregatedQueryVariables>(GetViewsAggregatedDocument, options);
+        }
+export function useGetViewsAggregatedSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetViewsAggregatedQuery, GetViewsAggregatedQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetViewsAggregatedQuery, GetViewsAggregatedQueryVariables>(GetViewsAggregatedDocument, options);
+        }
+export type GetViewsAggregatedQueryHookResult = ReturnType<typeof useGetViewsAggregatedQuery>;
+export type GetViewsAggregatedLazyQueryHookResult = ReturnType<typeof useGetViewsAggregatedLazyQuery>;
+export type GetViewsAggregatedSuspenseQueryHookResult = ReturnType<typeof useGetViewsAggregatedSuspenseQuery>;
+export type GetViewsAggregatedQueryResult = ApolloReactCommon.QueryResult<GetViewsAggregatedQuery, GetViewsAggregatedQueryVariables>;
+export const GetViewsGroupedByBoutiqueDocument = gql`
+    query GetViewsGroupedByBoutique {
+  views_aggregated(groupBy: ["boutique"]) {
+    group
+    countAll
+  }
+}
+    `;
+
+/**
+ * __useGetViewsGroupedByBoutiqueQuery__
+ *
+ * To run a query within a React component, call `useGetViewsGroupedByBoutiqueQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetViewsGroupedByBoutiqueQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetViewsGroupedByBoutiqueQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetViewsGroupedByBoutiqueQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetViewsGroupedByBoutiqueQuery, GetViewsGroupedByBoutiqueQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetViewsGroupedByBoutiqueQuery, GetViewsGroupedByBoutiqueQueryVariables>(GetViewsGroupedByBoutiqueDocument, options);
+      }
+export function useGetViewsGroupedByBoutiqueLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetViewsGroupedByBoutiqueQuery, GetViewsGroupedByBoutiqueQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetViewsGroupedByBoutiqueQuery, GetViewsGroupedByBoutiqueQueryVariables>(GetViewsGroupedByBoutiqueDocument, options);
+        }
+export function useGetViewsGroupedByBoutiqueSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetViewsGroupedByBoutiqueQuery, GetViewsGroupedByBoutiqueQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetViewsGroupedByBoutiqueQuery, GetViewsGroupedByBoutiqueQueryVariables>(GetViewsGroupedByBoutiqueDocument, options);
+        }
+export type GetViewsGroupedByBoutiqueQueryHookResult = ReturnType<typeof useGetViewsGroupedByBoutiqueQuery>;
+export type GetViewsGroupedByBoutiqueLazyQueryHookResult = ReturnType<typeof useGetViewsGroupedByBoutiqueLazyQuery>;
+export type GetViewsGroupedByBoutiqueSuspenseQueryHookResult = ReturnType<typeof useGetViewsGroupedByBoutiqueSuspenseQuery>;
+export type GetViewsGroupedByBoutiqueQueryResult = ApolloReactCommon.QueryResult<GetViewsGroupedByBoutiqueQuery, GetViewsGroupedByBoutiqueQueryVariables>;
+export const GetViewsGroupedByProductDocument = gql`
+    query GetViewsGroupedByProduct {
+  views_aggregated(groupBy: ["product"]) {
+    group
+    countAll
+  }
+}
+    `;
+
+/**
+ * __useGetViewsGroupedByProductQuery__
+ *
+ * To run a query within a React component, call `useGetViewsGroupedByProductQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetViewsGroupedByProductQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetViewsGroupedByProductQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetViewsGroupedByProductQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetViewsGroupedByProductQuery, GetViewsGroupedByProductQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetViewsGroupedByProductQuery, GetViewsGroupedByProductQueryVariables>(GetViewsGroupedByProductDocument, options);
+      }
+export function useGetViewsGroupedByProductLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetViewsGroupedByProductQuery, GetViewsGroupedByProductQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetViewsGroupedByProductQuery, GetViewsGroupedByProductQueryVariables>(GetViewsGroupedByProductDocument, options);
+        }
+export function useGetViewsGroupedByProductSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetViewsGroupedByProductQuery, GetViewsGroupedByProductQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetViewsGroupedByProductQuery, GetViewsGroupedByProductQueryVariables>(GetViewsGroupedByProductDocument, options);
+        }
+export type GetViewsGroupedByProductQueryHookResult = ReturnType<typeof useGetViewsGroupedByProductQuery>;
+export type GetViewsGroupedByProductLazyQueryHookResult = ReturnType<typeof useGetViewsGroupedByProductLazyQuery>;
+export type GetViewsGroupedByProductSuspenseQueryHookResult = ReturnType<typeof useGetViewsGroupedByProductSuspenseQuery>;
+export type GetViewsGroupedByProductQueryResult = ApolloReactCommon.QueryResult<GetViewsGroupedByProductQuery, GetViewsGroupedByProductQueryVariables>;
+export const GetAllVisitsDocument = gql`
+    query GetAllVisits {
+  visits {
+    id
+    date_created
+    date_updated
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+    }
+    boutique {
+      id
+      name
+      address
+      city
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAllVisitsQuery__
+ *
+ * To run a query within a React component, call `useGetAllVisitsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllVisitsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllVisitsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllVisitsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetAllVisitsQuery, GetAllVisitsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetAllVisitsQuery, GetAllVisitsQueryVariables>(GetAllVisitsDocument, options);
+      }
+export function useGetAllVisitsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetAllVisitsQuery, GetAllVisitsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetAllVisitsQuery, GetAllVisitsQueryVariables>(GetAllVisitsDocument, options);
+        }
+export function useGetAllVisitsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetAllVisitsQuery, GetAllVisitsQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetAllVisitsQuery, GetAllVisitsQueryVariables>(GetAllVisitsDocument, options);
+        }
+export type GetAllVisitsQueryHookResult = ReturnType<typeof useGetAllVisitsQuery>;
+export type GetAllVisitsLazyQueryHookResult = ReturnType<typeof useGetAllVisitsLazyQuery>;
+export type GetAllVisitsSuspenseQueryHookResult = ReturnType<typeof useGetAllVisitsSuspenseQuery>;
+export type GetAllVisitsQueryResult = ApolloReactCommon.QueryResult<GetAllVisitsQuery, GetAllVisitsQueryVariables>;
+export const GetVisitByIdDocument = gql`
+    query GetVisitById($id: ID!) {
+  visits_by_id(id: $id) {
+    id
+    date_created
+    date_updated
+    customer {
+      id
+      nick_name
+      open_id
+      avatar
+      sex
+      status
+      type
+    }
+    boutique {
+      id
+      name
+      address
+      city
+      code
+      category
+    }
+    user_created {
+      id
+      first_name
+      last_name
+    }
+    user_updated {
+      id
+      first_name
+      last_name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetVisitByIdQuery__
+ *
+ * To run a query within a React component, call `useGetVisitByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetVisitByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetVisitByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetVisitByIdQuery(baseOptions: ApolloReactHooks.QueryHookOptions<GetVisitByIdQuery, GetVisitByIdQueryVariables> & ({ variables: GetVisitByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetVisitByIdQuery, GetVisitByIdQueryVariables>(GetVisitByIdDocument, options);
+      }
+export function useGetVisitByIdLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetVisitByIdQuery, GetVisitByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetVisitByIdQuery, GetVisitByIdQueryVariables>(GetVisitByIdDocument, options);
+        }
+export function useGetVisitByIdSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetVisitByIdQuery, GetVisitByIdQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetVisitByIdQuery, GetVisitByIdQueryVariables>(GetVisitByIdDocument, options);
+        }
+export type GetVisitByIdQueryHookResult = ReturnType<typeof useGetVisitByIdQuery>;
+export type GetVisitByIdLazyQueryHookResult = ReturnType<typeof useGetVisitByIdLazyQuery>;
+export type GetVisitByIdSuspenseQueryHookResult = ReturnType<typeof useGetVisitByIdSuspenseQuery>;
+export type GetVisitByIdQueryResult = ApolloReactCommon.QueryResult<GetVisitByIdQuery, GetVisitByIdQueryVariables>;
+export const GetVisitsAggregatedDocument = gql`
+    query GetVisitsAggregated($filter: visits_filter) {
+  visits_aggregated(filter: $filter) {
+    countAll
+  }
+}
+    `;
+
+/**
+ * __useGetVisitsAggregatedQuery__
+ *
+ * To run a query within a React component, call `useGetVisitsAggregatedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetVisitsAggregatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetVisitsAggregatedQuery({
+ *   variables: {
+ *      filter: // value for 'filter'
+ *   },
+ * });
+ */
+export function useGetVisitsAggregatedQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetVisitsAggregatedQuery, GetVisitsAggregatedQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetVisitsAggregatedQuery, GetVisitsAggregatedQueryVariables>(GetVisitsAggregatedDocument, options);
+      }
+export function useGetVisitsAggregatedLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetVisitsAggregatedQuery, GetVisitsAggregatedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetVisitsAggregatedQuery, GetVisitsAggregatedQueryVariables>(GetVisitsAggregatedDocument, options);
+        }
+export function useGetVisitsAggregatedSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetVisitsAggregatedQuery, GetVisitsAggregatedQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetVisitsAggregatedQuery, GetVisitsAggregatedQueryVariables>(GetVisitsAggregatedDocument, options);
+        }
+export type GetVisitsAggregatedQueryHookResult = ReturnType<typeof useGetVisitsAggregatedQuery>;
+export type GetVisitsAggregatedLazyQueryHookResult = ReturnType<typeof useGetVisitsAggregatedLazyQuery>;
+export type GetVisitsAggregatedSuspenseQueryHookResult = ReturnType<typeof useGetVisitsAggregatedSuspenseQuery>;
+export type GetVisitsAggregatedQueryResult = ApolloReactCommon.QueryResult<GetVisitsAggregatedQuery, GetVisitsAggregatedQueryVariables>;
+export const GetVisitsGroupedByBoutiqueDocument = gql`
+    query GetVisitsGroupedByBoutique {
+  visits_aggregated(groupBy: ["boutique"]) {
+    group
+    countAll
+  }
+}
+    `;
+
+/**
+ * __useGetVisitsGroupedByBoutiqueQuery__
+ *
+ * To run a query within a React component, call `useGetVisitsGroupedByBoutiqueQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetVisitsGroupedByBoutiqueQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetVisitsGroupedByBoutiqueQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetVisitsGroupedByBoutiqueQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetVisitsGroupedByBoutiqueQuery, GetVisitsGroupedByBoutiqueQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetVisitsGroupedByBoutiqueQuery, GetVisitsGroupedByBoutiqueQueryVariables>(GetVisitsGroupedByBoutiqueDocument, options);
+      }
+export function useGetVisitsGroupedByBoutiqueLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetVisitsGroupedByBoutiqueQuery, GetVisitsGroupedByBoutiqueQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetVisitsGroupedByBoutiqueQuery, GetVisitsGroupedByBoutiqueQueryVariables>(GetVisitsGroupedByBoutiqueDocument, options);
+        }
+export function useGetVisitsGroupedByBoutiqueSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetVisitsGroupedByBoutiqueQuery, GetVisitsGroupedByBoutiqueQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetVisitsGroupedByBoutiqueQuery, GetVisitsGroupedByBoutiqueQueryVariables>(GetVisitsGroupedByBoutiqueDocument, options);
+        }
+export type GetVisitsGroupedByBoutiqueQueryHookResult = ReturnType<typeof useGetVisitsGroupedByBoutiqueQuery>;
+export type GetVisitsGroupedByBoutiqueLazyQueryHookResult = ReturnType<typeof useGetVisitsGroupedByBoutiqueLazyQuery>;
+export type GetVisitsGroupedByBoutiqueSuspenseQueryHookResult = ReturnType<typeof useGetVisitsGroupedByBoutiqueSuspenseQuery>;
+export type GetVisitsGroupedByBoutiqueQueryResult = ApolloReactCommon.QueryResult<GetVisitsGroupedByBoutiqueQuery, GetVisitsGroupedByBoutiqueQueryVariables>;
+export const GetVisitsGroupedByDateDocument = gql`
+    query GetVisitsGroupedByDate {
+  visits_aggregated(groupBy: ["date_created"]) {
+    group
+    countAll
+  }
+}
+    `;
+
+/**
+ * __useGetVisitsGroupedByDateQuery__
+ *
+ * To run a query within a React component, call `useGetVisitsGroupedByDateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetVisitsGroupedByDateQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetVisitsGroupedByDateQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetVisitsGroupedByDateQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetVisitsGroupedByDateQuery, GetVisitsGroupedByDateQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetVisitsGroupedByDateQuery, GetVisitsGroupedByDateQueryVariables>(GetVisitsGroupedByDateDocument, options);
+      }
+export function useGetVisitsGroupedByDateLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetVisitsGroupedByDateQuery, GetVisitsGroupedByDateQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetVisitsGroupedByDateQuery, GetVisitsGroupedByDateQueryVariables>(GetVisitsGroupedByDateDocument, options);
+        }
+export function useGetVisitsGroupedByDateSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetVisitsGroupedByDateQuery, GetVisitsGroupedByDateQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetVisitsGroupedByDateQuery, GetVisitsGroupedByDateQueryVariables>(GetVisitsGroupedByDateDocument, options);
+        }
+export type GetVisitsGroupedByDateQueryHookResult = ReturnType<typeof useGetVisitsGroupedByDateQuery>;
+export type GetVisitsGroupedByDateLazyQueryHookResult = ReturnType<typeof useGetVisitsGroupedByDateLazyQuery>;
+export type GetVisitsGroupedByDateSuspenseQueryHookResult = ReturnType<typeof useGetVisitsGroupedByDateSuspenseQuery>;
+export type GetVisitsGroupedByDateQueryResult = ApolloReactCommon.QueryResult<GetVisitsGroupedByDateQuery, GetVisitsGroupedByDateQueryVariables>;

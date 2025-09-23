@@ -2,17 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Avatar, Dropdown, Button, Typography } from 'antd';
-import { 
-  DashboardOutlined, 
-  ShoppingCartOutlined, 
+import {
+  DashboardOutlined,
+  ShopOutlined,
+  ShoppingCartOutlined,
   UserOutlined,
+  TeamOutlined,
+  EyeOutlined,
+  BarChartOutlined,
+  DesktopOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  SettingOutlined,
-  ShopOutlined,
-  DesktopOutlined,
-  SearchOutlined
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@providers/AuthProvider';
@@ -302,9 +303,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const getSelectedKey = () => {
     if (pathname === '/dashboard') return 'dashboard';
     if (pathname.startsWith('/boutiques')) return 'boutiques';
-    if (pathname.startsWith('/orders')) return 'orders';
+    if (pathname.startsWith('/orders')) return 'orders';;
     if (pathname.startsWith('/terminals')) return 'terminals';
     if (pathname.startsWith('/users')) return 'users';
+    if (pathname.startsWith('/customers')) return 'customers';
+    if (pathname.startsWith('/views')) return 'views';
+    if (pathname.startsWith('/visits')) return 'visits'
     if (pathname.startsWith('/profile')) return 'profile';
     return 'dashboard';
   };
@@ -316,6 +320,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       'dashboard': '仪表盘',
       'boutiques': '店铺管理',
       'orders': '订单管理',
+      'customers': '客户管理',
+      'views': '浏览分析',
+      'visits': '访问统计',
       'terminals': '终端管理',
       'users': '用户管理',
       'profile': '个人资料'
@@ -330,6 +337,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       'dashboard': '查看系统概况和关键指标',
       'boutiques': '管理店铺信息和运营状态',
       'orders': '处理订单和交易记录',
+      'customers': '管理客户信息和关系维护',
+      'views': '分析产品浏览行为和热度',
+      'visits': '统计店铺访问数据和趋势',
       'terminals': '管理终端设备和配置',
       'users': '管理系统用户和权限',
       'profile': '管理个人账户和设置'
@@ -355,6 +365,24 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       icon: <ShoppingCartOutlined />,
       label: '订单管理',
       onClick: () => router.push('/orders'),
+    },
+    {
+      key: 'customers',
+      icon: <TeamOutlined />,
+      label: '客户管理',
+      onClick: () => router.push('/customers'),
+    },
+    {
+      key: 'views',
+      icon: <EyeOutlined />,
+      label: '浏览分析',
+      onClick: () => router.push('/views'),
+    },
+    {
+      key: 'visits',
+      icon: <BarChartOutlined />,
+      label: '访问统计',
+      onClick: () => router.push('/visits'),
     },
     {
       key: 'terminals',
