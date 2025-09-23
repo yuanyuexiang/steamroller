@@ -317,7 +317,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const getPageTitle = () => {
     const key = getSelectedKey();
     const titleMap = {
-      'dashboard': '仪表盘',
+      'dashboard': '数据总览',
       'boutiques': '店铺管理',
       'orders': '订单管理',
       'customers': '客户管理',
@@ -351,7 +351,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       key: 'dashboard',
       icon: <DashboardOutlined />,
-      label: '仪表盘',
+      label: '数据总览',
       onClick: () => router.push('/dashboard'),
     },
     {
