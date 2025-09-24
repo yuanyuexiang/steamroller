@@ -6,6 +6,7 @@ import { message } from 'antd';
 import { TokenManager } from '@lib/auth/token-manager';
 import { authLogger } from '@lib/utils/logger';
 import { APP_CONFIG } from '@config/app-config';
+import { isAdminRole, AUTH_MESSAGES } from '@config/roles-config';
 
 interface User {
   id: string;
@@ -231,10 +232,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (userResult.data?.users_me) {
           const userData = userResult.data.users_me;
+          
+          // 检查用户角色是否是管理员
+          if (!userData.role || !isAdminRole(userData.role.name)) {
+            authLogger.warn('用户权限不足，非管理员用户', { 
+              email, 
+              roleName: userData.role?.name || 'No Role',
+              roleId: userData.role?.id || 'No Role ID'
+            });
+            
+            // 清除已存储的令牌
+            localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN);
+            localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.REFRESH_TOKEN);
+            
+            // 提示用户权限不足
+            message.error(AUTH_MESSAGES.INSUFFICIENT_PERMISSION);
+            return false;
+          }
+          
           setUser(userData);
           // 保存用户信息到localStorage
           localStorage.setItem('user_info', JSON.stringify(userData));
-          authLogger.info('登录成功，获取到完整用户信息');
+          authLogger.info('管理员登录成功，获取到完整用户信息', { 
+            email,
+            roleName: userData.role.name,
+            roleId: userData.role.id 
+          });
         } else {
           authLogger.warn('登录成功但获取用户信息失败，使用基本信息');
           const basicUser = { 
@@ -318,9 +341,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           try {
             const userInfo = JSON.parse(storedUserInfo);
             console.log('从localStorage获取用户信息:', userInfo);
+            
+            // 检查存储的用户角色是否是管理员
+            if (!userInfo.role || !isAdminRole(userInfo.role.name)) {
+              console.warn('localStorage中的用户权限不足，清除存储的认证信息');
+              
+              // 清除已存储的令牌
+              localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN);
+              localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.REFRESH_TOKEN);
+              localStorage.removeItem('user_info');
+              
+              setUser(null);
+              setLoading(false);
+              router.push('/login');
+              message.error(AUTH_MESSAGES.INSUFFICIENT_PERMISSION);
+              console.log('=== AuthProvider initAuth 结束 (localStorage权限不足) ===');
+              return;
+            }
+            
             setUser(userInfo);
             setLoading(false);
-            console.log('=== AuthProvider initAuth 结束 (使用localStorage) ===');
+            console.log('=== AuthProvider initAuth 结束 (使用localStorage，管理员验证通过) ===');
             return;
           } catch (error) {
             console.error('解析localStorage用户信息失败:', error);
@@ -364,6 +405,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               const userData = result.data.users_me;
               console.log('从GraphQL system获取到用户数据:', userData);
               
+              // 检查用户角色是否是管理员
+              if (!userData.role || !isAdminRole(userData.role.name)) {
+                console.warn('用户权限不足，非管理员用户', { 
+                  roleName: userData.role?.name || 'No Role',
+                  roleId: userData.role?.id || 'No Role ID'
+                });
+                
+                // 清除已存储的令牌
+                localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN);
+                localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.REFRESH_TOKEN);
+                localStorage.removeItem('user_info');
+                
+                // 跳转到登录页面并提示
+                setUser(null);
+                setLoading(false);
+                router.push('/login');
+                message.error('权限不足：此系统仅限管理员访问');
+                console.log('=== AuthProvider initAuth 结束 (权限不足) ===');
+                return;
+              }
+              
               const userInfo = {
                 id: userData.id,
                 email: userData.email || '',
@@ -376,7 +438,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               // 保存到localStorage以便下次使用
               localStorage.setItem('user_info', JSON.stringify(userInfo));
               setLoading(false);
-              console.log('=== AuthProvider initAuth 结束 (使用GraphQL system) ===');
+              console.log('=== AuthProvider initAuth 结束 (管理员验证通过) ===');
               return;
             }
           }

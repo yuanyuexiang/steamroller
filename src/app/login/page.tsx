@@ -134,7 +134,7 @@ export default function LoginPage() {
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
             }}
           >
-            实体店产品展示系统
+            实体店产品展示管理系统
           </p>
         </div>
         
@@ -219,14 +219,25 @@ export default function LoginPage() {
                 WebkitTextFillColor: 'transparent'
               }}
             >
-              欢迎回来
+              管理员登录
             </h2>
             <p 
-              className="text-base"
+              className="text-base mb-2"
               style={{ color: '#6B7280' }}
             >
-              登录您的管理账户
+              系统管理员专用入口
             </p>
+            <div 
+              className="text-sm mb-6 p-3 rounded-lg"
+              style={{ 
+                backgroundColor: '#F3F4F6',
+                color: '#6B7280',
+                border: '1px solid #E5E7EB'
+              }}
+            >
+              <span style={{ color: '#EF4444', fontWeight: '600' }}>⚠️ 注意：</span>
+              此系统仅限具有管理员权限的用户访问
+            </div>
           </div>
           
           <Form
