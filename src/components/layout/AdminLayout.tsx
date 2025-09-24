@@ -373,16 +373,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       onClick: () => router.push('/terminals'),
     },
     {
-      key: 'orders',
-      icon: <ShoppingCartOutlined />,
-      label: '订单管理',
-      onClick: () => router.push('/orders'),
-    },
-    {
       key: 'customers',
       icon: <TeamOutlined />,
       label: '客户管理',
       onClick: () => router.push('/customers'),
+    },
+    {
+      key: 'orders',
+      icon: <ShoppingCartOutlined />,
+      label: '订单管理',
+      onClick: () => router.push('/orders'),
     },
     {
       key: 'views',
