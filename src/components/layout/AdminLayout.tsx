@@ -355,10 +355,22 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       onClick: () => router.push('/dashboard'),
     },
     {
+      key: 'users',
+      icon: <UserOutlined />,
+      label: '用户管理',
+      onClick: () => router.push('/users'),
+    },
+    {
       key: 'boutiques',
       icon: <ShopOutlined />,
       label: '店铺管理',
       onClick: () => router.push('/boutiques'),
+    },
+    {
+      key: 'terminals',
+      icon: <DesktopOutlined />,
+      label: '终端管理',
+      onClick: () => router.push('/terminals'),
     },
     {
       key: 'orders',
@@ -383,18 +395,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       icon: <BarChartOutlined />,
       label: '访问统计',
       onClick: () => router.push('/visits'),
-    },
-    {
-      key: 'terminals',
-      icon: <DesktopOutlined />,
-      label: '终端管理',
-      onClick: () => router.push('/terminals'),
-    },
-    {
-      key: 'users',
-      icon: <UserOutlined />,
-      label: '用户管理',
-      onClick: () => router.push('/users'),
     },
   ];
 
