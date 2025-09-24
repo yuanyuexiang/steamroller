@@ -79,7 +79,10 @@ export const FILE_CONFIG = {
     format?: 'auto' | 'webp' | 'png' | 'jpg' | 'jpeg';
   }) => {
     if (!fileId) return '';
-    if (fileId.startsWith('http')) return fileId;
+    
+    // 确保 fileId 是字符串类型
+    const fileIdStr = typeof fileId === 'string' ? fileId : String(fileId);
+    if (fileIdStr.startsWith('http')) return fileIdStr;
     
     // 尝试获取令牌，优先使用传入的令牌
     let token = authToken;
@@ -115,11 +118,11 @@ export const FILE_CONFIG = {
     
     if (useProxy) {
       // 本地开发环境：使用代理
-      const baseUrl = `${DIRECTUS_CONFIG.BASE_URL}/api/assets/${fileId}`;
+      const baseUrl = `${DIRECTUS_CONFIG.BASE_URL}/api/assets/${fileIdStr}`;
       return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
     } else {
       // 云端部署环境：直接访问 Directus
-      const baseUrl = `${getDirectusUrl()}/assets/${fileId}`;
+      const baseUrl = `${getDirectusUrl()}/assets/${fileIdStr}`;
       return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
     }
   },

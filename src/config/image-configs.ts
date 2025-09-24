@@ -1,3 +1,12 @@
+// 图片配置类型定义
+export interface ImageConfig {
+  width: number;
+  height: number;
+  quality: number;
+  fit: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
+  format: 'auto' | 'webp' | 'png' | 'jpg' | 'jpeg';
+}
+
 // 图片尺寸配置 - 统一管理应用中的图片尺寸设置
 export const IMAGE_CONFIGS = {
   // 缩略图配置（用于列表、卡片等小图）

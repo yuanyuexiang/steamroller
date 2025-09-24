@@ -23,6 +23,8 @@ import {
 } from '../../generated/graphql';
 import { FILE_CONFIG } from '@lib/api';
 import { IMAGE_CONFIGS } from '@config/image-configs';
+import { getImageUrl } from '@config/image-utils';
+import dayjs from 'dayjs';
 
 const { Title } = Typography;
 
@@ -64,18 +66,8 @@ function DashboardContent() {
   const today = new Date().toISOString().split('T')[0];
   
   // 辅助函数：安全地获取产品图片URL
-  const getProductImageUrl = (images: string | null) => {
-    if (!images) return null;
-    
-    try {
-      // 尝试解析JSON格式的图片数组
-      const imageArray = JSON.parse(images);
-      const imageId = Array.isArray(imageArray) ? imageArray[0] : imageArray;
-      return imageId ? FILE_CONFIG.getAssetUrl(imageId, undefined, IMAGE_CONFIGS.RANKING_THUMB) : null;
-    } catch (e) {
-      // 如果解析失败，直接使用字符串作为图片ID
-      return FILE_CONFIG.getAssetUrl(images, undefined, IMAGE_CONFIGS.RANKING_THUMB);
-    }
+  const getProductImageUrl = (images: any) => {
+    return getImageUrl(images, IMAGE_CONFIGS.RANKING_THUMB);
   };
   
   // 使用超级管理员权限的 GraphQL hooks 获取全局数据
