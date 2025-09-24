@@ -22,6 +22,7 @@ import {
   useGetRecentOrdersQuery
 } from '../../generated/graphql';
 import { FILE_CONFIG } from '@lib/api';
+import { IMAGE_CONFIGS } from '@config/image-configs';
 
 const { Title } = Typography;
 
@@ -70,10 +71,10 @@ function DashboardContent() {
       // 尝试解析JSON格式的图片数组
       const imageArray = JSON.parse(images);
       const imageId = Array.isArray(imageArray) ? imageArray[0] : imageArray;
-      return imageId ? FILE_CONFIG.getAssetUrl(imageId) : null;
+      return imageId ? FILE_CONFIG.getAssetUrl(imageId, undefined, IMAGE_CONFIGS.RANKING_THUMB) : null;
     } catch (e) {
       // 如果解析失败，直接使用字符串作为图片ID
-      return FILE_CONFIG.getAssetUrl(images);
+      return FILE_CONFIG.getAssetUrl(images, undefined, IMAGE_CONFIGS.RANKING_THUMB);
     }
   };
   

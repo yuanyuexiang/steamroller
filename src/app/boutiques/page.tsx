@@ -42,6 +42,7 @@ import {
   GetAllBoutiquesQuery
 } from '@generated/graphql';
 import { FILE_CONFIG } from '@lib/api';
+import { IMAGE_CONFIGS } from '@config/image-configs';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
@@ -395,15 +396,9 @@ function BoutiquesContent() {
     boutique.address?.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // 生成带认证的图片URL - 为店铺列表页面优化尺寸
+  // 生成带认证的图片URL - 使用统一的图片配置
   const getImageUrl = useCallback((imageId: string): string => {
-    return FILE_CONFIG.getAssetUrl(imageId, undefined, {
-      width: 120,
-      height: 120,
-      quality: 80,
-      fit: 'cover',
-      format: 'webp'
-    });
+    return FILE_CONFIG.getAssetUrl(imageId, undefined, IMAGE_CONFIGS.BOUTIQUE_LIST);
   }, []);
 
   // 解析图片字段，处理 JSON 字符串或数组

@@ -34,6 +34,7 @@ import {
 import { useGetAllBoutiquesQuery } from '../../generated/graphql';
 import { ProtectedRoute, AdminLayout } from '@components';
 import { FILE_CONFIG } from '@lib/api';
+import { IMAGE_CONFIGS } from '@config/image-configs';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -173,7 +174,7 @@ function ViewsContent() {
               }}>
                 {record.product.main_image ? (
                   <Image 
-                    src={FILE_CONFIG.getAssetUrl(record.product.main_image)} 
+                    src={FILE_CONFIG.getAssetUrl(record.product.main_image, undefined, IMAGE_CONFIGS.THUMBNAIL)} 
                     alt={record.product.name}
                     width={40}
                     height={40}
@@ -416,7 +417,7 @@ function ViewsContent() {
               <Descriptions.Item label="商品图片">
                 {selectedView.product?.main_image ? (
                   <Image 
-                    src={FILE_CONFIG.getAssetUrl(selectedView.product.main_image)} 
+                    src={FILE_CONFIG.getAssetUrl(selectedView.product.main_image, undefined, IMAGE_CONFIGS.PREVIEW_MEDIUM)} 
                     alt={selectedView.product.name}
                     width={80}
                     height={80}
