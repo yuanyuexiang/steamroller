@@ -318,13 +318,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const key = getSelectedKey();
     const titleMap = {
       'dashboard': '数据总览',
+      'users': '用户管理',
       'boutiques': '店铺管理',
       'orders': '订单管理',
+      'terminals': '终端管理',
       'customers': '客户管理',
       'views': '浏览分析',
       'visits': '访问统计',
-      'terminals': '终端管理',
-      'users': '用户管理',
       'profile': '个人资料'
     };
     return titleMap[key as keyof typeof titleMap] || '管理后台';
