@@ -9,7 +9,7 @@ services:
       - matrix-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.steamroller.rule=Host(`steamroller.matrix-net.tech`)" # 替换为你的域名
+      - "traefik.http.routers.steamroller.rule=Host(`steamroller.kcbaotech.com`)" # 替换为你的域名
       - "traefik.http.routers.steamroller.entrypoints=websecure"
       - "traefik.http.routers.steamroller.service=steamroller"
       - "traefik.http.routers.steamroller.tls.certresolver=aliyunresolver"

@@ -82,7 +82,7 @@ CMD ["npm", "start"]
 
 ```bash
 # 检查Directus配置
-curl -X GET "https://forge.matrix-net.tech/server/specs/oas" \
+curl -X GET "https://forge.kcbaotech.com/server/specs/oas" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # 启用WebSocket
@@ -137,7 +137,7 @@ open test-websocket-fixed.html
 
 ```env
 # .env.local
-NEXT_PUBLIC_DIRECTUS_URL=https://forge.matrix-net.tech
+NEXT_PUBLIC_DIRECTUS_URL=https://forge.kcbaotech.com
 
 # 生产环境额外配置
 NEXTAUTH_URL=https://your-app.vercel.app

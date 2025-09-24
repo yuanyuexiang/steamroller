@@ -213,10 +213,11 @@ function UserEditContent() {
   // 表单初始化
   useEffect(() => {
     if (user && !isNew) {
+      console.log('初始化编辑表单，用户数据:', user);
       form.setFieldsValue({
         first_name: user.first_name,
         last_name: user.last_name,
-        email: user.email,
+        email: user.email, // 设置当前邮箱值，即使字段被禁用
         status: user.status,
         title: user.title,
         location: user.location,
@@ -227,6 +228,7 @@ function UserEditContent() {
         email_notifications: user.email_notifications
       });
     } else if (isNew) {
+      console.log('初始化新建表单');
       // 新用户的默认值
       form.setFieldsValue({
         status: 'active',
@@ -241,13 +243,16 @@ function UserEditContent() {
   const handleSave = async () => {
     try {
       setLoading(true);
-      const values = await form.validateFields();
       
-      // 构建用户数据，暂时不包含角色字段
-      const userData = {
+      // 先进行表单验证
+      console.log('开始表单验证...');
+      const values = await form.validateFields();
+      console.log('表单验证成功，获得的值:', values);
+      
+      // 构建用户数据
+      const userData: any = {
         first_name: values.first_name,
         last_name: values.last_name,
-        email: values.email,
         status: values.status,
         title: values.title || null,
         location: values.location || null,
@@ -258,7 +263,12 @@ function UserEditContent() {
         ...(values.password && { password: values.password })
       };
 
-      console.log('创建用户数据:', userData);
+      // 只在新建用户时包含邮箱
+      if (isNew && values.email) {
+        userData.email = values.email;
+      }
+
+      console.log('保存用户数据:', userData);
 
       if (isNew) {
         const result = await createUser({
@@ -326,7 +336,24 @@ function UserEditContent() {
       }
     } catch (error: any) {
       console.error('保存用户失败:', error);
-      message.error(error.message || '保存用户失败');
+      
+      // 如果是表单验证错误，显示具体的验证错误信息
+      if (error.errorFields && Array.isArray(error.errorFields)) {
+        const errorMessages = error.errorFields.map((field: any) => {
+          return `${field.name?.[0] || '字段'}: ${field.errors?.[0] || '验证失败'}`;
+        }).join('; ');
+        message.error(`表单验证失败: ${errorMessages}`);
+      } else if (error.graphQLErrors && error.graphQLErrors.length > 0) {
+        // GraphQL 错误
+        const graphQLError = error.graphQLErrors[0];
+        message.error(`保存失败: ${graphQLError.message}`);
+      } else if (error.networkError) {
+        // 网络错误
+        message.error('网络错误，请检查网络连接');
+      } else {
+        // 其他错误
+        message.error(error.message || '保存用户失败');
+      }
     } finally {
       setLoading(false);
     }
@@ -432,7 +459,7 @@ function UserEditContent() {
               </span>
             }
             rules={[
-              { required: true, message: '请输入邮箱' },
+              { required: isNew, message: '请输入邮箱' },
               { type: 'email', message: '请输入有效的邮箱地址' }
             ]}
           >

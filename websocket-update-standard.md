@@ -14,10 +14,10 @@
 
 ```json
 {
-  "wsUrl": "wss://forge.matrix-net.tech/graphql",
+  "wsUrl": "wss://forge.kcbaotech.com/graphql",
   "endpoint": "/graphql", 
   "authMode": "handshake",
-  "directusUrl": "https://forge.matrix-net.tech",
+  "directusUrl": "https://forge.kcbaotech.com",
   "success": true,
   "note": "Directus标准WebSocket端点，使用/graphql进行WebSocket连接"
 }
@@ -43,7 +43,7 @@
 
 ```yaml
 # docker-compose.yaml 中的 Traefik 标签
-traefik.http.routers.directus.rule: Host(`forge.matrix-net.tech`) && (PathPrefix(`/graphql`) || PathPrefix(`/`))
+traefik.http.routers.directus.rule: Host(`forge.kcbaotech.com`) && (PathPrefix(`/graphql`) || PathPrefix(`/`))
 ```
 
 ## 验证步骤
@@ -56,10 +56,10 @@ curl -s http://localhost:3000/api/websocket | jq
 预期输出：
 ```json
 {
-  "wsUrl": "wss://forge.matrix-net.tech/graphql",
+  "wsUrl": "wss://forge.kcbaotech.com/graphql",
   "endpoint": "/graphql",
   "authMode": "handshake",
-  "directusUrl": "https://forge.matrix-net.tech",
+  "directusUrl": "https://forge.kcbaotech.com",
   "success": true
 }
 ```
@@ -72,7 +72,7 @@ open test-websocket-complete.html
 
 ### 3. 检查 Directus GraphQL 端点
 ```bash
-curl -I https://forge.matrix-net.tech/graphql
+curl -I https://forge.kcbaotech.com/graphql
 ```
 
 应该返回 HTTP 200 或 405 (Method Not Allowed)，表示端点存在。
@@ -98,7 +98,7 @@ curl -I https://forge.matrix-net.tech/graphql
 
 当您更新 Traefik 配置后，WebSocket 连接将：
 
-1. 连接到 `wss://forge.matrix-net.tech/graphql`
+1. 连接到 `wss://forge.kcbaotech.com/graphql`
 2. 使用标准的 Directus WebSocket 认证流程
 3. 订阅您指定的 Directus 集合变化
 4. 实时接收数据变更通知

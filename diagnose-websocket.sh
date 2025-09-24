@@ -7,16 +7,16 @@ echo
 
 # 检查服务器基本连接
 echo "1. 检查服务器HTTP连接..."
-curl -I https://forge.matrix-net.tech/server/ping 2>/dev/null || echo "HTTP连接失败"
+curl -I https://forge.kcbaotech.com/server/ping 2>/dev/null || echo "HTTP连接失败"
 
 echo
 echo "2. 检查GraphQL端点..."
-curl -I https://forge.matrix-net.tech/graphql 2>/dev/null || echo "GraphQL端点无响应"
+curl -I https://forge.kcbaotech.com/graphql 2>/dev/null || echo "GraphQL端点无响应"
 
 echo
 echo "3. 尝试WebSocket连接测试..."
 echo "使用wscat测试（如果安装了）:"
-echo "wscat -c wss://forge.matrix-net.tech/graphql"
+echo "wscat -c wss://forge.kcbaotech.com/graphql"
 
 echo
 echo "4. 检查防火墙和代理设置..."
@@ -25,7 +25,7 @@ env | grep -i proxy || echo "未检测到代理设置"
 
 echo
 echo "5. 网络诊断..."
-ping -c 3 forge.matrix-net.tech
+ping -c 3 forge.kcbaotech.com
 
 echo
 echo "=== 建议检查项目 ==="

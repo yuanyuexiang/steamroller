@@ -63,7 +63,7 @@ const {
 ### 环境变量
 确保您的环境变量正确配置：
 ```bash
-DIRECTUS_URL=https://forge.matrix-net.tech
+DIRECTUS_URL=https://forge.kcbaotech.com
 DIRECTUS_TOKEN=your_admin_token
 ```
 
@@ -77,7 +77,7 @@ environment:
 ### Traefik 路由
 您的 Traefik 配置已经包含了 WebSocket 路由：
 ```yaml
-traefik.http.routers.directus.rule: Host(`forge.matrix-net.tech`) && (PathPrefix(`/websocket`) || PathPrefix(`/graphql`) || PathPrefix(`/`))
+traefik.http.routers.directus.rule: Host(`forge.kcbaotech.com`) && (PathPrefix(`/websocket`) || PathPrefix(`/graphql`) || PathPrefix(`/`))
 ```
 
 ## 使用步骤
@@ -108,7 +108,7 @@ open test-websocket-complete.html
 在浏览器控制台查看 WebSocket 连接状态：
 ```javascript
 // WebSocket: 开始连接流程
-// WebSocket: 尝试连接到Directus WebSocket端点: wss://forge.matrix-net.tech/websocket
+// WebSocket: 尝试连接到Directus WebSocket端点: wss://forge.kcbaotech.com/websocket
 // WebSocket: 连接已建立
 // WebSocket: 订阅集合变化: users
 ```
@@ -118,8 +118,8 @@ open test-websocket-complete.html
 ### 连接问题
 1. **检查端点可用性**:
    ```bash
-   curl -I https://forge.matrix-net.tech/websocket
-   curl -I https://forge.matrix-net.tech/graphql
+   curl -I https://forge.kcbaotech.com/websocket
+   curl -I https://forge.kcbaotech.com/graphql
    ```
 
 2. **验证认证**:
@@ -149,14 +149,14 @@ GET /api/websocket
 响应示例：
 ```json
 {
-  "primary": "wss://forge.matrix-net.tech/websocket",
-  "fallback": "wss://forge.matrix-net.tech/graphql",
+  "primary": "wss://forge.kcbaotech.com/websocket",
+  "fallback": "wss://forge.kcbaotech.com/graphql",
   "possibleEndpoints": [
-    "wss://forge.matrix-net.tech/websocket",
-    "wss://forge.matrix-net.tech/graphql"
+    "wss://forge.kcbaotech.com/websocket",
+    "wss://forge.kcbaotech.com/graphql"
   ],
   "authMode": "handshake",
-  "directusUrl": "https://forge.matrix-net.tech",
+  "directusUrl": "https://forge.kcbaotech.com",
   "success": true
 }
 ```

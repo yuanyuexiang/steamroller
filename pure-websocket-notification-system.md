@@ -80,7 +80,7 @@ const {
 ### 环境配置
 确保您的 `.env` 文件包含正确的 Directus 配置：
 ```bash
-DIRECTUS_URL=https://forge.matrix-net.tech
+DIRECTUS_URL=https://forge.kcbaotech.com
 DIRECTUS_TOKEN=your_admin_token
 ```
 
@@ -95,7 +95,7 @@ environment:
 ### WebSocket 端点
 系统使用标准的 Directus GraphQL WebSocket 端点：
 ```
-wss://forge.matrix-net.tech/graphql
+wss://forge.kcbaotech.com/graphql
 ```
 
 ## 🧪 测试工具
@@ -125,10 +125,10 @@ curl -s http://localhost:3000/api/websocket | jq
 预期响应：
 ```json
 {
-  "wsUrl": "wss://forge.matrix-net.tech/graphql",
+  "wsUrl": "wss://forge.kcbaotech.com/graphql",
   "endpoint": "/graphql",
   "authMode": "handshake",
-  "directusUrl": "https://forge.matrix-net.tech",
+  "directusUrl": "https://forge.kcbaotech.com",
   "success": true
 }
 ```
