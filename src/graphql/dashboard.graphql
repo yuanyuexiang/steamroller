@@ -58,6 +58,33 @@ query GetDashboardData($today: String) {
   }) {
     id
   }
+  
+  # 获取所有访问记录用于统计最热门店铺
+  all_visits_for_ranking: visits(limit: 1000, sort: ["-date_created"]) {
+    id
+    boutique {
+      id
+      name
+      address
+    }
+    date_created
+  }
+  
+  # 获取所有浏览记录用于统计最热门商品
+  all_views_for_ranking: views(limit: 1000, sort: ["-date_created"]) {
+    id
+    product {
+      id
+      name
+      images
+      price
+      category_id {
+        id
+        name
+      }
+    }
+    date_created
+  }
 }
 
 query GetRecentOrders($limit: Int = 5) {

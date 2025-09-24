@@ -61,6 +61,21 @@ function DashboardContent() {
   // 获取今日日期（格式：YYYY-MM-DD）
   const today = new Date().toISOString().split('T')[0];
   
+  // 辅助函数：安全地获取产品图片URL
+  const getProductImageUrl = (images: string | null) => {
+    if (!images) return null;
+    
+    try {
+      // 尝试解析JSON格式的图片数组
+      const imageArray = JSON.parse(images);
+      const imageId = Array.isArray(imageArray) ? imageArray[0] : imageArray;
+      return imageId ? `${process.env.NEXT_PUBLIC_DIRECTUS_URL}/assets/${imageId}` : null;
+    } catch (e) {
+      // 如果解析失败，直接使用字符串作为图片ID
+      return `${process.env.NEXT_PUBLIC_DIRECTUS_URL}/assets/${images}`;
+    }
+  };
+  
   // 使用超级管理员权限的 GraphQL hooks 获取全局数据
   const { data: dashboardData, loading: dashboardLoading, error: dashboardError } = useGetDashboardDataQuery({
     variables: { today }
@@ -83,6 +98,67 @@ function DashboardContent() {
     todayViews: dashboardData?.today_views?.length || 0,
     todayVisits: dashboardData?.today_visits?.length || 0
   };
+
+  // 处理访问最多的店铺排名
+  const getMostVisitedBoutiques = () => {
+    if (!dashboardData?.all_visits_for_ranking) return [];
+    
+    // 按店铺ID统计访问次数
+    const visitCounts = new Map();
+    dashboardData.all_visits_for_ranking.forEach(visit => {
+      if (visit.boutique) {
+        const boutiqueId = visit.boutique.id;
+        if (visitCounts.has(boutiqueId)) {
+          visitCounts.set(boutiqueId, {
+            ...visitCounts.get(boutiqueId),
+            count: visitCounts.get(boutiqueId).count + 1
+          });
+        } else {
+          visitCounts.set(boutiqueId, {
+            boutique: visit.boutique,
+            count: 1
+          });
+        }
+      }
+    });
+    
+    // 转换为数组并排序
+    return Array.from(visitCounts.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+  };
+
+  // 处理查看最多的商品排名
+  const getMostViewedProducts = () => {
+    if (!dashboardData?.all_views_for_ranking) return [];
+    
+    // 按商品ID统计查看次数
+    const viewCounts = new Map();
+    dashboardData.all_views_for_ranking.forEach(view => {
+      if (view.product) {
+        const productId = view.product.id;
+        if (viewCounts.has(productId)) {
+          viewCounts.set(productId, {
+            ...viewCounts.get(productId),
+            count: viewCounts.get(productId).count + 1
+          });
+        } else {
+          viewCounts.set(productId, {
+            product: view.product,
+            count: 1
+          });
+        }
+      }
+    });
+    
+    // 转换为数组并排序
+    return Array.from(viewCounts.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+  };
+
+  const mostVisitedBoutiques = getMostVisitedBoutiques();
+  const mostViewedProducts = getMostViewedProducts();
 
   // 详细调试信息
   console.log('=== Dashboard Debug Info ===');
@@ -350,6 +426,123 @@ function DashboardContent() {
 
         {/* 数据展示区域 */}
         <div className="dashboard-data-sections">
+          {/* 热门店铺排名 */}
+          <div className="dashboard-section popular-boutiques">
+            <div className="dashboard-section-header">
+              <h3 className="section-title">热门店铺排名</h3>
+              <Button 
+                type="link" 
+                className="section-link"
+                onClick={() => router.push('/visits')}
+              >
+                查看详情 →
+              </Button>
+            </div>
+            <div className="ranking-content">
+              {isLoading ? (
+                <div className="loading-state">
+                  <Spin />
+                  <span>加载排名数据...</span>
+                </div>
+              ) : mostVisitedBoutiques.length > 0 ? (
+                <div className="ranking-list">
+                  {mostVisitedBoutiques.map((item, index) => (
+                    <div key={item.boutique.id} className="ranking-item">
+                      <div className="ranking-position">
+                        <span className={`rank-badge rank-${index + 1}`}>
+                          {index + 1}
+                        </span>
+                      </div>
+                      <div className="ranking-info">
+                        <div className="ranking-name">{item.boutique.name}</div>
+                        <div className="ranking-detail">{item.boutique.address}</div>
+                      </div>
+                      <div className="ranking-stats">
+                        <div className="stat-number">{item.count}</div>
+                        <div className="stat-label">次访问</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <div className="empty-icon">🏪</div>
+                  <p>暂无访问数据</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 热门商品排名 */}
+          <div className="dashboard-section popular-products">
+            <div className="dashboard-section-header">
+              <h3 className="section-title">热门商品排名</h3>
+              <Button 
+                type="link" 
+                className="section-link"
+                onClick={() => router.push('/views')}
+              >
+                查看详情 →
+              </Button>
+            </div>
+            <div className="ranking-content">
+              {isLoading ? (
+                <div className="loading-state">
+                  <Spin />
+                  <span>加载排名数据...</span>
+                </div>
+              ) : mostViewedProducts.length > 0 ? (
+                <div className="ranking-list">
+                  {mostViewedProducts.map((item, index) => (
+                    <div key={item.product.id} className="ranking-item">
+                      <div className="ranking-position">
+                        <span className={`rank-badge rank-${index + 1}`}>
+                          {index + 1}
+                        </span>
+                      </div>
+                      <div className="product-image">
+                        {(() => {
+                          const imageUrl = getProductImageUrl(item.product.images);
+                          return imageUrl ? (
+                            <img 
+                              src={imageUrl}
+                              alt={item.product.name}
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="no-image">📦</div>
+                          );
+                        })()}
+                      </div>
+                      <div className="ranking-info">
+                        <div className="ranking-name">{item.product.name}</div>
+                        <div className="ranking-detail">
+                          ¥{item.product.price?.toFixed(2)} 
+                          {item.product.category_id?.name && (
+                            <span className="category-tag">
+                              {item.product.category_id.name}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="ranking-stats">
+                        <div className="stat-number">{item.count}</div>
+                        <div className="stat-label">次查看</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <div className="empty-icon">📦</div>
+                  <p>暂无浏览数据</p>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* 最近订单 */}
           <div className="dashboard-section recent-orders">
             <div className="dashboard-section-header">

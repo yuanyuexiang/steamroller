@@ -4372,7 +4372,7 @@ export type GetDashboardDataQueryVariables = Exact<{
 }>;
 
 
-export type GetDashboardDataQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'orders', id: string }>, boutiques: Array<{ __typename?: 'boutiques', id: string }>, terminals: Array<{ __typename?: 'terminals', id: string }>, customers: Array<{ __typename?: 'customers', id: string }>, views: Array<{ __typename?: 'views', id: string }>, visits: Array<{ __typename?: 'visits', id: string }>, orders_aggregated: Array<{ __typename?: 'orders_aggregated', countAll?: number | null }>, boutiques_aggregated: Array<{ __typename?: 'boutiques_aggregated', countAll?: number | null }>, terminals_aggregated: Array<{ __typename?: 'terminals_aggregated', countAll?: number | null }>, customers_aggregated: Array<{ __typename?: 'customers_aggregated', countAll?: number | null }>, views_aggregated: Array<{ __typename?: 'views_aggregated', countAll?: number | null }>, visits_aggregated: Array<{ __typename?: 'visits_aggregated', countAll?: number | null }>, today_orders: Array<{ __typename?: 'orders', id: string, status?: string | null }>, today_views: Array<{ __typename?: 'views', id: string }>, today_visits: Array<{ __typename?: 'visits', id: string }> };
+export type GetDashboardDataQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'orders', id: string }>, boutiques: Array<{ __typename?: 'boutiques', id: string }>, terminals: Array<{ __typename?: 'terminals', id: string }>, customers: Array<{ __typename?: 'customers', id: string }>, views: Array<{ __typename?: 'views', id: string }>, visits: Array<{ __typename?: 'visits', id: string }>, orders_aggregated: Array<{ __typename?: 'orders_aggregated', countAll?: number | null }>, boutiques_aggregated: Array<{ __typename?: 'boutiques_aggregated', countAll?: number | null }>, terminals_aggregated: Array<{ __typename?: 'terminals_aggregated', countAll?: number | null }>, customers_aggregated: Array<{ __typename?: 'customers_aggregated', countAll?: number | null }>, views_aggregated: Array<{ __typename?: 'views_aggregated', countAll?: number | null }>, visits_aggregated: Array<{ __typename?: 'visits_aggregated', countAll?: number | null }>, today_orders: Array<{ __typename?: 'orders', id: string, status?: string | null }>, today_views: Array<{ __typename?: 'views', id: string }>, today_visits: Array<{ __typename?: 'visits', id: string }>, all_visits_for_ranking: Array<{ __typename?: 'visits', id: string, date_created?: any | null, boutique?: { __typename?: 'boutiques', id: string, name?: string | null, address?: string | null } | null }>, all_views_for_ranking: Array<{ __typename?: 'views', id: string, date_created?: any | null, product?: { __typename?: 'products', id: string, name: string, images?: any | null, price: number, category_id?: { __typename?: 'categories', id: string, name: string } | null } | null }> };
 
 export type GetRecentOrdersQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -5191,6 +5191,29 @@ export const GetDashboardDataDocument = gql`
   }
   today_visits: visits(filter: {date_created: {_gte: $today}}) {
     id
+  }
+  all_visits_for_ranking: visits(limit: 1000, sort: ["-date_created"]) {
+    id
+    boutique {
+      id
+      name
+      address
+    }
+    date_created
+  }
+  all_views_for_ranking: views(limit: 1000, sort: ["-date_created"]) {
+    id
+    product {
+      id
+      name
+      images
+      price
+      category_id {
+        id
+        name
+      }
+    }
+    date_created
   }
 }
     `;
