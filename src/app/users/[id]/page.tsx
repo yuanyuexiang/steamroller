@@ -234,7 +234,8 @@ function UserEditContent() {
         status: 'active',
         language: 'zh-CN',
         appearance: 'auto',
-        email_notifications: true
+        email_notifications: true,
+        password: '123456' // 默认密码
       });
     }
   }, [user, form, isNew]);
@@ -285,36 +286,9 @@ function UserEditContent() {
           });
         }
         
-        // 显示创建成功的详细信息
-        Modal.success({
-          title: '用户创建成功',
-          content: (
-            <div>
-              <p>新用户已成功创建，请将以下登录信息告知用户：</p>
-              <div style={{ 
-                background: '#f5f5f5', 
-                padding: '12px', 
-                borderRadius: '6px', 
-                marginTop: '12px',
-                fontFamily: 'monospace'
-              }}>
-                <p style={{ margin: '4px 0' }}>
-                  <strong>邮箱：</strong>{values.email}
-                </p>
-                <p style={{ margin: '4px 0' }}>
-                  <strong>密码：</strong>{values.password || '123456'}
-                </p>
-              </div>
-              <p style={{ marginTop: '12px', fontSize: '12px', color: '#8c8c8c' }}>
-                建议用户首次登录后立即修改密码
-              </p>
-            </div>
-          ),
-          width: 480,
-          onOk: () => {
-            router.replace('/users');
-          }
-        });
+        // 创建成功，直接跳转到用户列表页面
+        message.success(`用户创建成功！登录信息 - 邮箱: ${values.email}, 密码: ${values.password || '123456'}`);
+        router.replace('/users');
       } else {
         // 构建更新数据，处理角色字段
         const updateData = { ...userData };
@@ -627,27 +601,16 @@ function UserEditContent() {
               extra={
                 <div style={{ marginTop: '4px' }}>
                   <Text type="secondary" style={{ fontSize: '12px' }}>
-                    建议使用 <Text code>123456</Text> 作为初始密码，用户首次登录后可修改
+                    默认密码为 <Text code>123456</Text>，用户首次登录后建议修改
                   </Text>
-                  <br />
-                  <Button 
-                    type="link" 
-                    size="small" 
-                    style={{ padding: '0', height: 'auto', fontSize: '12px' }}
-                    onClick={() => {
-                      form.setFieldsValue({ password: '123456' });
-                      message.success('已设置默认密码');
-                    }}
-                  >
-                    使用默认密码 123456
-                  </Button>
                 </div>
               }
             >
-              <Input.Password 
-                placeholder="请输入初始密码（建议使用 123456）"
+              <Input 
+                placeholder="默认初始密码: 123456"
                 size="large"
                 style={{ borderRadius: '8px' }}
+                autoComplete="new-password"
               />
             </Form.Item>
           </Col>
