@@ -19,12 +19,13 @@ export interface Notification {
 
 // WebSocket 消息类型
 export interface WebSocketMessage {
-  type: 'notification' | 'system' | 'heartbeat' | 'auth' | 'subscription';
+  type: 'notification' | 'system' | 'heartbeat' | 'auth' | 'subscription' | 'ping' | 'pong';
   data?: any;
   timestamp?: string;
   status?: 'ok' | 'error';
   event?: 'create' | 'update' | 'delete' | 'init';
   collection?: string;
+  uid?: string; // 用于标识订阅的唯一 ID
 }
 
 // 用户相关类型

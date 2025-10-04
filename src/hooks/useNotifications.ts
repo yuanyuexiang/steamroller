@@ -32,6 +32,59 @@ export function useNotifications(): NotificationsState & NotificationsActions {
   const { user } = useAuth();
   const wsRef = useRef<WebSocket | null>(null);
   const initRef = useRef(false);
+  const subscriptionsRef = useRef<Set<string>>(new Set()); // 跟踪已创建的订阅 UID
+
+  // 实体配置映射
+  const COLLECTION_CONFIG = {
+    boutiques: { name: '店铺', nameField: 'name', prefix: undefined },
+    customers: { name: '客户', nameField: 'nick_name', prefix: undefined },
+    orders: { name: '订单', nameField: 'id', prefix: '#' },
+    products: { name: '产品', nameField: 'name', prefix: undefined },
+    categories: { name: '分类', nameField: 'name', prefix: undefined },
+    terminals: { name: '终端', nameField: 'name', prefix: undefined },
+    views: { name: '视图', nameField: 'name', prefix: undefined },
+    visits: { name: '访问记录', nameField: 'id', prefix: undefined },
+    directus_users: { name: '用户', nameField: 'first_name', prefix: undefined }
+  };
+
+  // 统一的通知生成函数
+  const createNotification = (event: string, collection: string, data: any, uid?: string) => {
+    const config = COLLECTION_CONFIG[collection as keyof typeof COLLECTION_CONFIG];
+    if (!config) {
+      console.warn(`未知实体类型: ${collection}`, { event, data, uid });
+      return null;
+    }
+
+    // 获取实体名称
+    const itemName = data?.[config.nameField] || data?.name || data?.email || data?.id || '未知';
+    const displayName = config.prefix ? `${config.prefix}${itemName}` : itemName;
+
+    // 事件类型映射
+    const eventMap = {
+      create: { action: '新增', type: 'success' as const, verb: '创建' },
+      update: { action: '更新', type: 'info' as const, verb: '更新' },
+      delete: { action: '删除', type: 'warning' as const, verb: '删除' }
+    };
+
+    const eventInfo = eventMap[event as keyof typeof eventMap];
+    if (!eventInfo) {
+      console.warn(`未知事件类型: ${event}`);
+      return null;
+    }
+
+    const title = `${config.name}${eventInfo.action}`;
+    const message = `${config.name} ${displayName} 已${eventInfo.verb}`;
+
+    return {
+      id: `${Date.now()}-${Math.random()}`,
+      title,
+      message,
+      type: eventInfo.type,
+      timestamp: new Date().toISOString(),
+      read: false,
+      data: { collection, event, item: data, uid }
+    };
+  };
 
   // 极简连接函数 - 没有任何依赖
   const connectWs = async () => {
@@ -92,6 +145,9 @@ export function useNotifications(): NotificationsState & NotificationsActions {
           if (msg.status === 'ok') {
             console.log('=== WebSocket: 认证成功，开始订阅 ===');
             
+            // 清空之前的订阅记录
+            subscriptionsRef.current.clear();
+            
             // 订阅所有重要实体的事件
             const collections = ['boutiques', 'categories', 'customers', 'orders', 'products', 'terminals', 'views', 'visits'];
             const events = ['create', 'update', 'delete'];
@@ -100,12 +156,17 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             
             collections.forEach(collection => {
               events.forEach(event => {
-                console.log(`WebSocket: 订阅 ${collection} ${event} 事件`);
+                const uid = `sub_${collection}_${event}_${Math.random().toString(36).substr(2, 9)}`;
+                console.log(`WebSocket: 订阅 ${collection} ${event} 事件, UID: ${uid}`);
+                
                 ws.send(JSON.stringify({
                   type: 'subscribe',
                   collection: collection,
-                  event: event
+                  event: event,
+                  uid: uid
                 }));
+                
+                subscriptionsRef.current.add(uid);
               });
             });
             
@@ -115,251 +176,57 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             ws.close();
           }
         } else if (msg.type === 'subscription') {
+          // 直接使用消息中的 collection 字段
+          const collection = msg.collection;
+          if (!collection) {
+            console.warn('WebSocket: 收到没有 collection 字段的订阅消息', msg);
+            return;
+          }
+
+          if (!msg.event) {
+            console.warn('WebSocket: 收到没有 event 字段的订阅消息', msg);
+            return;
+          }
+
           // 处理数据结构：data 可能是数组或对象
           const actualData = Array.isArray(msg.data) ? msg.data[0] : msg.data;
           
-          console.log('WebSocket: 收到订阅消息==========================================', {
+          console.log('WebSocket: 收到订阅消息', {
             type: msg.type,
             event: msg.event,
-            collection: msg.collection,
-            rawData: msg.data,
-            actualData: actualData,
+            collection: collection,
+            uid: msg.uid,
             dataId: actualData?.id,
             dataKeys: actualData ? Object.keys(actualData) : []
           });
-          
-          // 根据数据字段推断实体类型（如果没有 collection 字段）
-          let collectionName = msg.collection;
-          if (!collectionName && actualData) {
-            // 根据数据特征推断实体类型
-            if (actualData.name && actualData.address && actualData.contact) {
-              collectionName = 'boutiques';
-            } else if (actualData.nick_name || actualData.customer_id) {
-              collectionName = 'customers';
-            } else if (actualData.product_name || actualData.price) {
-              collectionName = 'products';
-            } else if (actualData.order_number || actualData.total_amount) {
-              collectionName = 'orders';
-            } else if (actualData.first_name || actualData.email) {
-              collectionName = 'directus_users';
-            } else if (actualData.category_name) {
-              collectionName = 'categories';
-            } else if (actualData.terminal_id) {
-              collectionName = 'terminals';
-            } else if (actualData.view_name) {
-              collectionName = 'views';
-            } else if (actualData.visit_time) {
-              collectionName = 'visits';
-            }
+
+          // 统一处理所有事件类型
+          const notification = createNotification(msg.event, collection, actualData, msg.uid);
+          if (notification) {
+            setNotifications(prev => [notification, ...prev.slice(0, 99)]);
+            setUnreadCount(prev => prev + 1);
+            
+            // 根据事件类型显示不同的消息
+            const messageMethod = {
+              'success': message.success,
+              'info': message.info,
+              'warning': message.warning,
+              'error': message.error
+            }[notification.type];
+            
+            messageMethod(`${notification.title}: ${notification.message}`);
           }
-          
-          if (msg.event === 'create') {
-            console.log('WebSocket: 新建记录', collectionName, actualData);
-            
-            // 根据不同实体类型生成通知
-            let title = '新记录';
-            let notificationText = '';
-            let notificationType: 'info' | 'success' | 'warning' | 'error' = 'success';
-            
-            switch (collectionName) {
-              case 'orders':
-                title = '新订单';
-                notificationText = `收到新的订单 #${actualData?.id}`;
-                break;
-              case 'customers':
-                title = '新客户';
-                notificationText = `新客户注册: ${actualData?.nick_name || actualData?.name || actualData?.id}`;
-                break;
-              case 'products':
-                title = '新产品';
-                notificationText = `添加了新产品: ${actualData?.name || actualData?.id}`;
-                break;
-              case 'boutiques':
-                title = '新店铺';
-                notificationText = `新店铺开业: ${actualData?.name || actualData?.id}`;
-                break;
-              case 'directus_users':
-                title = '新用户';
-                notificationText = `新用户加入: ${actualData?.first_name || actualData?.email || actualData?.id}`;
-                break;
-              case 'categories':
-                title = '新分类';
-                notificationText = `添加了新分类: ${actualData?.name || actualData?.id}`;
-                break;
-              case 'terminals':
-                title = '新终端';
-                notificationText = `新终端接入: ${actualData?.name || actualData?.id}`;
-                break;
-              case 'views':
-                title = '新视图';
-                notificationText = `创建了新视图: ${actualData?.name || actualData?.id}`;
-                break;
-              case 'visits':
-                title = '新访问';
-                notificationText = `记录了新的访问: ${actualData?.id}`;
-                break;
-              default:
-                title = '新记录';
-                notificationText = `在 ${collectionName || '未知实体'} 中创建了新记录${actualData?.id ? ` ID: ${actualData.id}` : ''}`;
-            }
-            
-            // 创建新记录通知
-            const notification: Notification = {
-              id: `${Date.now()}-${Math.random()}`,
-              title,
-              message: notificationText,
-              type: notificationType,
-              timestamp: new Date().toISOString(),
-              read: false,
-              data: { collection: collectionName, event: msg.event, item: actualData }
-            };
-            setNotifications(prev => [notification, ...prev.slice(0, 99)]);
-            setUnreadCount(prev => prev + 1);
-            message.success(`${title}: ${notificationText}`);
-          } else if (msg.event === 'update') {
-            console.log('WebSocket: 更新记录', {
-              collection: collectionName,
-              dataId: actualData?.id,
-              data: actualData
-            });
-            
-            // 根据不同实体类型生成更新通知
-            let title = '记录更新';
-            let updateText = '';
-            let notificationType: 'info' | 'success' | 'warning' | 'error' = 'info';
-            
-            console.log('WebSocket: 订阅================', {
-              originalMsg: msg,
-              collectionName,
-              actualData
-            });
-            switch (collectionName) {
-              case 'orders':
-                title = '订单更新';
-                updateText = `订单 #${actualData?.id} 已更新`;
-                break;
-              case 'customers':
-                title = '客户更新';
-                updateText = `客户 ${actualData?.nick_name || actualData?.name || actualData?.id} 信息已更新`;
-                break;
-              case 'products':
-                title = '产品更新';
-                updateText = `产品 ${actualData?.name || actualData?.id} 已更新`;
-                break;
-              case 'boutiques':
-                title = '店铺更新';
-                updateText = `店铺 ${actualData?.name || actualData?.id} 信息已更新`;
-                break;
-              case 'directus_users':
-                title = '用户更新';
-                updateText = `用户 ${actualData?.first_name || actualData?.email || actualData?.id} 信息已更新`;
-                break;
-              case 'categories':
-                title = '分类更新';
-                updateText = `分类 ${actualData?.name || actualData?.id} 已更新`;
-                break;
-              case 'terminals':
-                title = '终端更新';
-                updateText = `终端 ${actualData?.name || actualData?.id} 已更新`;
-                break;
-              case 'views':
-                title = '视图更新';
-                updateText = `视图 ${actualData?.name || actualData?.id} 已更新`;
-                break;
-              case 'visits':
-                title = '访问更新';
-                updateText = `访问记录 ${actualData?.id} 已更新`;
-                break;
-              default:
-                title = '记录更新';
-                updateText = `${collectionName || '未知实体'} 中的记录已更新${actualData?.id ? ` (ID: ${actualData.id})` : ''}`;
-            }
-            
-            // 更新记录通知
-            const notification: Notification = {
-              id: `${Date.now()}-${Math.random()}`,
-              title,
-              message: updateText,
-              type: notificationType,
-              timestamp: new Date().toISOString(),
-              read: false,
-              data: { collection: collectionName, event: msg.event, item: actualData }
-            };
-            setNotifications(prev => [notification, ...prev.slice(0, 99)]);
-            setUnreadCount(prev => prev + 1);
-            message.info(`${title}: ${updateText}`);
-          } else if (msg.event === 'delete') {
-            console.log('WebSocket: 删除记录', {
-              collection: collectionName,
-              dataId: actualData?.id,
-              data: actualData
-            });
-            
-            // 根据不同实体类型生成删除通知
-            let title = '记录删除';
-            let deleteText = '';
-            let notificationType: 'info' | 'success' | 'warning' | 'error' = 'warning';
-            
-            switch (collectionName) {
-              case 'orders':
-                title = '订单删除';
-                deleteText = `订单 #${actualData?.id} 已被删除`;
-                break;
-              case 'customers':
-                title = '客户删除';
-                deleteText = `客户 ${actualData?.nick_name || actualData?.name || actualData?.id} 已被删除`;
-                break;
-              case 'products':
-                title = '产品删除';
-                deleteText = `产品 ${actualData?.name || actualData?.id} 已被删除`;
-                break;
-              case 'boutiques':
-                title = '店铺删除';
-                deleteText = `店铺 ${actualData?.name || actualData?.id} 已被删除`;
-                break;
-              case 'directus_users':
-                title = '用户删除';
-                deleteText = `用户 ${actualData?.first_name || actualData?.email || actualData?.id} 已被删除`;
-                break;
-              case 'categories':
-                title = '分类删除';
-                deleteText = `分类 ${actualData?.name || actualData?.id} 已被删除`;
-                break;
-              case 'terminals':
-                title = '终端删除';
-                deleteText = `终端 ${actualData?.name || actualData?.id} 已被删除`;
-                break;
-              case 'views':
-                title = '视图删除';
-                deleteText = `视图 ${actualData?.name || actualData?.id} 已被删除`;
-                break;
-              case 'visits':
-                title = '访问删除';
-                deleteText = `访问记录 ${actualData?.id} 已被删除`;
-                break;
-              default:
-                title = '记录删除';
-                deleteText = `${collectionName || '未知实体'} 中的记录已被删除${actualData?.id ? ` (ID: ${actualData.id})` : ''}`;
-            }
-            
-            // 删除记录通知
-            const notification: Notification = {
-              id: `${Date.now()}-${Math.random()}`,
-              title,
-              message: deleteText,
-              type: notificationType,
-              timestamp: new Date().toISOString(),
-              read: false,
-              data: { collection: collectionName, event: msg.event, item: actualData }
-            };
-            setNotifications(prev => [notification, ...prev.slice(0, 99)]);
-            setUnreadCount(prev => prev + 1);
-            message.warning(`${title}: ${deleteText}`);
-          }
+        } else if (msg.type === 'ping') {
+          // 响应心跳检查
+          console.log('WebSocket: 收到 ping，回复 pong');
+          ws.send(JSON.stringify({ type: 'pong' }));
         } else if (msg.type === 'heartbeat') {
-          // 忽略心跳消息
+          // 处理心跳消息 - 根据 Directus 文档，心跳可能是 ping/pong 机制
+          console.log('WebSocket: 收到心跳消息');
+          // 如果需要回复 pong，可以在这里处理
+          // ws.send(JSON.stringify({ type: 'pong' }));
         } else {
-          console.log('WebSocket: 未处理的消息类型', msg.type);
+          console.log('WebSocket: 未处理的消息类型', msg.type, msg);
         }
       } catch (error) {
         console.error('WebSocket: 解析消息错误', error, event.data);
@@ -402,10 +269,19 @@ export function useNotifications(): NotificationsState & NotificationsActions {
 
   const disconnect = () => {
     console.log('WebSocket: 手动断开');
+    
+    // 取消所有订阅
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      console.log('WebSocket: 取消所有订阅');
+      wsRef.current.send(JSON.stringify({ type: 'unsubscribe' })); // 取消所有订阅
+    }
+    
     if (wsRef.current) {
       wsRef.current.close(1000, 'Manual disconnect');
       wsRef.current = null;
     }
+    
+    subscriptionsRef.current.clear();
     setConnected(false);
   };
 
