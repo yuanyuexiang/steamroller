@@ -223,6 +223,12 @@ export function useNotifications(): NotificationsState & NotificationsActions {
         } else if (msg.type === 'subscription') {
           console.log('=== 收到完整的订阅消息 ===', JSON.stringify(msg, null, 2));
           
+          // 过滤掉初始化事件，这些不需要显示通知
+          if (msg.event === 'init') {
+            console.log('WebSocket: 跳过初始化事件', msg.uid);
+            return;
+          }
+          
           // 直接使用消息中的 collection 字段
           const collection = msg.collection;
           if (!collection) {
