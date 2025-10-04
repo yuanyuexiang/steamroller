@@ -172,7 +172,7 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             subscriptionsRef.current.clear();
             
             // 订阅所有重要实体的事件（保持现有的已知实体）
-            const knownCollections = ['boutiques', 'categories', 'customers', 'orders', 'products', 'terminals', 'views', 'visits'];
+            const knownCollections = ['boutiques', 'categories', 'customers', 'orders', 'products', 'terminals', 'views', 'visits', 'directus_users'];
             const events = ['create', 'update', 'delete'];
             
             console.log(`=== 准备订阅 ${knownCollections.length} 个已知实体，每个 ${events.length} 种事件 ===`);
@@ -266,6 +266,20 @@ export function useNotifications(): NotificationsState & NotificationsActions {
 
           // 即使没有 collection 也尝试创建通知
           const finalCollection = collection || 'unknown';
+          
+          // 调试：检查是否在已知集合中
+          const isKnownCollection = finalCollection in COLLECTION_NAMES;
+          console.log('=== Collection 映射检查 ===', {
+            originalCollection: collection,
+            finalCollection: finalCollection,
+            isKnownCollection: isKnownCollection,
+            availableCollections: Object.keys(COLLECTION_NAMES),
+            willShowAsUnknown: !isKnownCollection && finalCollection !== 'unknown',
+            subscriptionUID: msg.uid,
+            // 检查 UID 是否匹配我们创建的订阅
+            isOurSubscription: msg.uid && subscriptionsRef.current.has(msg.uid),
+            ourSubscriptions: Array.from(subscriptionsRef.current)
+          });
           const notification = createNotification(msg.event, finalCollection, actualData, msg.uid);
           if (notification) {
             console.log('=== 添加通知到状态 ===', notification);
