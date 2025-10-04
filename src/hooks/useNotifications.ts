@@ -228,18 +228,6 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             console.log('WebSocket: 跳过初始化事件', msg.uid);
             return;
           }
-          
-          // 直接使用消息中的 collection 字段
-          const collection = msg.collection;
-          if (!collection) {
-            console.warn('WebSocket: 收到没有 collection 字段的订阅消息', {
-              fullMessage: msg,
-              hasCollection: 'collection' in msg,
-              collectionValue: msg.collection,
-              allKeys: Object.keys(msg)
-            });
-            // 不要 return，继续尝试处理
-          }
 
           if (!msg.event) {
             console.warn('WebSocket: 收到没有 event 字段的订阅消息', {
@@ -251,6 +239,22 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             return;
           }
 
+          // 从 UID 中提取 collection 信息（格式：sub_collection_event_randomString）
+          let collection = 'unknown';
+          if (msg.uid && msg.uid.startsWith('sub_')) {
+            const uidParts = msg.uid.split('_');
+            if (uidParts.length >= 3) {
+              collection = uidParts[1]; // 第二个部分是 collection
+            }
+          }
+          
+          console.log('=== 从 UID 解析 Collection ===', {
+            uid: msg.uid,
+            parsedCollection: collection,
+            msgCollection: msg.collection,
+            isOurSubscription: msg.uid && subscriptionsRef.current.has(msg.uid)
+          });
+
           // 处理数据结构：data 可能是数组或对象
           const actualData = Array.isArray(msg.data) ? msg.data[0] : msg.data;
           
@@ -260,27 +264,20 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             collection: collection,
             uid: msg.uid,
             dataId: actualData?.id,
-            dataKeys: actualData ? Object.keys(actualData) : [],
-            hasCollection: !!collection
+            dataKeys: actualData ? Object.keys(actualData) : []
           });
 
-          // 即使没有 collection 也尝试创建通知
-          const finalCollection = collection || 'unknown';
-          
           // 调试：检查是否在已知集合中
-          const isKnownCollection = finalCollection in COLLECTION_NAMES;
+          const isKnownCollection = collection in COLLECTION_NAMES;
           console.log('=== Collection 映射检查 ===', {
-            originalCollection: collection,
-            finalCollection: finalCollection,
+            parsedCollection: collection,
             isKnownCollection: isKnownCollection,
             availableCollections: Object.keys(COLLECTION_NAMES),
-            willShowAsUnknown: !isKnownCollection && finalCollection !== 'unknown',
+            willShowAsUnknown: !isKnownCollection && collection !== 'unknown',
             subscriptionUID: msg.uid,
-            // 检查 UID 是否匹配我们创建的订阅
-            isOurSubscription: msg.uid && subscriptionsRef.current.has(msg.uid),
-            ourSubscriptions: Array.from(subscriptionsRef.current)
+            isOurSubscription: msg.uid && subscriptionsRef.current.has(msg.uid)
           });
-          const notification = createNotification(msg.event, finalCollection, actualData, msg.uid);
+          const notification = createNotification(msg.event, collection, actualData, msg.uid);
           if (notification) {
             console.log('=== 添加通知到状态 ===', notification);
             setNotifications(prev => {
@@ -305,7 +302,7 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             console.log('=== 显示 Ant Design 消息 ===', notification.type, notification.title, notification.message);
             messageMethod(`${notification.title}: ${notification.message}`);
           } else {
-            console.error('=== 通知创建失败 ===', { event: msg.event, collection: finalCollection, data: actualData });
+            console.error('=== 通知创建失败 ===', { event: msg.event, collection: collection, data: actualData });
           }
         } else if (msg.type === 'ping') {
           // 响应心跳检查
