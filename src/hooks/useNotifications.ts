@@ -44,7 +44,8 @@ export function useNotifications(): NotificationsState & NotificationsActions {
     terminals: '终端',
     views: '视图',
     visits: '访问记录',
-    directus_users: '用户'
+    directus_users: '用户',
+    unknown: '未知实体' // 添加对未知实体的支持
   };
 
   // 统一的通知生成函数（简化版）
@@ -220,15 +221,27 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             ws.close();
           }
         } else if (msg.type === 'subscription') {
+          console.log('=== 收到完整的订阅消息 ===', JSON.stringify(msg, null, 2));
+          
           // 直接使用消息中的 collection 字段
           const collection = msg.collection;
           if (!collection) {
-            console.warn('WebSocket: 收到没有 collection 字段的订阅消息', msg);
-            return;
+            console.warn('WebSocket: 收到没有 collection 字段的订阅消息', {
+              fullMessage: msg,
+              hasCollection: 'collection' in msg,
+              collectionValue: msg.collection,
+              allKeys: Object.keys(msg)
+            });
+            // 不要 return，继续尝试处理
           }
 
           if (!msg.event) {
-            console.warn('WebSocket: 收到没有 event 字段的订阅消息', msg);
+            console.warn('WebSocket: 收到没有 event 字段的订阅消息', {
+              fullMessage: msg,
+              hasEvent: 'event' in msg,
+              eventValue: msg.event,
+              allKeys: Object.keys(msg)
+            });
             return;
           }
 
@@ -241,11 +254,13 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             collection: collection,
             uid: msg.uid,
             dataId: actualData?.id,
-            dataKeys: actualData ? Object.keys(actualData) : []
+            dataKeys: actualData ? Object.keys(actualData) : [],
+            hasCollection: !!collection
           });
 
-          // 统一处理所有事件类型
-          const notification = createNotification(msg.event, collection, actualData, msg.uid);
+          // 即使没有 collection 也尝试创建通知
+          const finalCollection = collection || 'unknown';
+          const notification = createNotification(msg.event, finalCollection, actualData, msg.uid);
           if (notification) {
             console.log('=== 添加通知到状态 ===', notification);
             setNotifications(prev => {
@@ -270,7 +285,7 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             console.log('=== 显示 Ant Design 消息 ===', notification.type, notification.title, notification.message);
             messageMethod(`${notification.title}: ${notification.message}`);
           } else {
-            console.error('=== 通知创建失败 ===', { event: msg.event, collection, data: actualData });
+            console.error('=== 通知创建失败 ===', { event: msg.event, collection: finalCollection, data: actualData });
           }
         } else if (msg.type === 'ping') {
           // 响应心跳检查
