@@ -34,30 +34,36 @@ export function useNotifications(): NotificationsState & NotificationsActions {
   const initRef = useRef(false);
   const subscriptionsRef = useRef<Set<string>>(new Set()); // 跟踪已创建的订阅 UID
 
-  // 实体配置映射
-  const COLLECTION_CONFIG = {
-    boutiques: { name: '店铺', nameField: 'name', prefix: undefined },
-    customers: { name: '客户', nameField: 'nick_name', prefix: undefined },
-    orders: { name: '订单', nameField: 'id', prefix: '#' },
-    products: { name: '产品', nameField: 'name', prefix: undefined },
-    categories: { name: '分类', nameField: 'name', prefix: undefined },
-    terminals: { name: '终端', nameField: 'name', prefix: undefined },
-    views: { name: '视图', nameField: 'name', prefix: undefined },
-    visits: { name: '访问记录', nameField: 'id', prefix: undefined },
-    directus_users: { name: '用户', nameField: 'first_name', prefix: undefined }
+  // 实体中文名称映射（简化版）
+  const COLLECTION_NAMES = {
+    boutiques: '店铺',
+    customers: '客户',
+    orders: '订单',
+    products: '产品',
+    categories: '分类',
+    terminals: '终端',
+    views: '视图',
+    visits: '访问记录',
+    directus_users: '用户'
   };
 
-  // 统一的通知生成函数
+  // 统一的通知生成函数（简化版）
   const createNotification = (event: string, collection: string, data: any, uid?: string) => {
-    const config = COLLECTION_CONFIG[collection as keyof typeof COLLECTION_CONFIG];
-    if (!config) {
-      console.warn(`未知实体类型: ${collection}`, { event, data, uid });
-      return null;
-    }
-
-    // 获取实体名称
-    const itemName = data?.[config.nameField] || data?.name || data?.email || data?.id || '未知';
-    const displayName = config.prefix ? `${config.prefix}${itemName}` : itemName;
+    console.log('=== createNotification 调试 ===', { event, collection, data, uid });
+    
+    // 获取中文实体名称，没有则使用英文首字母大写
+    const entityName = COLLECTION_NAMES[collection as keyof typeof COLLECTION_NAMES] || 
+                       (collection.charAt(0).toUpperCase() + collection.slice(1));
+    
+    // 统一获取ID，简化逻辑
+    const itemId = data?.id || '未知ID';
+    
+    console.log('=== 简化解析 ===', {
+      collection,
+      entityName,
+      itemId,
+      hasCustomName: !!COLLECTION_NAMES[collection as keyof typeof COLLECTION_NAMES]
+    });
 
     // 事件类型映射
     const eventMap = {
@@ -68,14 +74,27 @@ export function useNotifications(): NotificationsState & NotificationsActions {
 
     const eventInfo = eventMap[event as keyof typeof eventMap];
     if (!eventInfo) {
-      console.warn(`未知事件类型: ${event}`);
-      return null;
+      console.warn(`未知事件类型: ${event}，使用默认配置`);
+      // 为未知事件提供默认配置
+      const title = `${entityName}变更`;
+      const message = `${entityName} ID: ${itemId} 发生变更`;
+      
+      return {
+        id: `${Date.now()}-${Math.random()}`,
+        title,
+        message,
+        type: 'info' as const,
+        timestamp: new Date().toISOString(),
+        read: false,
+        data: { collection, event, item: data, uid }
+      };
     }
 
-    const title = `${config.name}${eventInfo.action}`;
-    const message = `${config.name} ${displayName} 已${eventInfo.verb}`;
-
-    return {
+    // 统一的通知格式：实体名 + ID
+    const title = `${entityName}${eventInfo.action}`;
+    const message = `${entityName} ID: ${itemId} 已${eventInfo.verb}`;
+    
+    const notification = {
       id: `${Date.now()}-${Math.random()}`,
       title,
       message,
@@ -84,6 +103,9 @@ export function useNotifications(): NotificationsState & NotificationsActions {
       read: false,
       data: { collection, event, item: data, uid }
     };
+    
+    console.log('=== 生成的通知 ===', notification);
+    return notification;
   };
 
   // 极简连接函数 - 没有任何依赖
@@ -148,16 +170,17 @@ export function useNotifications(): NotificationsState & NotificationsActions {
             // 清空之前的订阅记录
             subscriptionsRef.current.clear();
             
-            // 订阅所有重要实体的事件
-            const collections = ['boutiques', 'categories', 'customers', 'orders', 'products', 'terminals', 'views', 'visits'];
+            // 订阅所有重要实体的事件（保持现有的已知实体）
+            const knownCollections = ['boutiques', 'categories', 'customers', 'orders', 'products', 'terminals', 'views', 'visits'];
             const events = ['create', 'update', 'delete'];
             
-            console.log(`=== 准备订阅 ${collections.length} 个实体，每个 ${events.length} 种事件 ===`);
+            console.log(`=== 准备订阅 ${knownCollections.length} 个已知实体，每个 ${events.length} 种事件 ===`);
             
-            collections.forEach(collection => {
+            // 订阅已知实体
+            knownCollections.forEach(collection => {
               events.forEach(event => {
                 const uid = `sub_${collection}_${event}_${Math.random().toString(36).substr(2, 9)}`;
-                console.log(`WebSocket: 订阅 ${collection} ${event} 事件, UID: ${uid}`);
+                console.log(`WebSocket: 订阅已知实体 ${collection} ${event} 事件, UID: ${uid}`);
                 
                 ws.send(JSON.stringify({
                   type: 'subscribe',
@@ -169,6 +192,27 @@ export function useNotifications(): NotificationsState & NotificationsActions {
                 subscriptionsRef.current.add(uid);
               });
             });
+            
+            // 可选：订阅所有集合的变更（如果你想捕获任何新的实体类型）
+            // 注意：这可能会产生大量通知，根据需要启用
+            const enableWildcardSubscription = false; // 设置为 true 启用
+            
+            if (enableWildcardSubscription) {
+              console.log('=== 启用通配符订阅，捕获所有实体变更 ===');
+              events.forEach(event => {
+                const uid = `sub_wildcard_${event}_${Math.random().toString(36).substr(2, 9)}`;
+                console.log(`WebSocket: 订阅通配符 ${event} 事件, UID: ${uid}`);
+                
+                // 注意：这个语法可能需要根据 Directus 版本调整
+                ws.send(JSON.stringify({
+                  type: 'subscribe',
+                  event: event, // 不指定 collection，订阅所有集合
+                  uid: uid
+                }));
+                
+                subscriptionsRef.current.add(uid);
+              });
+            }
             
             console.log('=== 所有订阅请求已发送 ===');
           } else {
@@ -203,8 +247,17 @@ export function useNotifications(): NotificationsState & NotificationsActions {
           // 统一处理所有事件类型
           const notification = createNotification(msg.event, collection, actualData, msg.uid);
           if (notification) {
-            setNotifications(prev => [notification, ...prev.slice(0, 99)]);
-            setUnreadCount(prev => prev + 1);
+            console.log('=== 添加通知到状态 ===', notification);
+            setNotifications(prev => {
+              const newNotifications = [notification, ...prev.slice(0, 99)];
+              console.log('=== 更新后的通知列表 ===', newNotifications.length, '条通知');
+              return newNotifications;
+            });
+            setUnreadCount(prev => {
+              const newCount = prev + 1;
+              console.log('=== 未读数量更新 ===', prev, '->', newCount);
+              return newCount;
+            });
             
             // 根据事件类型显示不同的消息
             const messageMethod = {
@@ -214,7 +267,10 @@ export function useNotifications(): NotificationsState & NotificationsActions {
               'error': message.error
             }[notification.type];
             
+            console.log('=== 显示 Ant Design 消息 ===', notification.type, notification.title, notification.message);
             messageMethod(`${notification.title}: ${notification.message}`);
+          } else {
+            console.error('=== 通知创建失败 ===', { event: msg.event, collection, data: actualData });
           }
         } else if (msg.type === 'ping') {
           // 响应心跳检查
