@@ -78,12 +78,12 @@ export default function LoginPage() {
       if (success) {
         message.success('登录成功！');
         router.push('/dashboard');
-      } else {
-        message.error('登录失败，请检查邮箱和密码！检查浏览器控制台获取更多信息。');
       }
+      // 如果登录失败，AuthProvider 已经显示了具体的错误信息，这里不需要再显示
     } catch (error) {
       console.error('登录异常:', error);
-      message.error('登录失败，请重试！检查浏览器控制台获取更多信息。');
+      // 只在发生异常时显示错误（非预期的错误）
+      message.error('登录过程发生异常，请重试');
     } finally {
       setLoading(false);
     }

@@ -145,6 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!response.ok) {
         authLogger.error('认证请求失败', { status: response.status });
+        message.error(`认证请求失败，状态码: ${response.status}`);
         return false;
       }
 
@@ -162,10 +163,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         // 根据错误类型提供更友好的提示
         if (errorCode === 'INVALID_CREDENTIALS') {
+          message.error('用户名或密码错误，请检查后重试');
           console.error('用户凭据无效，请检查邮箱和密码');
         } else if (errorCode === 'USER_SUSPENDED') {
+          message.error('用户账户已被暂停，请联系管理员');
           console.error('用户账户已被暂停');
         } else {
+          message.error(`认证失败: ${errorMessage}`);
           console.error(`认证错误: ${errorMessage}`);
         }
         return false;
@@ -173,6 +177,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (!result.data?.auth_login?.access_token) {
         authLogger.error('认证失败：没有获取到access_token', { response: result });
+        message.error('认证失败：未能获取访问令牌');
         return false;
       }
 
