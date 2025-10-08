@@ -227,18 +227,33 @@ function UserEditContent() {
         appearance: user.appearance,
         email_notifications: user.email_notifications
       });
-    } else if (isNew) {
+    } else if (isNew && roles.length > 0) {
       console.log('初始化新建表单');
+      
+      // 查找"用户"角色
+      const userRole = roles.find(
+        role => role.name === '用户'
+      );
+      
+      console.log('查找到的角色:', userRole);
+      
       // 新用户的默认值
       form.setFieldsValue({
         status: 'active',
         language: 'zh-CN',
         appearance: 'auto',
         email_notifications: true,
-        password: '123456' // 默认密码
+        password: '123456', // 默认密码
+        role: userRole?.id // 设置默认角色为"用户"
       });
+      
+      if (userRole) {
+        console.log('已设置默认角色为"用户"，角色ID:', userRole.id);
+      } else {
+        console.warn('未找到"用户"角色，可用角色:', roles.map(r => r.name));
+      }
     }
-  }, [user, form, isNew]);
+  }, [user, form, isNew, roles]);
 
   // 保存用户数据
   const handleSave = async () => {
