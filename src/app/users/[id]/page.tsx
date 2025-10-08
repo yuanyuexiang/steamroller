@@ -250,6 +250,41 @@ function UserEditContent() {
       const values = await form.validateFields();
       console.log('表单验证成功，获得的值:', values);
       
+      // 额外验证：确保基本信息的必填项不为空
+      const requiredBasicFields = ['first_name', 'last_name', 'email'];
+      const missingBasicFields = requiredBasicFields.filter(field => !values[field] || String(values[field]).trim() === '');
+      
+      if (missingBasicFields.length > 0) {
+        const fieldNames = {
+          first_name: '名',
+          last_name: '姓',
+          email: '邮箱'
+        };
+        const missingNames = missingBasicFields.map(field => fieldNames[field as keyof typeof fieldNames]).join('、');
+        message.error(`基本信息中的必填项不能为空：${missingNames}`);
+        setLoading(false);
+        return;
+      }
+      
+      // 额外验证：确保安全设置的必填项不为空
+      const requiredSecurityFields = ['status', 'role'];
+      if (isNew) {
+        requiredSecurityFields.push('password');
+      }
+      const missingSecurityFields = requiredSecurityFields.filter(field => !values[field] || String(values[field]).trim() === '');
+      
+      if (missingSecurityFields.length > 0) {
+        const fieldNames = {
+          status: '状态',
+          role: '角色',
+          password: '初始密码'
+        };
+        const missingNames = missingSecurityFields.map(field => fieldNames[field as keyof typeof fieldNames]).join('、');
+        message.error(`安全设置中的必填项不能为空：${missingNames}`);
+        setLoading(false);
+        return;
+      }
+      
       // 构建用户数据
       const userData: any = {
         first_name: values.first_name,
