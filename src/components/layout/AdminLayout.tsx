@@ -319,10 +319,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const titleMap = {
       'dashboard': '数据总览',
       'users': '用户管理',
-      'boutiques': '店铺管理',
-      'orders': '订单管理',
+      'boutiques': '商铺管理',
+      'orders': '商铺订单',
       'terminals': '终端管理',
-      'customers': '客户管理',
+      'customers': '商铺客户',
       'views': '浏览分析',
       'visits': '访问统计',
       'profile': '个人资料'
