@@ -363,7 +363,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       key: 'boutiques',
       icon: <ShopOutlined />,
-      label: '店铺管理',
+      label: '商铺管理',
       onClick: () => router.push('/boutiques'),
     },
     {
@@ -375,13 +375,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       key: 'customers',
       icon: <TeamOutlined />,
-      label: '客户管理',
+      label: '商铺客户',
       onClick: () => router.push('/customers'),
     },
     {
       key: 'orders',
       icon: <ShoppingCartOutlined />,
-      label: '订单管理',
+      label: '商铺订单',
       onClick: () => router.push('/orders'),
     },
     {
