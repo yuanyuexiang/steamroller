@@ -351,7 +351,7 @@ function DashboardContent() {
               onClick={() => router.push('/boutiques')}
             >
               <span className="btn-text">
-                <strong>店铺管理</strong>
+                <strong>商铺管理</strong>
                 <small>管理店铺信息</small>
               </span>
             </Button>
@@ -361,7 +361,7 @@ function DashboardContent() {
               onClick={() => router.push('/orders')}
             >
               <span className="btn-text">
-                <strong>查看订单</strong>
+                <strong>商户订单</strong>
                 <small>订单处理中心</small>
               </span>
             </Button>
@@ -391,7 +391,7 @@ function DashboardContent() {
               onClick={() => router.push('/customers')}
             >
               <span className="btn-text">
-                <strong>客户管理</strong>
+                <strong>商户客户</strong>
                 <small>客户关系</small>
               </span>
             </Button>
