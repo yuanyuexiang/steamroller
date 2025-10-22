@@ -2057,6 +2057,7 @@ export type Subscription = {
   terminals_mutated?: Maybe<Terminals_Mutated>;
   views_mutated?: Maybe<Views_Mutated>;
   visits_mutated?: Maybe<Visits_Mutated>;
+  wechat_users_mutated?: Maybe<Wechat_Users_Mutated>;
 };
 
 
@@ -2201,6 +2202,11 @@ export type SubscriptionViews_MutatedArgs = {
 
 
 export type SubscriptionVisits_MutatedArgs = {
+  event?: InputMaybe<EventEnum>;
+};
+
+
+export type SubscriptionWechat_Users_MutatedArgs = {
   event?: InputMaybe<EventEnum>;
 };
 
@@ -2670,12 +2676,15 @@ export type Create_Directus_Webhooks_Input = {
 
 export type Customers = {
   __typename?: 'customers';
+  address?: Maybe<Scalars['String']['output']>;
   avatar?: Maybe<Scalars['String']['output']>;
   boutique?: Maybe<Boutiques>;
+  contact?: Maybe<Scalars['String']['output']>;
   date_created?: Maybe<Scalars['Date']['output']>;
   date_created_func?: Maybe<Datetime_Functions>;
   date_updated?: Maybe<Scalars['Date']['output']>;
   date_updated_func?: Maybe<Datetime_Functions>;
+  full_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   nick_name?: Maybe<Scalars['String']['output']>;
   open_id: Scalars['String']['output'];
@@ -2720,12 +2729,15 @@ export type CustomersUser_UpdatedArgs = {
 export type Customers_Filter = {
   _and?: InputMaybe<Array<InputMaybe<Customers_Filter>>>;
   _or?: InputMaybe<Array<InputMaybe<Customers_Filter>>>;
+  address?: InputMaybe<String_Filter_Operators>;
   avatar?: InputMaybe<String_Filter_Operators>;
   boutique?: InputMaybe<Boutiques_Filter>;
+  contact?: InputMaybe<String_Filter_Operators>;
   date_created?: InputMaybe<Date_Filter_Operators>;
   date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
   date_updated?: InputMaybe<Date_Filter_Operators>;
   date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  full_name?: InputMaybe<String_Filter_Operators>;
   id?: InputMaybe<Number_Filter_Operators>;
   nick_name?: InputMaybe<String_Filter_Operators>;
   open_id?: InputMaybe<String_Filter_Operators>;
@@ -4522,6 +4534,16 @@ export type Directus_Settings = {
   default_theme_light?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   mapbox_key?: Maybe<Scalars['String']['output']>;
+  /** $t:fields.directus_settings.mcp_allow_deletes_note */
+  mcp_allow_deletes: Scalars['Boolean']['output'];
+  /** $t:fields.directus_settings.mcp_enabled_note */
+  mcp_enabled: Scalars['Boolean']['output'];
+  /** $t:fields.directus_settings.mcp_prompts_collection_note */
+  mcp_prompts_collection?: Maybe<Scalars['String']['output']>;
+  /** $t:fields.directus_settings.mcp_system_prompt_note */
+  mcp_system_prompt?: Maybe<Scalars['String']['output']>;
+  /** $t:fields.directus_settings.mcp_system_prompt_enabled_note */
+  mcp_system_prompt_enabled?: Maybe<Scalars['Boolean']['output']>;
   module_bar?: Maybe<Scalars['JSON']['output']>;
   module_bar_func?: Maybe<Count_Functions>;
   /** $t:field_options.directus_settings.project_color_note */
@@ -5290,6 +5312,7 @@ export type Products = {
   images?: Maybe<Scalars['JSON']['output']>;
   images_func?: Maybe<Count_Functions>;
   is_on_sale?: Maybe<Scalars['Boolean']['output']>;
+  location?: Maybe<Scalars['String']['output']>;
   main_image?: Maybe<Scalars['String']['output']>;
   market_price?: Maybe<Scalars['Float']['output']>;
   name: Scalars['String']['output'];
@@ -5378,6 +5401,7 @@ export type Products_Filter = {
   images?: InputMaybe<String_Filter_Operators>;
   images_func?: InputMaybe<Count_Function_Filter_Operators>;
   is_on_sale?: InputMaybe<Boolean_Filter_Operators>;
+  location?: InputMaybe<String_Filter_Operators>;
   main_image?: InputMaybe<String_Filter_Operators>;
   market_price?: InputMaybe<Number_Filter_Operators>;
   name?: InputMaybe<String_Filter_Operators>;
@@ -5491,6 +5515,7 @@ export type Terminals = {
   android_id?: Maybe<Scalars['String']['output']>;
   authorized_boutique?: Maybe<Boutiques>;
   brand?: Maybe<Scalars['String']['output']>;
+  carousel_interval?: Maybe<Scalars['Int']['output']>;
   date_created?: Maybe<Scalars['Date']['output']>;
   date_created_func?: Maybe<Datetime_Functions>;
   date_updated?: Maybe<Scalars['Date']['output']>;
@@ -5746,6 +5771,16 @@ export type Update_Directus_Settings_Input = {
   default_theme_light?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   mapbox_key?: InputMaybe<Scalars['String']['input']>;
+  /** $t:fields.directus_settings.mcp_allow_deletes_note */
+  mcp_allow_deletes?: InputMaybe<Scalars['Boolean']['input']>;
+  /** $t:fields.directus_settings.mcp_enabled_note */
+  mcp_enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** $t:fields.directus_settings.mcp_prompts_collection_note */
+  mcp_prompts_collection?: InputMaybe<Scalars['String']['input']>;
+  /** $t:fields.directus_settings.mcp_system_prompt_note */
+  mcp_system_prompt?: InputMaybe<Scalars['String']['input']>;
+  /** $t:fields.directus_settings.mcp_system_prompt_enabled_note */
+  mcp_system_prompt_enabled?: InputMaybe<Scalars['Boolean']['input']>;
   module_bar?: InputMaybe<Scalars['JSON']['input']>;
   /** $t:field_options.directus_settings.project_color_note */
   project_color?: InputMaybe<Scalars['String']['input']>;
@@ -5994,6 +6029,39 @@ export type VisitsUser_UpdatedArgs = {
 export type Visits_Mutated = {
   __typename?: 'visits_mutated';
   data?: Maybe<Visits>;
+  event?: Maybe<EventEnum>;
+  key: Scalars['ID']['output'];
+};
+
+export type Wechat_Users = {
+  __typename?: 'wechat_users';
+  access_token?: Maybe<Scalars['String']['output']>;
+  city?: Maybe<Scalars['String']['output']>;
+  country?: Maybe<Scalars['String']['output']>;
+  created_at?: Maybe<Scalars['Date']['output']>;
+  created_at_func?: Maybe<Datetime_Functions>;
+  expires_at?: Maybe<Scalars['Date']['output']>;
+  expires_at_func?: Maybe<Datetime_Functions>;
+  headimgurl?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  is_active?: Maybe<Scalars['Boolean']['output']>;
+  language?: Maybe<Scalars['String']['output']>;
+  nickname?: Maybe<Scalars['String']['output']>;
+  openid: Scalars['String']['output'];
+  privilege?: Maybe<Scalars['JSON']['output']>;
+  privilege_func?: Maybe<Count_Functions>;
+  province?: Maybe<Scalars['String']['output']>;
+  refresh_token?: Maybe<Scalars['String']['output']>;
+  scope?: Maybe<Scalars['String']['output']>;
+  sex?: Maybe<Scalars['Int']['output']>;
+  unionid?: Maybe<Scalars['String']['output']>;
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  updated_at_func?: Maybe<Datetime_Functions>;
+};
+
+export type Wechat_Users_Mutated = {
+  __typename?: 'wechat_users_mutated';
+  data?: Maybe<Wechat_Users>;
   event?: Maybe<EventEnum>;
   key: Scalars['ID']['output'];
 };

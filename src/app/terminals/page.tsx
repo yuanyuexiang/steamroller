@@ -8,7 +8,8 @@ import {
   Space, 
   Modal, 
   Form, 
-  Input, 
+  Input,
+  InputNumber,
   Select,
   Typography, 
   message, 
@@ -230,6 +231,7 @@ export default function TerminalsPage() {
       total_memory: terminal.total_memory,
       supported_cpu_architectures: terminal.supported_cpu_architectures,
       purposes: terminal.purposes,
+      carousel_interval: terminal.carousel_interval || 5,
       authorized_boutique: terminal.authorized_boutique?.id,
     });
     setIsModalVisible(true);
@@ -371,6 +373,21 @@ export default function TerminalsPage() {
           <Tag color="cyan">{getPurposeLabel(purposes)}</Tag>
         ) : (
           <span style={{ color: '#ccc' }}>-</span>
+        )
+      ),
+    },
+    {
+      title: '轮播间隔',
+      dataIndex: 'carousel_interval',
+      key: 'carousel_interval',
+      width: 120,
+      render: (interval: number) => (
+        interval ? (
+          <Tag color="processing" icon={<ClockCircleOutlined />}>
+            {interval} 秒
+          </Tag>
+        ) : (
+          <Tag color="default">5 秒</Tag>
         )
       ),
     },
@@ -675,6 +692,28 @@ export default function TerminalsPage() {
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
+                    label="轮播间隔（秒）"
+                    name="carousel_interval"
+                    tooltip="终端APP轮播图片时，每张图片的展示时长"
+                    initialValue={5}
+                  >
+                    <InputNumber
+                      min={1}
+                      max={60}
+                      placeholder="默认5秒"
+                      style={{ width: '100%' }}
+                      addonAfter="秒"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  {/* 空列，保持布局对称 */}
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
                     label="操作系统"
                     name="os_name"
                   >
@@ -818,6 +857,16 @@ export default function TerminalsPage() {
                   {viewingTerminal.purposes ? (
                     <Tag color="cyan">{getPurposeLabel(viewingTerminal.purposes)}</Tag>
                   ) : '-'}
+                </Descriptions.Item>
+
+                <Descriptions.Item label="轮播间隔" span={2}>
+                  {viewingTerminal.carousel_interval ? (
+                    <Tag color="processing" icon={<ClockCircleOutlined />}>
+                      {viewingTerminal.carousel_interval} 秒
+                    </Tag>
+                  ) : (
+                    <Tag color="default">5 秒（默认）</Tag>
+                  )}
                 </Descriptions.Item>
 
                 <Descriptions.Item label="操作系统">
