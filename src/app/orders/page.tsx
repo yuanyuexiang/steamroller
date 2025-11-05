@@ -26,7 +26,8 @@ import {
   UserOutlined,
   ClockCircleOutlined,
   DownloadOutlined,
-  SearchOutlined
+  SearchOutlined,
+  CheckCircleOutlined
 } from '@ant-design/icons';
 import { 
   useGetAllOrdersQuery,
@@ -181,6 +182,22 @@ function OrdersContent() {
     }
   };
 
+  // 快速处理订单（将状态设为已完成）
+  const handleProcessOrder = async (orderId: string) => {
+    try {
+      await updateOrderStatus({
+        variables: {
+          id: orderId,
+          status: 'completed'
+        }
+      });
+      message.success('订单处理完成');
+    } catch (error) {
+      console.error('处理订单失败:', error);
+      message.error('处理订单失败');
+    }
+  };
+
   // 表格列定义
   const columns = [
     {
@@ -261,27 +278,49 @@ function OrdersContent() {
     {
       title: '操作',
       key: 'actions',
-      width: 150,
-      render: (record: Order) => (
-        <Space>
-          <Button
-            className="action-btn detail-btn"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => viewOrderDetails(record)}
-          >
-            详情
-          </Button>
-          <Button
-            className="action-btn status-btn"
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => handleUpdateStatus(record.id)}
-          >
-            状态
-          </Button>
-        </Space>
-      ),
+      width: 200,
+      render: (record: Order) => {
+        const isCompleted = record.status === 'completed';
+        const isCancelled = record.status === 'cancelled';
+        
+        return (
+          <Space>
+            <Button
+              className="action-btn detail-btn"
+              size="small"
+              icon={<EyeOutlined />}
+              onClick={() => viewOrderDetails(record)}
+            >
+              详情
+            </Button>
+            <Button
+              className="action-btn status-btn"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => handleUpdateStatus(record.id)}
+            >
+              状态
+            </Button>
+            {/* 处理按钮 */}
+            {!isCancelled && (
+              isCompleted ? (
+                <Tag color="success" icon={<CheckCircleOutlined />}>
+                  已处理
+                </Tag>
+              ) : (
+                <Button
+                  type="primary"
+                  size="small"
+                  icon={<CheckCircleOutlined />}
+                  onClick={() => handleProcessOrder(record.id)}
+                >
+                  处理
+                </Button>
+              )
+            )}
+          </Space>
+        );
+      },
     },
   ];
 

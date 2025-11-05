@@ -250,7 +250,9 @@ export default function TerminalsPage() {
     } catch (error) {
       console.error('删除终端设备时出错:', error);
     }
-  };  // 表格列定义
+  };
+
+  // 表格列定义
   // 获取设备类型图标
   const getDeviceIcon = (deviceType: string | null | undefined) => {
     switch(deviceType?.toLowerCase()) {
