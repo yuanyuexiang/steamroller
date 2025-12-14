@@ -95,22 +95,15 @@ export default function LoginPage() {
       <div className="login-page-left">
         <div className="flex flex-col items-center mb-12">
           <div className="login-logo-circle">
-            <svg width="80" height="80" viewBox="0 0 100 100" fill="none">
-              {/* 蓝色叶片 */}
-              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#3B82F6" transform="rotate(-30 50 50)" />
-              {/* 紫色叶片 */}
-              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#A855F7" transform="rotate(30 50 50)" />
-              {/* 绿色叶片 */}
-              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#10B981" transform="rotate(90 50 50)" />
-              {/* 青色叶片 */}
-              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#06B6D4" transform="rotate(150 50 50)" />
-              {/* 橙色叶片 */}
-              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#F59E0B" transform="rotate(210 50 50)" />
-              {/* 粉色叶片 */}
-              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#EC4899" transform="rotate(270 50 50)" />
-              {/* 中心圆 */}
-              <circle cx="50" cy="50" r="6" fill="white" opacity="0.9" />
-            </svg>
+            <img 
+              src="/logo.png" 
+              alt="Kaichenbao Technology Logo" 
+              width={120} 
+              height={120}
+              style={{
+                filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2))'
+              }}
+            />
           </div>
           <h1 
             className="text-5xl font-light m-0"

@@ -68,6 +68,10 @@ body {
   position: relative;
   z-index: 2;
   backdrop-filter: blur(10px);
+  background-image: url('/background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .login-page-right {
