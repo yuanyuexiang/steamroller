@@ -95,29 +95,28 @@ export default function LoginPage() {
       <div className="login-page-left">
         <div className="flex flex-col items-center mb-12">
           <div className="login-logo-circle">
-            <svg width="70" height="70" viewBox="0 0 70 70" fill="none">
-              <path
-                d="M35 14L56 24.5v21L35 56 14 45.5v-21l21-10.5z"
-                fill="none"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M14 24.5l21 10.5 21-10.5M35 35v21"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle cx="35" cy="28" r="3" fill="white" opacity="0.8" />
+            <svg width="80" height="80" viewBox="0 0 100 100" fill="none">
+              {/* 蓝色叶片 */}
+              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#3B82F6" transform="rotate(-30 50 50)" />
+              {/* 紫色叶片 */}
+              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#A855F7" transform="rotate(30 50 50)" />
+              {/* 绿色叶片 */}
+              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#10B981" transform="rotate(90 50 50)" />
+              {/* 青色叶片 */}
+              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#06B6D4" transform="rotate(150 50 50)" />
+              {/* 橙色叶片 */}
+              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#F59E0B" transform="rotate(210 50 50)" />
+              {/* 粉色叶片 */}
+              <ellipse cx="50" cy="30" rx="8" ry="25" fill="#EC4899" transform="rotate(270 50 50)" />
+              {/* 中心圆 */}
+              <circle cx="50" cy="50" r="6" fill="white" opacity="0.9" />
             </svg>
           </div>
           <h1 
-            className="text-6xl font-light m-0"
+            className="text-5xl font-light m-0"
             style={{
               textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-              letterSpacing: '3px',
+              letterSpacing: '2px',
               color: '#FFFFFF',
               background: 'linear-gradient(135deg, #FFFFFF 0%, rgba(255, 255, 255, 0.8) 100%)',
               backgroundClip: 'text',
@@ -125,7 +124,7 @@ export default function LoginPage() {
               WebkitTextFillColor: 'transparent'
             }}
           >
-            Steamroller
+            Kaichenbao Technology
           </h1>
           <p 
             className="text-xl font-light mt-4"
@@ -134,21 +133,32 @@ export default function LoginPage() {
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
             }}
           >
-            实体店产品展示管理系统
+            实体店商品智能展销系统管理平台
           </p>
         </div>
         
         <div className="text-center max-w-lg">
           <p 
-            className="text-lg leading-relaxed mb-8"
+            className="text-2xl font-medium leading-relaxed mb-3"
             style={{ 
-              opacity: '0.9', 
+              opacity: '0.95', 
+              color: '#FFFFFF',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+              lineHeight: '1.6'
+            }}
+          >
+            开拓创新，塑造未来
+          </p>
+          <p 
+            className="text-base leading-relaxed mb-8"
+            style={{ 
+              opacity: '0.85', 
               color: '#FFFFFF',
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
               lineHeight: '1.8'
             }}
           >
-            为您的业务提供强大而优雅的管理解决方案
+            不断努力超越客户的期望，并提供卓越的终生价值。
           </p>
           <div 
             className="grid grid-cols-3 gap-6"
