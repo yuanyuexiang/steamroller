@@ -8,7 +8,7 @@ import { AuthProvider } from '@providers/AuthProvider';
 import '@lib/utils/suppress-warnings';
 
 export const metadata: Metadata = {
-  title: "服装店管理后台",
+  title: "实体店商品智能展销系统管理平台",
   description: "现代化服装店管理系统",
 };
 
