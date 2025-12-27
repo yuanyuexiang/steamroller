@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Card, 
-  Form, 
-  Input, 
-  Button, 
-  Avatar, 
-  Typography, 
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  Avatar,
+  Typography,
   Divider,
   message,
   Space,
@@ -23,9 +23,9 @@ import {
   Descriptions,
   Tabs
 } from 'antd';
-import { 
-  UserOutlined, 
-  EditOutlined, 
+import {
+  UserOutlined,
+  EditOutlined,
   SaveOutlined,
   UploadOutlined,
   LockOutlined,
@@ -89,7 +89,7 @@ function ProfileContent() {
     console.log('AuthUser from context:', authUser);
     console.log('Final user:', user);
     console.log('Auth loading state:', authLoading);
-    
+
     // 详细检查用户字段
     if (user) {
       console.log('用户字段详情:');
@@ -111,7 +111,7 @@ function ProfileContent() {
   useEffect(() => {
     if (user) {
       console.log('初始化表单数据...');
-      
+
       // 基本信息表单
       const formData = {
         first_name: user.first_name || '',
@@ -140,7 +140,7 @@ function ProfileContent() {
 
   const handleSave = async (values: any) => {
     if (!user?.id) return;
-    
+
     setLoading(true);
     try {
       // 这里可以调用GraphQL mutation更新用户信息
@@ -157,7 +157,7 @@ function ProfileContent() {
 
   const handlePreferencesSave = async (values: any) => {
     if (!user?.id) return;
-    
+
     setLoading(true);
     try {
       console.log('更新用户偏好:', values);
@@ -176,7 +176,7 @@ function ProfileContent() {
       message.error('两次输入的密码不一致');
       return;
     }
-    
+
     try {
       console.log('修改密码:', values);
       message.success('密码修改成功');
@@ -196,11 +196,11 @@ function ProfileContent() {
       'draft': { color: 'orange', text: '草稿' },
       'archived': { color: 'grey', text: '已归档' }
     };
-    
+
     if (!status) {
       return <Tag color="default">状态未设置</Tag>;
     }
-    
+
     const statusInfo = statusMap[status as keyof typeof statusMap];
     if (statusInfo) {
       return <Tag color={statusInfo.color}>{statusInfo.text}</Tag>;
@@ -214,7 +214,7 @@ function ProfileContent() {
     if (!lastAccess) {
       return '尚未记录访问时间';
     }
-    
+
     try {
       const date = new Date(lastAccess);
       // 检查日期是否有效
@@ -246,7 +246,7 @@ function ProfileContent() {
   const getUserFullName = () => {
     const firstName = user.first_name?.trim();
     const lastName = user.last_name?.trim();
-    
+
     if (firstName && lastName) {
       return `${firstName} ${lastName}`;
     } else if (firstName) {
@@ -263,7 +263,7 @@ function ProfileContent() {
   // 获取用户头像URL
   const getAvatarUrl = () => {
     if (user.avatar) {
-      return `https://forge.kcbaotech.com/assets/${user.avatar}`;
+      return `https://steamroller.kcbaotech.com/assets/${user.avatar}`;
     }
     return null;
   };
@@ -282,7 +282,7 @@ function ProfileContent() {
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <Title level={4}>个人信息</Title>
-            <Button 
+            <Button
               type={editing ? 'default' : 'primary'}
               icon={editing ? <SaveOutlined /> : <EditOutlined />}
               onClick={() => {
@@ -354,9 +354,9 @@ function ProfileContent() {
               label="个人描述"
               name="description"
             >
-              <TextArea 
-                rows={4} 
-                placeholder="介绍一下自己..." 
+              <TextArea
+                rows={4}
+                placeholder="介绍一下自己..."
                 maxLength={500}
                 showCount
               />
@@ -377,7 +377,7 @@ function ProfileContent() {
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <Title level={4}>系统偏好</Title>
-            <Button 
+            <Button
               type="primary"
               icon={<SaveOutlined />}
               onClick={() => preferencesForm.submit()}
@@ -461,8 +461,8 @@ function ProfileContent() {
               name="email_notifications"
               valuePropName="checked"
             >
-              <Switch 
-                checkedChildren="开启" 
+              <Switch
+                checkedChildren="开启"
                 unCheckedChildren="关闭"
               />
             </Form.Item>
@@ -481,7 +481,7 @@ function ProfileContent() {
       children: (
         <div>
           <Title level={4}>安全设置</Title>
-          
+
           <Card size="small" style={{ marginTop: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
@@ -490,7 +490,7 @@ function ProfileContent() {
                 </Title>
                 <Text type="secondary">定期更换密码以保护账户安全</Text>
               </div>
-              <Button 
+              <Button
                 type="primary"
                 onClick={() => setPasswordModalVisible(true)}
               >
@@ -522,27 +522,27 @@ function ProfileContent() {
         <Col xs={24} lg={8}>
           <Card>
             <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-              <Badge 
-                dot 
+              <Badge
+                dot
                 status={user.status === 'active' ? 'success' : 'default'}
                 offset={[-10, 10]}
               >
-                <Avatar 
-                  size={120} 
+                <Avatar
+                  size={120}
                   src={getAvatarUrl()}
                   icon={<UserOutlined />}
                   style={{ marginBottom: '16px' }}
                 />
               </Badge>
-              
+
               <Title level={3} style={{ marginBottom: '8px' }}>
                 {getUserFullName()}
               </Title>
-              
+
               <div style={{ marginBottom: '16px' }}>
                 {getUserStatusTag(user.status)}
               </div>
-              
+
               <Space direction="vertical" size="small" style={{ width: '100%' }}>
                 {user.email && (
                   <Text type="secondary">
@@ -563,7 +563,7 @@ function ProfileContent() {
             </div>
 
             <Divider />
-            
+
             <Descriptions column={1} size="small">
               <Descriptions.Item label="用户ID">
                 <Text code copyable>{user.id}</Text>
@@ -598,8 +598,8 @@ function ProfileContent() {
         {/* 详细信息和设置 */}
         <Col xs={24} lg={16}>
           <Card>
-            <Tabs 
-              activeKey={activeTab} 
+            <Tabs
+              activeKey={activeTab}
               onChange={setActiveTab}
               items={tabItems}
             />

@@ -15,7 +15,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
     }
 
     // 直接使用GraphQL system端点刷新token
-    const response = await fetch('https://forge.kcbaotech.com/graphql/system', {
+    const response = await fetch('https://steamroller.kcbaotech.com/graphql/system', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
     }
 
     const authData = result.data.auth_refresh;
-    
+
     // 更新存储的 token
     TokenManager.saveTokens(authData.access_token, authData.refresh_token);
 
@@ -59,7 +59,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
 const authLink = setContext(async (_, { headers }) => {
   // 使用 TokenManager 获取 token
   let token = TokenManager.getCurrentToken();
-  
+
   // 检查 token 是否即将过期（如果是 JWT）
   if (token) {
     const env = getEnvironmentInfo();
@@ -81,7 +81,7 @@ const authLink = setContext(async (_, { headers }) => {
       }
     }
   }
-  
+
   return {
     headers: {
       ...headers,
@@ -103,7 +103,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 
   if (networkError) {
     apiLogger.error('Network error', networkError);
-    
+
     // 如果是401错误（token过期），尝试刷新token并重试请求
     if ('statusCode' in networkError && networkError.statusCode === 401) {
       const env = getEnvironmentInfo();
@@ -136,7 +136,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 // 创建 Apollo Client
 const createApolloClient = () => {
   // 动态选择 GraphQL 端点
-  const httpLink = new HttpLink({ 
+  const httpLink = new HttpLink({
     uri: DIRECTUS_CONFIG.getGraphQLEndpoint(),
     fetchOptions: {
       timeout: 30000

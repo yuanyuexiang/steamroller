@@ -14,7 +14,7 @@ export const APP_CONFIG = {
   // API 配置
   API: {
     DIRECTUS: {
-      DEFAULT_URL: 'https://forge.kcbaotech.com',
+      DEFAULT_URL: 'https://steamroller.kcbaotech.com',
       GRAPHQL_ENDPOINT: '/graphql',
       ASSETS_ENDPOINT: '/assets',
     },

@@ -13,7 +13,7 @@ import { apiLogger } from '../utils/logger';
 
 const getDirectusUrl = () => {
   const env = getEnvironmentInfo();
-  
+
   // 检查是否在浏览器环境
   if (env.isBrowser) {
     // 云端部署时，Directus 在同一域名下
@@ -21,7 +21,7 @@ const getDirectusUrl = () => {
       return window.location.origin; // 使用当前域名
     }
   }
-  
+
   // 本地开发时使用远程 Directus
   return process.env.NEXT_PUBLIC_DIRECTUS_URL || APP_CONFIG.API.DIRECTUS.DEFAULT_URL;
 };
@@ -30,23 +30,23 @@ export const DIRECTUS_CONFIG = {
   // GraphQL 端点 - 自动检测
   GRAPHQL_URL: `${getDirectusUrl()}/graphql`,
   GRAPHQL_SYSTEM_URL: `${getDirectusUrl()}/graphql/system`,
-  
+
   // 本地代理端点
   LOCAL_GRAPHQL_PROXY: '/api/graphql',
-  
+
   // 文件上传端点
   FILE_UPLOAD_URL: `${getDirectusUrl()}/files`,
-  
+
   // 基础配置
   BASE_URL: (() => {
     const env = getEnvironmentInfo();
     return env.isBrowser ? window.location.origin : 'http://localhost:3000';
   })(),
-  
+
   // 获取当前环境应该使用的 GraphQL 端点
   getGraphQLEndpoint: () => {
     // 无论在哪个环境，都统一使用代理端点
-    // 本地开发：代理到 forge.kcbaotech.com
+    // 本地开发：代理到 steamroller.kcbaotech.com
     // 云端部署：代理到本地的 Directus 实例
     return '/api/graphql';
   },
@@ -56,7 +56,7 @@ export const DIRECTUS_CONFIG = {
 const shouldUseProxy = () => {
   const env = getEnvironmentInfo();
   if (env.isServer) return false; // 服务器端不使用代理
-  
+
   // 只有在本地开发环境才使用代理
   return env.isLocal;
 };
@@ -69,7 +69,7 @@ export const FILE_CONFIG = {
     if (fileId.startsWith('http')) return fileId;
     return `${getDirectusUrl()}/assets/${fileId}`;
   },
-  
+
   // 获取带认证的资产 URL（智能选择代理或直连）
   getAssetUrl: (fileId: string, authToken?: string, options?: {
     width?: number;
@@ -79,11 +79,11 @@ export const FILE_CONFIG = {
     format?: 'auto' | 'webp' | 'png' | 'jpg' | 'jpeg';
   }) => {
     if (!fileId) return '';
-    
+
     // 确保 fileId 是字符串类型
     const fileIdStr = typeof fileId === 'string' ? fileId : String(fileId);
     if (fileIdStr.startsWith('http')) return fileIdStr;
-    
+
     // 尝试获取令牌，优先使用传入的令牌
     let token = authToken;
     if (!token) {
@@ -93,10 +93,10 @@ export const FILE_CONFIG = {
         token = TokenManager.getCurrentToken() || undefined;
       }
     }
-    
+
     // 判断是否使用代理
     const useProxy = shouldUseProxy();
-    
+
     // 构建参数
     const params = new URLSearchParams();
     if (token) {
@@ -106,7 +106,7 @@ export const FILE_CONFIG = {
         params.set('access_token', token);
       }
     }
-    
+
     // 添加图片处理参数
     if (options) {
       if (options.width) params.set('width', options.width.toString());
@@ -115,7 +115,7 @@ export const FILE_CONFIG = {
       if (options.fit) params.set('fit', options.fit);
       if (options.format) params.set('format', options.format);
     }
-    
+
     if (useProxy) {
       // 本地开发环境：使用代理
       const baseUrl = `${DIRECTUS_CONFIG.BASE_URL}/api/assets/${fileIdStr}`;
@@ -126,7 +126,7 @@ export const FILE_CONFIG = {
       return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
     }
   },
-  
+
   // 获取带变换参数的图片 URL
   getImageUrl: (fileId: string, transforms?: {
     width?: number;
@@ -137,7 +137,7 @@ export const FILE_CONFIG = {
   }, authToken?: string) => {
     if (!fileId) return '';
     if (fileId.startsWith('http')) return fileId;
-    
+
     // 尝试获取令牌，优先使用传入的令牌
     let token = authToken;
     if (!token) {
@@ -147,10 +147,10 @@ export const FILE_CONFIG = {
         token = TokenManager.getCurrentToken() || undefined;
       }
     }
-    
+
     const useProxy = shouldUseProxy();
     const params = new URLSearchParams();
-    
+
     // 添加变换参数
     if (transforms) {
       Object.entries(transforms).forEach(([key, value]) => {
@@ -159,30 +159,30 @@ export const FILE_CONFIG = {
         }
       });
     }
-    
+
     // 添加认证参数
     if (token) {
       const tokenParam = useProxy ? 'token' : 'access_token';
       params.append(tokenParam, token);
     }
-    
-    const baseUrl = useProxy 
+
+    const baseUrl = useProxy
       ? `${DIRECTUS_CONFIG.BASE_URL}/api/assets/${fileId}`
       : `${getDirectusUrl()}/assets/${fileId}`;
-    
+
     return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
   }
 };
 
 // 服务器端 GraphQL 查询辅助函数（直接连接，不通过代理）
 export async function executeServerSideGraphQLQuery(
-  query: string, 
-  variables: any = {}, 
+  query: string,
+  variables: any = {},
   authToken?: string,
   useSystemEndpoint: boolean = false
 ) {
-  const url = useSystemEndpoint 
-    ? DIRECTUS_CONFIG.GRAPHQL_SYSTEM_URL 
+  const url = useSystemEndpoint
+    ? DIRECTUS_CONFIG.GRAPHQL_SYSTEM_URL
     : DIRECTUS_CONFIG.GRAPHQL_URL;
 
   try {
@@ -199,12 +199,12 @@ export async function executeServerSideGraphQLQuery(
     });
 
     const result = await response.json();
-    
+
     if (result.errors) {
       apiLogger.error('服务器端 GraphQL 错误', result.errors);
       throw new Error(result.errors[0]?.message || 'GraphQL 查询失败');
     }
-    
+
     return result.data;
   } catch (error) {
     apiLogger.error('服务器端 GraphQL 请求失败', error);
@@ -224,7 +224,7 @@ export const AUTH_QUERIES = {
       }
     }
   `,
-  
+
   // 刷新 Token Mutation（系统端点）
   REFRESH_TOKEN: `
     mutation AuthRefresh($refresh_token: String!, $mode: auth_mode) {
@@ -235,14 +235,14 @@ export const AUTH_QUERIES = {
       }
     }
   `,
-  
+
   // 登出 Mutation（系统端点）
   LOGOUT: `
     mutation AuthLogout($refresh_token: String!, $mode: auth_mode) {
       auth_logout(refresh_token: $refresh_token, mode: $mode)
     }
   `,
-  
+
   // 获取当前用户信息 Query（主端点）
   GET_CURRENT_USER: `
     query GetCurrentUser {
@@ -279,7 +279,7 @@ export const AUTH_QUERIES = {
       }
     }
   `,
-  
+
   // 更新用户信息 Mutation（系统端点）
   UPDATE_USER_ME: `
     mutation UpdateCurrentUser($data: update_directus_users_input!) {
@@ -298,14 +298,14 @@ export const AUTH_QUERIES = {
       }
     }
   `,
-  
+
   // 密码重置请求 Mutation（系统端点）
   PASSWORD_REQUEST: `
     mutation AuthPasswordRequest($email: String!, $reset_url: String) {
       auth_password_request(email: $email, reset_url: $reset_url)
     }
   `,
-  
+
   // 密码重置 Mutation（系统端点）
   PASSWORD_RESET: `
     mutation AuthPasswordReset($token: String!, $password: String!) {
@@ -361,7 +361,7 @@ export const BUSINESS_QUERIES = {
       }
     }
   `,
-  
+
   GET_PRODUCT_BY_ID: `
     query GetProductById($id: ID!) {
       products_by_id(id: $id) {
@@ -400,7 +400,7 @@ export const BUSINESS_QUERIES = {
       }
     }
   `,
-  
+
   // 分类相关查询
   GET_CATEGORIES: `
     query GetCategories($filter: categories_filter, $sort: [String], $limit: Int) {
@@ -413,7 +413,7 @@ export const BUSINESS_QUERIES = {
       }
     }
   `,
-  
+
   // 商铺相关查询
   GET_BOUTIQUES: `
     query GetBoutiques($filter: boutiques_filter, $sort: [String], $limit: Int, $offset: Int) {
@@ -429,7 +429,7 @@ export const BUSINESS_QUERIES = {
       }
     }
   `,
-  
+
   GET_BOUTIQUE_BY_ID: `
     query GetBoutiqueById($id: ID!) {
       boutiques_by_id(id: $id) {
@@ -445,7 +445,7 @@ export const BUSINESS_QUERIES = {
       }
     }
   `,
-  
+
   // 订单相关查询
   GET_USER_ORDERS: `
     query GetUserOrders($userId: Int!, $filter: orders_filter, $sort: [String], $limit: Int) {
@@ -470,7 +470,7 @@ export const BUSINESS_QUERIES = {
       }
     }
   `,
-  
+
   GET_ORDER_DETAILS: `
     query GetOrderById($id: ID!) {
       orders_by_id(id: $id) {
@@ -499,7 +499,7 @@ export const BUSINESS_QUERIES = {
       }
     }
   `,
-  
+
   // 用户相关查询
   GET_USERS: `
     query GetUsers($filter: users_filter, $limit: Int, $offset: Int) {
@@ -512,7 +512,7 @@ export const BUSINESS_QUERIES = {
       }
     }
   `,
-  
+
   GET_USER_BY_ID: `
     query GetUserById($id: ID!) {
       users_by_id(id: $id) {
@@ -568,7 +568,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 获取店铺统计信息
   GET_BOUTIQUES_STATS: `
     query GetBoutiquesAggregated($filter: boutiques_filter) {
@@ -591,7 +591,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 创建新店铺
   CREATE_BOUTIQUE: `
     mutation CreateBoutique($data: create_boutiques_input!) {
@@ -612,7 +612,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 更新店铺信息
   UPDATE_BOUTIQUE: `
     mutation UpdateBoutique($id: ID!, $data: update_boutiques_input!) {
@@ -633,7 +633,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 批量更新店铺状态
   UPDATE_BOUTIQUES_STATUS: `
     mutation UpdateBoutiqueStatus($ids: [ID]!, $status: String!) {
@@ -645,7 +645,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 删除店铺
   DELETE_BOUTIQUE: `
     mutation DeleteBoutique($id: ID!) {
@@ -654,7 +654,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 批量删除店铺
   DELETE_BOUTIQUES: `
     mutation DeleteBoutiques($ids: [ID]!) {
@@ -663,7 +663,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 获取店铺商品列表
   GET_BOUTIQUE_PRODUCTS: `
     query GetBoutiqueProducts(
@@ -698,7 +698,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 获取店铺商品统计
   GET_BOUTIQUE_PRODUCTS_STATS: `
     query GetBoutiqueProductsStats($boutiqueId: Int!) {
@@ -720,7 +720,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 获取店铺相关订单
   GET_BOUTIQUE_ORDERS: `
     query GetBoutiqueOrders(
@@ -762,7 +762,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 获取店铺销售统计
   GET_BOUTIQUE_SALES_STATS: `
     query GetBoutiqueSalesStats($boutiqueId: Int!) {
@@ -784,7 +784,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 获取店铺业绩概览
   GET_BOUTIQUE_PERFORMANCE: `
     query GetBoutiquePerformance($boutiqueId: Int!) {
@@ -819,7 +819,7 @@ export const BOUTIQUE_MANAGEMENT_QUERIES = {
       }
     }
   `,
-  
+
   // 高级店铺搜索
   SEARCH_BOUTIQUES: `
     query SearchBoutiques(
