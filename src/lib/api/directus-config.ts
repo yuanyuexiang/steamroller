@@ -32,7 +32,7 @@ export const DIRECTUS_CONFIG = {
   GRAPHQL_SYSTEM_URL: `${getDirectusUrl()}/graphql/system`,
 
   // 本地代理端点
-  LOCAL_GRAPHQL_PROXY: '/api/graphql',
+  LOCAL_GRAPHQL_PROXY: '/graphql',
 
   // 文件上传端点
   FILE_UPLOAD_URL: `${getDirectusUrl()}/files`,
@@ -48,7 +48,7 @@ export const DIRECTUS_CONFIG = {
     // 无论在哪个环境，都统一使用代理端点
     // 本地开发：代理到 steamroller.kcbaotech.com
     // 云端部署：代理到本地的 Directus 实例
-    return '/api/graphql';
+    return '/graphql';
   },
 };
 

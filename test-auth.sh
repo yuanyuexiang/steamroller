@@ -2,7 +2,7 @@
 
 echo "Testing authentication with valid credentials..."
 
-curl -X POST http://localhost:3000/api/graphql/system \
+curl -X POST http://localhost:3000/graphql/system \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{

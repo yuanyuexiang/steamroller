@@ -53,6 +53,19 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
+  // 重写规则：将干净的路径映射到内部 API 路由
+  async rewrites() {
+    return [
+      {
+        source: '/graphql',
+        destination: '/api/graphql',
+      },
+      {
+        source: '/graphql/system',
+        destination: '/api/graphql/system',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

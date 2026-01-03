@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // 使用本地代理端点刷新token
-      const response = await fetch('/api/graphql/system', {
+      const response = await fetch('/graphql/system', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       const result = await response.json();
-      
+
       if (result.errors || !result.data?.auth_refresh?.access_token) {
         // Refresh token 过期或无效，清除存储并返回 false
         localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN);
@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const authData = result.data.auth_refresh;
-      
+
       // 更新存储的 token
       localStorage.setItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN, authData.access_token);
       if (authData.refresh_token) {
@@ -125,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       authLogger.info('开始Directus认证', { email });
 
       // 使用本地代理端点进行认证
-      const response = await fetch('/api/graphql/system', {
+      const response = await fetch('/graphql/system', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,16 +151,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const result = await response.json();
       console.log('Directus认证响应:', result);
-      
+
       if (result.errors) {
         const errorMessage = result.errors[0]?.message || '未知错误';
         const errorCode = result.errors[0]?.extensions?.code || 'UNKNOWN';
-        authLogger.error('认证失败', { 
-          message: errorMessage, 
+        authLogger.error('认证失败', {
+          message: errorMessage,
           code: errorCode,
-          errors: result.errors 
+          errors: result.errors
         });
-        
+
         // 根据错误类型提供更友好的提示
         if (errorCode === 'INVALID_CREDENTIALS') {
           message.error('用户名或密码错误，请检查后重试');
@@ -174,7 +174,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         return false;
       }
-      
+
       if (!result.data?.auth_login?.access_token) {
         authLogger.error('认证失败：没有获取到access_token', { response: result });
         message.error('认证失败：未能获取访问令牌');
@@ -191,7 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // 获取用户信息
       try {
-        const userResponse = await fetch('/api/graphql/system', {
+        const userResponse = await fetch('/graphql/system', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -234,42 +234,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         const userResult = await userResponse.json();
-        
+
         if (userResult.data?.users_me) {
           const userData = userResult.data.users_me;
-          
+
           // 检查用户角色是否是管理员
           if (!userData.role || !isAdminRole(userData.role.name)) {
-            authLogger.warn('用户权限不足，非管理员用户', { 
-              email, 
+            authLogger.warn('用户权限不足，非管理员用户', {
+              email,
               roleName: userData.role?.name || 'No Role',
               roleId: userData.role?.id || 'No Role ID'
             });
-            
+
             // 清除已存储的令牌
             localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN);
             localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.REFRESH_TOKEN);
-            
+
             // 提示用户权限不足
             message.error(AUTH_MESSAGES.INSUFFICIENT_PERMISSION);
             return false;
           }
-          
+
           setUser(userData);
           // 保存用户信息到localStorage
           localStorage.setItem('user_info', JSON.stringify(userData));
-          authLogger.info('管理员登录成功，获取到完整用户信息', { 
+          authLogger.info('管理员登录成功，获取到完整用户信息', {
             email,
             roleName: userData.role.name,
-            roleId: userData.role.id 
+            roleId: userData.role.id
           });
         } else {
           authLogger.warn('登录成功但获取用户信息失败，使用基本信息');
-          const basicUser = { 
-            id: '', 
-            email, 
-            first_name: '', 
-            last_name: '', 
+          const basicUser = {
+            id: '',
+            email,
+            first_name: '',
+            last_name: '',
             role: undefined
           };
           setUser(basicUser);
@@ -277,17 +277,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (userError) {
         authLogger.error('获取用户信息失败', userError);
-        const basicUser = { 
-          id: '', 
-          email, 
-          first_name: '', 
-          last_name: '', 
+        const basicUser = {
+          id: '',
+          email,
+          first_name: '',
+          last_name: '',
           role: undefined
         };
         setUser(basicUser);
         localStorage.setItem('user_info', JSON.stringify(basicUser));
       }
-      
+
       return true;
     } catch (error) {
       authLogger.error('Login error', error);
@@ -300,10 +300,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       const refreshToken = localStorage.getItem(APP_CONFIG.AUTH.STORAGE_KEYS.REFRESH_TOKEN);
-      
+
       if (refreshToken) {
         // 使用本地代理端点登出
-        await fetch('/api/graphql/system', {
+        await fetch('/graphql/system', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -336,26 +336,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('=== AuthProvider initAuth 开始 ===');
       const accessToken = TokenManager.getCurrentToken();
       const storedUserInfo = localStorage.getItem('user_info');
-      
+
       console.log('Access token exists:', !!accessToken);
       console.log('Stored user info exists:', !!storedUserInfo);
-      
+
       if (accessToken) {
         // 首先尝试使用存储的用户信息
         if (storedUserInfo) {
           try {
             const userInfo = JSON.parse(storedUserInfo);
             console.log('从localStorage获取用户信息:', userInfo);
-            
+
             // 检查存储的用户角色是否是管理员
             if (!userInfo.role || !isAdminRole(userInfo.role.name)) {
               console.warn('localStorage中的用户权限不足，清除存储的认证信息');
-              
+
               // 清除已存储的令牌
               localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN);
               localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.REFRESH_TOKEN);
               localStorage.removeItem('user_info');
-              
+
               setUser(null);
               setLoading(false);
               router.push('/login');
@@ -363,7 +363,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               console.log('=== AuthProvider initAuth 结束 (localStorage权限不足) ===');
               return;
             }
-            
+
             setUser(userInfo);
             setLoading(false);
             console.log('=== AuthProvider initAuth 结束 (使用localStorage，管理员验证通过) ===');
@@ -376,7 +376,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // 如果没有存储的用户信息，使用GraphQL system端点获取当前用户
         try {
           console.log('使用本地代理端点获取用户信息...');
-          const response = await fetch('/api/graphql/system', {
+          const response = await fetch('/graphql/system', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -400,28 +400,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               `
             }),
           });
-          
+
           console.log('GraphQL system response status:', response.status);
           if (response.ok) {
             const result = await response.json();
             console.log('GraphQL system response:', result);
-            
+
             if (result.data?.users_me) {
               const userData = result.data.users_me;
               console.log('从GraphQL system获取到用户数据:', userData);
-              
+
               // 检查用户角色是否是管理员
               if (!userData.role || !isAdminRole(userData.role.name)) {
-                console.warn('用户权限不足，非管理员用户', { 
+                console.warn('用户权限不足，非管理员用户', {
                   roleName: userData.role?.name || 'No Role',
                   roleId: userData.role?.id || 'No Role ID'
                 });
-                
+
                 // 清除已存储的令牌
                 localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN);
                 localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.REFRESH_TOKEN);
                 localStorage.removeItem('user_info');
-                
+
                 // 跳转到登录页面并提示
                 setUser(null);
                 setLoading(false);
@@ -430,7 +430,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 console.log('=== AuthProvider initAuth 结束 (权限不足) ===');
                 return;
               }
-              
+
               const userInfo = {
                 id: userData.id,
                 email: userData.email || '',
@@ -438,7 +438,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 last_name: userData.last_name || '',
                 role: userData.role || undefined,
               };
-              
+
               setUser(userInfo);
               // 保存到localStorage以便下次使用
               localStorage.setItem('user_info', JSON.stringify(userInfo));
@@ -456,7 +456,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('解析JWT token...');
           const payload = JSON.parse(atob(accessToken.split('.')[1]));
           console.log('JWT Token Payload:', payload);
-          
+
           const fallbackUser = {
             id: payload.id,
             email: payload.email || '',
@@ -476,7 +476,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         console.log('没有找到access token');
       }
-      
+
       console.log('设置loading为false');
       setLoading(false);
       console.log('=== AuthProvider initAuth 结束 ===');

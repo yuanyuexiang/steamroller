@@ -14,7 +14,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
     }
 
     // 直接使用GraphQL system端点刷新token
-    const response = await fetch('/api/graphql/system', {
+    const response = await fetch('/graphql/system', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
 // 创建认证链接
 const systemAuthLink = setContext(async (_, { headers }) => {
   let token = TokenManager.getCurrentToken();
-  
+
   // 检查 token 是否即将过期
   if (token) {
     const env = getEnvironmentInfo();
@@ -76,7 +76,7 @@ const systemAuthLink = setContext(async (_, { headers }) => {
       }
     }
   }
-  
+
   return {
     headers: {
       ...headers,
@@ -98,7 +98,7 @@ const systemErrorLink = onError(({ graphQLErrors, networkError, operation, forwa
 
   if (networkError) {
     apiLogger.error('System Network error', networkError);
-    
+
     // 如果是401错误，尝试刷新token并重试请求
     if ('statusCode' in networkError && networkError.statusCode === 401) {
       const env = getEnvironmentInfo();
@@ -128,8 +128,8 @@ const systemErrorLink = onError(({ graphQLErrors, networkError, operation, forwa
 
 // 创建系统 Apollo Client
 const createSystemApolloClient = () => {
-  const httpLink = new HttpLink({ 
-    uri: '/api/graphql/system', // 使用系统端点
+  const httpLink = new HttpLink({
+    uri: '/graphql/system', // 使用系统端点
     fetchOptions: {
       timeout: 30000
     }

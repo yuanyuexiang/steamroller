@@ -24,17 +24,17 @@ export default function LoginPage() {
   const testConnection = async () => {
     setTestLoading(true);
     try {
-      const response = await fetch('/api/graphql/system', {
+      const response = await fetch('/graphql/system', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query: 'query { __typename }'
         })
       });
-      
+
       const result = await response.json();
       console.log('连接测试结果:', result);
-      
+
       if (response.ok) {
         message.success('代理连接正常！');
       } else {
@@ -52,13 +52,13 @@ export default function LoginPage() {
     setTestLoading(true);
     try {
       console.log('填入测试凭据到表单...');
-      
+
       // 使用Form实例设置值
       form.setFieldsValue({
         email: 'tom.nanjing@gmail.com',
         password: 'sual116y'
       });
-      
+
       message.success('已填入测试凭据，请点击登录按钮');
     } catch (error) {
       console.error('填入凭据失败:', error);
@@ -70,11 +70,11 @@ export default function LoginPage() {
 
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
-    
+
     try {
       console.log('尝试登录:', { email: values.email });
       const success = await login(values.email, values.password);
-      
+
       if (success) {
         message.success('登录成功！');
         router.push('/dashboard');
@@ -95,17 +95,17 @@ export default function LoginPage() {
       <div className="login-page-left">
         <div className="flex flex-col items-center mb-12">
           <div className="login-logo-circle">
-            <img 
-              src="/logo.png" 
-              alt="Kaichenbao Technology Logo" 
-              width={120} 
+            <img
+              src="/logo.png"
+              alt="Kaichenbao Technology Logo"
+              width={120}
               height={120}
               style={{
                 filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2))'
               }}
             />
           </div>
-          <h1 
+          <h1
             className="text-5xl font-light m-0"
             style={{
               textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
@@ -119,9 +119,9 @@ export default function LoginPage() {
           >
             Kaichenbao Technology
           </h1>
-          <p 
+          <p
             className="text-xl font-light mt-4"
-            style={{ 
+            style={{
               color: 'rgba(255, 255, 255, 0.9)',
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
             }}
@@ -129,12 +129,12 @@ export default function LoginPage() {
             实体店商品智能展销系统管理平台
           </p>
         </div>
-        
+
         <div className="text-center max-w-lg">
-          <p 
+          <p
             className="text-2xl font-medium leading-relaxed mb-3"
-            style={{ 
-              opacity: '0.95', 
+            style={{
+              opacity: '0.95',
               color: '#FFFFFF',
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
               lineHeight: '1.6'
@@ -142,10 +142,10 @@ export default function LoginPage() {
           >
             开拓创新，塑造未来
           </p>
-          <p 
+          <p
             className="text-base leading-relaxed mb-8"
-            style={{ 
-              opacity: '0.85', 
+            style={{
+              opacity: '0.85',
               color: '#FFFFFF',
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
               lineHeight: '1.8'
@@ -153,14 +153,14 @@ export default function LoginPage() {
           >
             不断努力超越客户的期望，并提供卓越的终生价值。
           </p>
-          <div 
+          <div
             className="grid grid-cols-3 gap-6"
             style={{
               padding: '0 2rem'
             }}
           >
             <div className="text-center">
-              <div 
+              <div
                 className="w-16 h-16 mx-auto mb-3 rounded-2xl flex items-center justify-center"
                 style={{
                   background: 'rgba(255, 255, 255, 0.2)',
@@ -169,13 +169,13 @@ export default function LoginPage() {
                 }}
               >
                 <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                 </svg>
               </div>
               <p className="text-sm font-medium text-white opacity-90">高效管理</p>
             </div>
             <div className="text-center">
-              <div 
+              <div
                 className="w-16 h-16 mx-auto mb-3 rounded-2xl flex items-center justify-center"
                 style={{
                   background: 'rgba(255, 255, 255, 0.2)',
@@ -184,13 +184,13 @@ export default function LoginPage() {
                 }}
               >
                 <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
-                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
                 </svg>
               </div>
               <p className="text-sm font-medium text-white opacity-90">安全可靠</p>
             </div>
             <div className="text-center">
-              <div 
+              <div
                 className="w-16 h-16 mx-auto mb-3 rounded-2xl flex items-center justify-center"
                 style={{
                   background: 'rgba(255, 255, 255, 0.2)',
@@ -199,7 +199,7 @@ export default function LoginPage() {
                 }}
               >
                 <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
                 </svg>
               </div>
               <p className="text-sm font-medium text-white opacity-90">数据洞察</p>
@@ -212,9 +212,9 @@ export default function LoginPage() {
       <div className="login-page-right">
         <div className="w-full max-w-sm">
           <div className="text-center mb-12">
-            <h2 
+            <h2
               className="text-3xl font-bold mb-3"
-              style={{ 
+              style={{
                 color: '#1F2937',
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 backgroundClip: 'text',
@@ -224,15 +224,15 @@ export default function LoginPage() {
             >
               管理员登录
             </h2>
-            <p 
+            <p
               className="text-base mb-2"
               style={{ color: '#6B7280' }}
             >
               系统管理员专用入口
             </p>
-            <div 
+            <div
               className="text-sm mb-6 p-3 rounded-lg"
-              style={{ 
+              style={{
                 backgroundColor: '#F3F4F6',
                 color: '#6B7280',
                 border: '1px solid #E5E7EB'
@@ -242,7 +242,7 @@ export default function LoginPage() {
               此系统仅限具有管理员权限的用户访问
             </div>
           </div>
-          
+
           <Form
             name="login"
             form={form}
@@ -253,9 +253,9 @@ export default function LoginPage() {
           >
             <Form.Item
               label={
-                <span 
-                  style={{ 
-                    color: '#374151', 
+                <span
+                  style={{
+                    color: '#374151',
                     fontWeight: '600',
                     fontSize: '15px'
                   }}
@@ -270,26 +270,26 @@ export default function LoginPage() {
               ]}
               style={{ marginBottom: '24px' }}
             >
-              <Input 
+              <Input
                 className="login-input-field"
                 prefix={
-                  <UserOutlined 
-                    style={{ 
+                  <UserOutlined
+                    style={{
                       color: '#667eea',
                       fontSize: '16px'
-                    }} 
+                    }}
                   />
-                } 
-                placeholder="输入您的邮箱地址" 
+                }
+                placeholder="输入您的邮箱地址"
                 size="large"
               />
             </Form.Item>
 
             <Form.Item
               label={
-                <span 
-                  style={{ 
-                    color: '#374151', 
+                <span
+                  style={{
+                    color: '#374151',
                     fontWeight: '600',
                     fontSize: '15px'
                   }}
@@ -307,11 +307,11 @@ export default function LoginPage() {
               <Input.Password
                 className="login-input-field"
                 prefix={
-                  <LockOutlined 
-                    style={{ 
+                  <LockOutlined
+                    style={{
                       color: '#667eea',
                       fontSize: '16px'
-                    }} 
+                    }}
                   />
                 }
                 placeholder="输入您的登录密码"
@@ -320,9 +320,9 @@ export default function LoginPage() {
             </Form.Item>
 
             <Form.Item style={{ marginBottom: '0' }}>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
+              <Button
+                type="primary"
+                htmlType="submit"
                 loading={loading}
                 className="login-submit-button w-full"
                 size="large"
@@ -331,8 +331,8 @@ export default function LoginPage() {
               </Button>
             </Form.Item>
           </Form>
-          
-          <div 
+
+          <div
             className="text-center text-sm mt-10"
             style={{ color: '#9CA3AF' }}
           >

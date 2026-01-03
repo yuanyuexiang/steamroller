@@ -7,31 +7,31 @@ export class TokenManager {
   // 获取当前令牌
   static getCurrentToken(): string | null {
     if (typeof window === 'undefined') return null;
-    
+
     return localStorage.getItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN) ||
-           localStorage.getItem('directus_auth_token') || 
-           localStorage.getItem('authToken') ||
-           localStorage.getItem('directus_token');
+      localStorage.getItem('directus_auth_token') ||
+      localStorage.getItem('authToken') ||
+      localStorage.getItem('directus_token');
   }
 
   // 获取刷新令牌
   static getRefreshToken(): string | null {
     if (typeof window === 'undefined') return null;
-    
+
     return localStorage.getItem(APP_CONFIG.AUTH.STORAGE_KEYS.REFRESH_TOKEN) ||
-           localStorage.getItem('directus_refresh_token') || 
-           localStorage.getItem('refresh_token');
+      localStorage.getItem('directus_refresh_token') ||
+      localStorage.getItem('refresh_token');
   }
 
   // 保存令牌
   static saveTokens(accessToken: string, refreshToken?: string) {
     if (typeof window === 'undefined') return;
-    
+
     // 保存到 AuthProvider 使用的键名
     localStorage.setItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN, accessToken);
     localStorage.setItem('directus_auth_token', accessToken);
     localStorage.setItem('authToken', accessToken);
-    
+
     if (refreshToken) {
       localStorage.setItem(APP_CONFIG.AUTH.STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
       localStorage.setItem('directus_refresh_token', refreshToken);
@@ -42,7 +42,7 @@ export class TokenManager {
   // 清除令牌
   static clearTokens() {
     if (typeof window === 'undefined') return;
-    
+
     // 清除所有可能的令牌键名
     localStorage.removeItem(APP_CONFIG.AUTH.STORAGE_KEYS.ACCESS_TOKEN);
     localStorage.removeItem('directus_auth_token');
@@ -61,7 +61,7 @@ export class TokenManager {
     }
 
     this.refreshPromise = this.doRefreshToken();
-    
+
     try {
       const result = await this.refreshPromise;
       return result;
@@ -69,7 +69,7 @@ export class TokenManager {
       this.refreshPromise = null;
     }
   }
-  
+
   private static async doRefreshToken(): Promise<string | null> {
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
@@ -79,9 +79,9 @@ export class TokenManager {
 
     try {
       console.log('TokenManager: Attempting to refresh token using local proxy...');
-      
+
       // 使用本地代理端点刷新 token
-      const response = await fetch('/api/graphql/system', {
+      const response = await fetch('/graphql/system', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ export class TokenManager {
       }
 
       const authData = result.data.auth_refresh;
-      
+
       if (authData.access_token) {
         this.saveTokens(authData.access_token, authData.refresh_token);
         console.log('TokenManager: Token refreshed successfully via local proxy');
@@ -128,7 +128,7 @@ export class TokenManager {
   // 获取有效的令牌（包括自动刷新）
   static async getValidToken(): Promise<string | null> {
     let token = this.getCurrentToken();
-    
+
     if (!token) {
       console.log('TokenManager: No token found');
       return null;
@@ -153,7 +153,7 @@ export class TokenManager {
       const exp = payload.exp * 1000; // 转换为毫秒
       const now = Date.now();
       const fiveMinutes = 5 * 60 * 1000;
-      
+
       return (exp - now) < fiveMinutes;
     } catch (error) {
       console.error('令牌解析失败:', error);
@@ -177,7 +177,7 @@ export class TokenManager {
   // 检查token是否过期
   static isTokenExpired(tokenPayload: any): boolean {
     if (!tokenPayload || !tokenPayload.exp) return true;
-    
+
     const currentTime = Math.floor(Date.now() / 1000);
     return tokenPayload.exp < currentTime;
   }
