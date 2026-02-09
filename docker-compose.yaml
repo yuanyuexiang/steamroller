@@ -3,6 +3,14 @@ services:
     container_name: steamroller
     image: ${DOCKER_IMAGE_TAG}
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'        # 最多使用 1 个 CPU 核心
+          memory: 2g         # 最大使用 2GB 内存
+        reservations:
+          cpus: '0.5'        # 预留 0.5 CPU
+          memory: 1g         # 预留 1GB 内存
     healthcheck:
       disable: true
     networks:
